@@ -419,7 +419,7 @@ Pour l'origine de "bois_mort_perche.csv" voir "Inventaire vertical" > "preparati
 A vérifié
 
 ```{r}
-BMP <- read.table(here::here("DATA_placette_CANOPIX","bois_mort_perche.csv"), sep=";", header=TRUE, stringsAsFactors = FALSE)
+BMP <- read.table("bois_mort_perche.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
 colnames(BMP)[colnames(BMP) == "vol.m2"] <- "vol.m3" # corrige
 
 colnames(BMP)[colnames(BMP) == "plot"] <- "placette" # renomme la colonne pour la jointure
@@ -447,6 +447,9 @@ ggplot(G_plac_pivot, aes(x = placette, y = Vol_m3.ha, fill = categorie_BM)) +
 Pour joindre toutes les métriques dans une même table. Il faut les joindre deux à deux par contre ; à chaque fois on en ajoute une
 
 ```{r}
+library(tidyverse)
+BM_wagner <- BM_wagner %>% unite(BM_wagner, c("massif", "placette")); names(BM_wagner) = c("placette", "BMS_Wagner.m3ha")
+
 metrique <- left_join(div_DMH, density_DMH, by = "placette")
 metrique <- left_join(metrique, couvert, by = "placette")
 metrique <- left_join(metrique, encombrement, by = "placette")
@@ -454,7 +457,7 @@ metrique <- left_join(metrique, Gini_index, by = "placette")
 metrique <- left_join(metrique, BM_wagner, by = "placette")
 
   # Export
-write.csv(metrique, here::here("DATA_placette_CANOPIX", "metrique_placette_Canopix.csv"), row.names = FALSE)
+write.csv(metrique, "metrique_placette_CanopixAD.csv", row.names = FALSE)
 ```
 
 # 3. Calculs FD
@@ -473,7 +476,7 @@ strateTreM <- as.data.frame.matrix(xtabs(effectif ~ strate_pl + DMH, data = DMH_
 strateTreM <- strateTreM[,order(colnames(strateTreM))] # trie par ordre alphabétique
 
   # import TreMs/trait
-TreMtrait <- read.table(here::here("DATA_placette_CANOPIX","TreMtrait.csv"), sep=";", header=TRUE, stringsAsFactors = FALSE)
+TreMtrait <- read.table("TreMtrait.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
   # on compare et on retire les lignes de DMH dans la table de trait, non-présents lors de l'inventaire Canopix
 TreMtrait$id_TreM_type ; names(strateTreM)
 TreMtrait <- TreMtrait[-c(8,15,18,24,25,32,37,41,42,44,45,47,49:53),]
@@ -482,7 +485,7 @@ rownames(TreMtrait) <- TreMtrait$id_TreM_type # met le nom des lignes en index
 TreMtrait <- subset(TreMtrait, select = -c(id_TreM_type)) # supprime la colonne id_TreM_type
 TreMtrait <- TreMtrait[order(rownames(TreMtrait),decreasing=FALSE),] # trie par ordre alphabetique
 
-  # calcul dbFD
+  # calcul dbFD ERREUR !!!!!!!!!!!!!!!!!!!!!!!!
 dbFD_strate <- dbFD(TreMtrait, strateTreM,  w.abun=TRUE, corr="lingoes", calc.FDiv=TRUE, calc.CWM=TRUE, m="min")
 ```
 
