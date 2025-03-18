@@ -1,0 +1,49 @@
+code_groupe;code_forme;code_type;identifiant;label_fr
+CV;CV1;CV11;1011;Loge de pic epeichette (o < 4 cm)
+CV;CV1;CV12;1012;Loge de pic de taille moyenne (o = 4-7 cm)
+CV;CV1;CV13;1013;Loge de pic noir (o > 10 cm)
+CV;CV1;CV14;1014;Flute de pic (? 3 loges en ligne)
+CV;CV2;CV21;1021;Cavite a terreau de pied
+CV;CV2;CV22;1022;Cavite a terreau de tronc
+CV;CV2;CV23;1023;Cavite a terreau semi-ouverte
+CV;CV2;CV24;1024;Cavite a terreau de pied de type cheminee
+CV;CV2;CV25;1025;Cavite a terreau de tronc de type cheminee
+CV;CV2;CV26;1026;Branche creuse
+CV;CV3;CV31;1031;Orifices et galeries creusees par des insectes 
+CV;CV4;CV41;1041;Dendrotelme
+CV;CV4;CV42;1042;Concavite de nourrissage de pic
+CV;CV4;CV43;1043;Concavite a fond dur de tronc
+CV;CV4;CV44;1044;Concavite racinaire a fond dur 
+IN;IN1;IN11;1051;Bois sans ecorce
+IN;IN1;IN12;1052;Cicatrice de feu
+IN;IN1;IN13;1053;Abri sous ecorce decolee
+IN;IN1;IN14;1054;Ecorce decollee formant une poche
+IN;IN1;IN21;1061;Cime brisee
+IN;IN1;IN22;1062;Charpentiere arrachee exposant le bois du tronc
+IN;IN1;IN23;1063;Fente simple
+IN;IN1;IN24;1064;Fente complexe de foudre
+IN;IN1;IN25;1065;Fente de fourche
+DE;DE1;DE10;1070;10% du houppier mort. Categorie juste pour le protocole Canopix
+DE;DE1;DE11;1071;Branches mortes
+DE;DE1;DE12;1072;Cime morte
+DE;DE1;DE13;1073;Vestige de charpentiere brisee
+GR;GR1;GR11;1081;Balai de sorciere
+GR;GR1;GR12;1082;Brogne
+GR;GR2;GR21;1091;Loupe
+GR;GR2;GR22;1092;Chancre
+EP;EP1;EP11;1101;Polypore perenne
+EP;EP2;EP21;1111;Polypore annuel
+EP;EP2;EP22;1112;Agaric charnu
+EP;EP2;EP23;1113;Pyrenomycete
+EP;EP2;EP24;1114;Myxomycete
+SE;SE1;SE11;1121;Bryophyte (mousse ou hepatique)
+SE;SE1;SE12;1122;Lichen foliace ou fruticuleux
+SE;SE1;SE13;1123;Lierre ou liane
+SE;SE1;SE14;1124;Fougere
+SE;SE1;SE15;1125;Gui
+SE;SE2;SE21;1131;Nid de vertebre
+SE;SE2;SE22;1132;Nid construit par un invertebre
+SE;SE3;SE31;1141;Microsol sur ecorce
+SE;SE3;SE32;1142;Microsol de houppier
+EX;EX1;EX11;1151;Coulee de seve active
+EX;EX1;EX12;1152;Coulee abondante de resine

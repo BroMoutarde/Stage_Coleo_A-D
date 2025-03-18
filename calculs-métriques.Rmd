@@ -1,0 +1,565 @@
+---
+title: "Calculs métriques"
+author: "Mathéo Mosnier"
+date: "2024-06-27"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# PACKAGES
+```{r}
+library(dplyr)
+library(tidyverse)
+library(stringr)
+library(ggplot2)
+library(FD) # pour dbFD
+library(DescTools) # pour Gini
+```
+
+Import du fichier initial. Le chapitre 1 peut être passé, le fichier de travail se situe à la ligne 175
+```{r}
+  # Import
+placette_Canopix <- read.table(here::here("DATA_placette_CANOPIX", "data_placette_Canopix.csv"), sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
+```
+
+# 1. Mise en forme des données DMH
+Ajout identifiant unique arbre
+```{r}
+ # crée un colonne avec le nom des quarts abrégés
+placette_Canopix <- placette_Canopix %>% mutate(quart_abg = case_when(quart == 'Nord-Est' ~ 'NE',
+                                                                     quart == 'Est-Sud' ~ 'ES',
+                                                                     quart == 'Sud-Ouest' ~ 'SO',
+                                                                     quart == 'Ouest-Nord' ~ 'ON', TRUE ~ NA_character_))
+ 
+ # crée un identifiant unique pour chaque arbre, composé du numéro de la placette et du quart dans lequel ils se situent
+placette_Canopix <- placette_Canopix %>%
+  group_by(placette, quart_abg) %>%
+  mutate(num_arbre = ifelse(Cat_arbre %in% c("V", "M", "C", "S"), 
+                             paste0(placette, "_", quart_abg, ".", row_number() + 1), 
+                             Cat_arbre)) %>%
+  ungroup()
+
+  # EXPORT
+write.table(x = placette_Canopix, file = here::here("DATA_placette_CANOPIX", "placette_Canopix.csv"), row.names = FALSE, dec=".", sep=";")
+```
+
+## 1.1 Mise en forme des 80 arbres DMH
+Mise en forme des données DMH des 80 arbres DMH (= inventaire vertical Mathéo) pour ensuite inclure ces données dans l'inventaire global de la placette
+
+"TREMs_obs.csv" => donnée de l'inventaire vertical de Mathéo
+```{r}
+  # import
+TREMs_obs <- read.table(here::here("DATA_placette_CANOPIX","TREMs_obs.csv"), sep=";", header=TRUE, stringsAsFactors = FALSE)
+code_DMH <- read.table(here::here("DATA_placette_CANOPIX","code_DMH.csv"), sep=";", header=TRUE, stringsAsFactors = FALSE)
+  # crée un nouveau dataframe avec seulement les colonnes utiles
+TREMs_obs2 <- TREMs_obs %>% select(id_arbre, sp, note_DEPERIS, DBH.cm, type_related, strate, vol_BMP.m2) 
+  # simplifie la notation des strates
+TREMs_obs2 <- TREMs_obs2 %>% mutate(strate = case_when(strate == '1p' ~ 'p',
+                                                       strate == '2t1' ~ 't',
+                                                       strate == '2t2' ~ 't',
+                                                       strate == 'h1' ~ 'h',
+                                                       strate == 'h2' ~ 'h',
+                                                       strate == 'h3' ~ 'h')) 
+  # associe le même système de notation des DMH (format lettres & chiffres - XX00)
+colnames(code_DMH)[colnames(code_DMH) == "identifiant"] <- "type_related" # renomme la colonne pour la jointure
+TREMs_obs2 <- left_join(TREMs_obs2, code_DMH[,c(3:4)], by="type_related") # joint
+TREMs_obs2 <- TREMs_obs2 %>% select(-type_related) # supprime la colonne devenue inutile                                                            
+# transforme le dataframe en format large
+TREMs_obs2 <- TREMs_obs2 %>%
+  group_by(id_arbre, code_type) %>%
+  summarise(combined = paste(code_type, strate, sep = "", collapse = ", "), .groups = 'drop') %>%
+  pivot_wider(names_from = code_type, values_from = combined)
+  # Sélectionner les colonnes 2 à 35
+cols_to_unite <- names(TREMs_obs2)[2:35] 
+  # ajoute tout dans une seule colonne
+TREMs_obs3 <- TREMs_obs2 %>%
+  unite("code_DMH", all_of(cols_to_unite), sep = ", ", na.rm = FALSE) 
+  # supprime les NA (=> mots "NA, "; ", NA"; "NA-")
+TREMs_obs4 <- TREMs_obs3 %>%
+  mutate(code_DMH = gsub("\\b(, NA|NA, |NA-)\\b", "", code_DMH)) 
+
+# Compte et affiche le nombre de redondance
+  # fonction pour traiter le texte
+traiter_texte <- function(texte) {
+  # sépare les mots
+  mots <- unlist(str_split(texte, "\\s+"))
+  # compte les occurrences de chaque mot
+  compte_mots <- table(mots)
+  # crée une nouvelle chaîne avec le nombre d'occurrences
+  texte_modifie <- sapply(names(compte_mots), function(mot) {
+    paste(compte_mots[mot], mot, sep = "")
+  })
+  
+  # Joindre les mots modifiés dans une seule chaîne sans espace
+  texte_final <- paste(texte_modifie, collapse = ",")
+  
+  return(texte_final)
+}
+  # applique la fonction à la colonne 'code_DMH'
+TREMs_obs4 <- TREMs_obs4 %>% mutate(code_DMH = sapply(code_DMH, traiter_texte))
+  # remplace les doubles tirets par un seul tiret dans la colonne 'code_DMH'
+TREMs_obs4$code_DMH <- gsub("\\,,", ",", TREMs_obs4$code_DMH)
+  # dispose en longueurs les codes des DMH délimités par des tirets. Crée donc une ligne par DMH.
+TREMs_obs5 <- TREMs_obs4 %>%
+  separate(code_DMH, into = paste0("code_DMH", 10:26), sep = ",", fill = "right", extra = "merge")
+
+# Ajout des variables relatives aux arbres DMH
+  # crée un nouveau dataframe avec seulement les colonnes utiles
+TREMs_obs6 <- TREMs_obs %>% select(id_arbre, vol_BMP.m2) %>% distinct()
+  # joint
+TREMs_obs7 <- left_join(TREMs_obs6, TREMs_obs5, by="id_arbre") 
+  # renomme la colonne "id_arbre" en "Cat_arbre" pour la jointure suivante
+TREMs_obs7 <- TREMs_obs7 %>% rename(Cat_arbre = id_arbre)
+DMH_placette <- left_join(placette_Canopix, TREMs_obs7, by=c("Cat_arbre")) # joint
+  # remplace les NA par une chaîne vide dans les colonnes 38 à 56
+DMH_placette <- DMH_placette %>% mutate(across(39:56, ~ replace_na(as.character(.), "")))
+```
+
+
+## 1.2 Mise en forme des DMH des données placettes
+```{r}
+# Crée un tableau avec une ligne par DMH
+  # regroupe les différentes colonnes DMH en une seule colonne et séparer par un tiret
+DMH_placette <- unite(DMH_placette, c("code_DMH","code_DMH2","code_DMH3","code_DMH4","code_DMH5","code_DMH6","code_DMH7","code_DMH8","code_DMH9", "code_DMH10","code_DMH11","code_DMH12","code_DMH13","code_DMH14","code_DMH15","code_DMH16","code_DMH17","code_DMH18","code_DMH19","code_DMH20","code_DMH21","code_DMH22","code_DMH23","code_DMH24","code_DMH25","code_DMH26"), col = "code_DMH", sep = "-")
+  # dispose en longueurs les codes des DMH délimités par des tirets. Crée donc une ligne par DMH.
+DMH_placette <- separate_longer_delim(DMH_placette, code_DMH, delim = "-")
+  # supprime les lignes où la colonne quart est pleine et code_DMH est vide
+DMH_placette <- DMH_placette %>% filter(!((!is.na(quart) & quart != "") & (is.na(code_DMH) | code_DMH == "")))
+unique(DMH_placette$code_DMH) # vérification
+
+# Création d'une colonne "effectif"
+  # extrait les 4 derniers caractères de la colonne "code_DMH" et crée un nouvelle colonne "effectif"
+DMH_placette <- DMH_placette %>%
+  mutate(effectif = substr(code_DMH, 1, 1))
+  # si le premier caractère est une lettre alors le DMH était présent qu'une seul fois. On remplace donc les lettres par 1
+DMH_placette <- DMH_placette %>%
+  mutate(effectif = ifelse(grepl("[A-Za-z]", effectif), 1, effectif))
+unique(DMH_placette$effectif) # vérification
+DMH_placette$effectif <- as.numeric(DMH_placette$effectif) # rend la colonne numérique
+
+# Création d'une colonne "DMH"
+  # here you define a vector of the characters you want to look for in the column (so this is the list of TreMs in the EFI reference list)
+liste.EFI <- c("CV11", "CV12", "CV13", "CV14", "CV21", "CV22", "CV23", "CV24", "CV25", "CV26", "CV31", "CV41", "CV42", "CV43", "CV44", "IN11", "IN12", "IN13", "IN14", "IN21", "IN22", "IN23", "IN24","IN25", "DE10", "DE11", "DE12", "DE13", "GR11", "GR12", "GR21", "GR22", "EP11", "EP21", "EP22", "EP23", "EP24", "SE11","SE12","SE13","SE14","SE15","SE21","SE22","SE31","SE32", "EX11", "EX12")
+
+DMH_placette$code_DMH[DMH_placette$code_DMH == ""] <- NA # remplace les cellules vides par NA
+
+  # Extraction des code DMH et création de la nouvelle colonne "DMH"
+DMH_placette$DMH <- str_extract_all(DMH_placette$code_DMH, paste(liste.EFI, collapse = "|"))
+DMH_placette$DMH <- as.character(DMH_placette$DMH) # passage en numérique
+DMH_placette$DMH[DMH_placette$DMH == "character(0)"] <- NA # remplace les cellules avec character(0) par NA
+unique(DMH_placette$DMH) # vérification
+
+# Création d'une colonne "strate"
+  # extrait le derniers caractères de la colonne "code_DMH" et crée un nouvelle colonne "strate"
+DMH_placette <- DMH_placette %>%
+  mutate(strate = substr(code_DMH, nchar(code_DMH), nchar(code_DMH)))
+  # si le dernier caractère est un chiffre alors la position du DMH n'était pas renseignée. On remplace donc les chiffres par NA
+DMH_placette <- DMH_placette %>%
+  mutate(strate = ifelse(grepl("[0-9]", strate), NA, strate))
+DMH_placette$strate[DMH_placette$strate == "A"] <- NA # remplace les cellules A par NA
+unique(DMH_placette$strate) # vérification
+
+  # supprime les lignes avec NA dans la colonne 'DMH'
+DMH_placette <- DMH_placette %>% filter(!is.na(DMH))
+  # retire les lignes relatives aux transects
+DMH_placette <- DMH_placette %>% select(-c(5:17))
+  # supprime les dataframe inutile
+rm(TREMs_obs2, TREMs_obs3,TREMs_obs4,TREMs_obs5, TREMs_obs6,TREMs_obs7)
+
+  # EXPORT
+write.table(x = DMH_placette, file = here::here("DATA_placette_CANOPIX", "placette_Canopix_DMH.csv"), row.names = FALSE, dec=".", sep=";")
+```
+
+
+# 2. Calcul des métriques
+Maintenant travailler avec 'DMH_placette' pour tout ce qui est relatif aux DMH. Dans ce fichier l'inventaire vertical exhaustif des 4 arbres DMH est inclut mais les colonnes relatives aux transects on été retiré. Ici une ligne correspond à un DMH sur un arbre.
+__________
+'placette_Canopix' est le fichier initial dans lequel l'inventaire vertical exhaustif des 4 arbres DMH **n'est pas** inclut. Une lignes correspond à un arbre ou a un Bois Mort au Sol (BMS). L'utiliser pour tout ce qui est relatif au bois mort.
+
+```{r}
+  # IMPORT
+DMH_placette <- read.table(here::here("DATA_placette_CANOPIX", "placette_Canopix_DMH.csv"), sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
+
+  # IMPORT
+placette_Canopix <- read.table(here::here("DATA_placette_CANOPIX", "placette_Canopix.csv"), sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
+```
+
+
+
+## div_DMH
+Calcul de la diversité des DMH
+```{r}
+  # calcul de la diversité total
+length(unique(DMH_placette$DMH))
+unique(DMH_placette$DMH)
+  # calcul diversité par placette
+div_DMH <- DMH_placette %>%
+  group_by(placette) %>%
+  summarise(div_DMH = n_distinct(DMH))
+```
+
+## density_DMH
+surface placette = pi*30² = 2827.433 m²
+1 ha = 10 000 m²
+densité = (Ab_DMH*10000)/ 2827.433
+________________
+Densité par placette
+```{r}
+  # calcul de l'abondance de DMH par type et par placette
+density_DMH <- DMH_placette %>%
+  group_by(placette, DMH) %>%
+  summarise(Ab_DMH = sum(effectif))
+  # crée un matrice
+density_DMH <- pivot_wider(density_DMH, names_from = DMH,
+values_from = Ab_DMH)
+  # remplace les NA par 0
+density_DMH[is.na(density_DMH)] <- 0
+  # calcul la densité pour chaque placette et DMH
+density_DMH <- density_DMH %>%
+  mutate(across(1:38, ~ .x * 10000/(pi*30^2)))
+  # renomme les colonnes
+density_DMH <- density_DMH %>%
+   rename_with(~ paste0("density_", .), 2:39)
+```
+________________
+Densité par strate
+p : pied
+t : tronc
+h : houppier
+```{r}
+  # calcul de l'abondance de DMH par type et par strate
+density_DMH_strate <- DMH_placette %>%
+  group_by(strate, DMH) %>%
+  summarise(Ab_DMH = sum(effectif))
+  # crée un matrice
+density_DMH_strate <- pivot_wider(density_DMH_strate, names_from = DMH,
+values_from = Ab_DMH)
+  # remplace les NA par 0
+density_DMH_strate[, 2:39][is.na(density_DMH_strate[, 2:39])] <- 0
+
+  # calcul la densité pour chaque strate et DMH
+density_DMH_strate <- density_DMH_strate %>%
+  mutate(across(1:38, ~ .x * 10000/(pi*30^2)))
+  # renomme les colonnes
+density_DMH_strate <- density_DMH_strate %>%
+   rename_with(~ paste0("density_", .), 2:39)
+
+  # transforme le tableau en longueur
+density_DMH_strate_long <- pivot_longer(density_DMH_strate, cols = 2:39, names_to ="code_DMH",
+values_to = "density")
+  # supprime lignes avec density = 0
+density_DMH_strate_long <- density_DMH_strate_long %>%
+  filter(density != 0)
+  # supprime les 8 premiers cratères 'code_DMH'
+library(stringr)
+density_DMH_strate_long$code_DMH <- str_sub(density_DMH_strate_long$code_DMH, 9)
+
+  # graph
+ggplot(density_DMH_strate_long, aes(x=code_DMH, y=density, fill=strate)) +
+  geom_bar(stat="identity", position=position_dodge()) +
+  theme_classic() +
+  # Tourne les légendes de l'axe x pour pouvoir les lire
+  theme(axis.text.x = element_text(angle = 90))
+
+```
+
+
+
+## couvert
+```{r}
+  # IMPORT
+placette_Canopix <- read.table(here::here("DATA_placette_CANOPIX", "placette_Canopix.csv"), sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
+
+  # supprime les colonnes relative aux quarts
+str_placette <- placette_Canopix %>%
+  select(-c(5, 7, 14:34))
+  # supprime les colonnes redondantes
+str_placette <- str_placette %>%
+ distinct()
+  # supprime les colonnes avec NA dans la colonne 'transect'
+str_placette <- str_placette %>%
+  filter(transect != "")
+
+  # calcul le pourcentage de couvert (*1.04)
+str_placette <- str_placette %>%
+  mutate(across(6:7, ~ .x * 1.04))
+
+  # calcul la moyenne des pourcentages de couvert en fonction de la placette
+couvert <- str_placette %>%
+  group_by(placette) %>%
+  summarise(ouverture_pc = mean(c(pts_libres_15m, pts_libres_25m), na.rm = TRUE))
+
+# graph
+ggplot(couvert, aes(x = placette, y = ouverture_pc)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Ouverture du feuillage",
+       x = "Placette",
+       y = "Ouverture (%)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
+
+```
+
+## encombrement des strates
+```{r}
+  # calcul la moyenne des pourcentages de couvert en fonction de la placette
+encombrement <- str_placette %>%
+  group_by(placette) %>%
+  summarise(encombrement_arbust = mean(c(arbustive_15m, arbustive_25m), na.rm = TRUE),
+            encombrement_arbo = mean(c(arboree_15m, arboree_25m), na.rm = TRUE))
+  # transforme le tableau en longueur
+encombrement_long <- pivot_longer(encombrement, cols = 2:3, names_to ="strate",
+values_to = "encombrement_moy")
+  # graph
+ggplot(encombrement_long, aes(x=placette, y=encombrement_moy, fill=strate)) +
+  geom_bar(stat="identity", position=position_dodge()) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
+
+```
+
+## Bois Mort au Sol (BMS)
+```{r}
+  # IMPORT - fichier sans les données des 4 arbres DMHs
+placette_Canopix <- read.table(here::here("DATA_placette_CANOPIX", "placette_Canopix.csv"), sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
+
+# création d'une fonction qui utilise la fonction de Van Wagner
+wagner <- function(x) {
+  return((pi^2/(8*120)*(x/100)^2)*10000)
+}
+
+BM_placette <- placette_Canopix %>%
+  # supprime les colonnes relative aux quarts
+  select(-c(2:5, 7:13, 18:38)) %>%
+  # supprime les colonnes avec NA dans la colonne 'transect'
+  filter(transect != "") %>%
+  # transforme les données de classe de diamètre en nombres. 'suppressWarnings()' supprime les avertissements pour conserver les NA
+  mutate(BMS_classe_diametre.cm = suppressWarnings(as.numeric(BMS_classe_diametre.cm))) %>%
+  # ajoute une colonne avec la formule de wagner calculee
+  mutate(BM_wagner.ha = wagner(BMS_classe_diametre.cm))
+
+summary(BM_placette)
+
+# Creation d'un nouveau dataframe avec le volume de BM en m2 par ha
+BM_wagner <- BM_placette %>%
+  group_by(placette) %>%
+  summarize(BMS_wagner.m3ha = sum(BM_wagner.ha, na.rm=TRUE))
+
+
+# graph
+ggplot(BM_wagner, aes(x = placette, y = BMS_wagner.m3ha)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Volume de BMS en m3 par hectare",
+       x = "Placette",
+       y = "Volume BM (m3/ha)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
+
+  # dans le nom de la placette sépare massif et n° de placette
+BM_wagner <- separate(BM_wagner, placette, sep = "_", into = c("massif", "placette"))
+```
+
+## indice de Gini
+Indice qui rend compte du niveau d'inégalité des diamètres d'arbres
+```{r}
+  # crée une colonne avec l'indice de Gini
+Gini_index <- DMH_placette %>% 
+  group_by(placette) %>%
+  summarise(coef_Gini = Gini(diam, na.rm=TRUE))
+```
+
+## surface terrière (G)
+surface terrière d’un arbre (noté g) = surface du tronc coupé (pi*r²)à 1,30 m
+surface terrière d’un peuplement (noté G) = somme des surfaces terrières de tous les arbres qui le composent (m²)
+```{r}
+  # IMPORT
+DMH_placette <- read.table(here::here("DATA_placette_CANOPIX", "placette_Canopix_DMH.csv"), sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
+
+G <- DMH_placette %>% filter(Cat_arbre !="M" & Cat_arbre !="C" & Cat_arbre !="S") %>%
+  group_by(num_arbre) %>% summarise(g = pi*(diam/2)^2) %>% distinct()
+
+G <- separate(G, num_arbre, sep = "_", into = c("massif", "placette", "reste"))
+#G <- G %>% mutate(placette = str_extract(num_arbre, "^[^.]+")) # extrait les caractères avant le premier point
+
+G_plac <- G %>% group_by(placette) %>% summarise(Gtot.m2 = sum(g, na.rm=TRUE)) %>% distinct() ; rm(G) # calcul G par placette
+```
+
+Calcul surface terrière des arbres DMH
+```{r}
+G_DMH <- DMH_placette %>% filter(Cat_arbre !="M" & Cat_arbre !="C" & Cat_arbre !="S" & Cat_arbre !="V") %>%
+  group_by(num_arbre) %>% summarise(g = pi*(diam/2)^2)  %>% distinct()
+
+G_DMH <- separate(G_DMH, num_arbre, sep = "_", into = c("massif", "placette", "reste"))
+G_DMH <- G_DMH %>% group_by(placette) %>% summarise(Gdmh.m2 = sum(g, na.rm=TRUE)) # calcul G par placette
+
+G_plac <- left_join(G_DMH, G_plac, by=c("placette")) ; G_DMH # joint
+
+  # calcul de la contribution BMP au BM tot en pondérant la proportion des 4 arbres inventoriés à la surface terrière de la placette
+G_plac$contribution_Gdmh <- G_plac$Gdmh.m2/ G_plac$Gtot.m2
+```
+
+## Bois Mort Perché (BMP)
+Pour l'origine de "bois_mort_perche.csv" voir "Inventaire vertical" > "preparation_data.Rmd" de Mathéo
+A vérifié
+```{r}
+BMP <- read.table(here::here("DATA_placette_CANOPIX","bois_mort_perche.csv"), sep=";", header=TRUE, stringsAsFactors = FALSE)
+colnames(BMP)[colnames(BMP) == "vol.m2"] <- "vol.m3" # corrige
+
+colnames(BMP)[colnames(BMP) == "plot"] <- "placette" # renomme la colonne pour la jointure
+BMP <- BMP %>% group_by(placette) %>% summarise(BMP.m3 = sum(vol.m3, na.rm=TRUE)) # calcul vol BMP par placette
+BMP$placette <- as.character(BMP$placette)
+G_plac <- left_join(G_plac, BMP, by=c("placette")) # joint
+G_plac <- left_join(G_plac, BM_wagner, by=c("placette")) # joint
+
+G_plac$BMPvol.m3ha <- (G_plac$BMP.m3 * G_plac$Gtot.m2)/ G_plac$Gdmh.m2
+
+G_plac_pivot <- pivot_longer(G_plac, cols = 7:8, names_to ="categorie_BM", values_to = "Vol_m3.ha")
+
+  # graph
+ggplot(G_plac_pivot, aes(x = placette, y = Vol_m3.ha, fill = categorie_BM)) +
+  geom_bar(position="fill", stat="identity") +
+  labs(title = "Proportion de BMP et BMS par placette",
+       x = "Placette",
+       y = "Volume BM (m3/ha)") +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 90)) + geom_col(aes(fill = categorie_BM)) +
+  scale_fill_manual(values = c("black", "grey"))
+```
+
+
+## => jointure
+Pour joindre toutes les métriques dans une même table. Il faut les joindre deux à deux par contre ; à chaque fois on en ajoute une
+```{r}
+metrique <- left_join(div_DMH, density_DMH, by = "placette")
+metrique <- left_join(metrique, couvert, by = "placette")
+metrique <- left_join(metrique, encombrement, by = "placette")
+metrique <- left_join(metrique, Gini_index, by = "placette")
+metrique <- left_join(metrique, BM_wagner, by = "placette")
+
+  # Export
+write.csv(metrique, here::here("DATA_placette_CANOPIX", "metrique_placette_Canopix.csv"), row.names = FALSE)
+```
+
+
+
+
+# 3. Calculs FD
+Calculs des indices des diversités avec dbFD
+dbFD est calculé par strate, par placette
+TreM/trait
+strate/TreM
+```{r}
+DMH_placette2 <- unite(DMH_placette, placette, strate, col = "strate_pl", sep = "_") # regroupe strate par placette
+
+  # création table de contingence strate/TreMs en incluant des effectifs présents dans une troisième colonne
+strateTreM <- as.data.frame.matrix(xtabs(effectif ~ strate_pl + DMH, data = DMH_placette2))
+  #colSums(strateTreM) #   # détection des TreM à 0
+  #strateTreM <- strateTreM[-c(1,2,6,13,19,22,24,25,27,29,30,31,34)] #  supprime la colonne 3000 (34)
+strateTreM <- strateTreM[,order(colnames(strateTreM))] # trie par ordre alphabétique
+
+  # import TreMs/trait
+TreMtrait <- read.table(here::here("DATA_placette_CANOPIX","TreMtrait.csv"), sep=";", header=TRUE, stringsAsFactors = FALSE)
+  # on compare et on retire les lignes de DMH dans la table de trait, non-présents lors de l'inventaire Canopix
+TreMtrait$id_TreM_type ; names(strateTreM)
+TreMtrait <- TreMtrait[-c(8,15,18,24,25,32,37,41,42,44,45,47,49:53),]
+  # agencements divers
+rownames(TreMtrait) <- TreMtrait$id_TreM_type # met le nom des lignes en index
+TreMtrait <- subset(TreMtrait, select = -c(id_TreM_type)) # supprime la colonne id_TreM_type
+TreMtrait <- TreMtrait[order(rownames(TreMtrait),decreasing=FALSE),] # trie par ordre alphabetique
+
+  # calcul dbFD
+dbFD_strate <- dbFD(TreMtrait, strateTreM,  w.abun=TRUE, corr="lingoes", calc.FDiv=TRUE, calc.CWM=TRUE, m="min")
+```
+
+# CWM by trait
+CWM ~ trait moyen
+```{r}
+ # extrait le CWM
+strate_CWM <- as.data.frame(dbFD_strate$CWM)
+strate_CWM$strate <- rownames(strate_CWM)# met le nom des lignes en colonne
+strate_CWM$strate <- str_sub(strate_CWM$strate, -1, -1) # extrait le dernier charactère
+strate_CWM <- subset(strate_CWM, strate != "A") # supprime les lignes avec A (NA)
+
+  # renomme les strates pour quelles soient dans l'ordre sur les graphiques
+strate_CWM <- strate_CWM%>%mutate(strate=case_when(strate =="p" ~ "1_p",
+                                           strate =="t" ~ "2_t",
+                                           strate =="h" ~ "3_h"),)
+```
+
+Planches de graphique CWM
+```{r}
+names(strate_CWM)
+
+par(mfrow=c(4,5))
+
+boxplot(saproxylic~strate,data=strate_CWM, ylab="CWM saproxylic", ylim(0,5))
+boxplot(epixylic~strate,data=strate_CWM)
+
+boxplot(contains_mould~strate,data=strate_CWM)
+
+boxplot(borne_by_living_tree~strate,data=strate_CWM)
+boxplot(borne_by_snag~strate,data=strate_CWM)
+boxplot(borne_by_log~strate,data=strate_CWM)
+
+boxplot(tree_base~strate,data=strate_CWM)
+boxplot(trunk~strate,data=strate_CWM)
+boxplot(crown~strate,data=strate_CWM)
+
+boxplot(soil_humus_contact~strate,data=strate_CWM)
+boxplot(shelter~strate,data=strate_CWM)
+
+boxplot(dry~strate,data=strate_CWM)
+boxplot(wet~strate,data=strate_CWM)
+boxplot(water_filled~strate,data=strate_CWM)
+
+boxplot(ephemeral~strate,data=strate_CWM)
+boxplot(annual~strate,data=strate_CWM)
+boxplot(perennial~strate,data=strate_CWM)
+
+boxplot(conifers~strate,data=strate_CWM)
+boxplot(broadleaves~strate,data=strate_CWM)
+
+par(mfrow=c(2,5))
+boxplot(ontogenesis_rythm_veryrapid~strate,data=strate_CWM)
+boxplot(ontogenesis_rythm_rapid~strate,data=strate_CWM)
+boxplot(ontogenesis_rythm_fairlyrapid~strate,data=strate_CWM)
+boxplot(ontogenesis_rythm_fairlyslow~strate,data=strate_CWM)
+boxplot(ontogenesis_rythm_slow~strate,data=strate_CWM)
+
+#boxplot(trigger_frequency_veryrapid~strate,data=strate_CWM)
+boxplot(trigger_frequency_rapid~strate,data=strate_CWM)
+boxplot(trigger_frequency_fairlyrapid~strate,data=strate_CWM)
+boxplot(trigger_frequency_fairlyslow~strate,data=strate_CWM)
+boxplot(trigger_frequency_slow~strate,data=strate_CWM)
+boxplot(trigger_frequency_veryslow~strate,data=strate_CWM)
+
+dev.off()
+```
+
+
+# FDiv by strate
+```{r}
+ # extrait le FDiv
+strate_FDiv <- as.data.frame(dbFD_strate$FDiv)
+strate_FDiv$strate <- rownames(strate_FDiv) # met le nom des lignes en colonne
+strate_FDiv$strate <- str_sub(strate_FDiv$strate, -1, -1) # extrait le dernier charactère
+colnames(strate_FDiv) <- c("FDiv", "strate") # renomme colonnes
+strate_FDiv <- subset(strate_FDiv, FDiv != "NA") # supprime les lignes avec NA
+
+colnames(strate_FDiv) <- c("FDiv", "strate") # renomme colonnes
+
+  # renomme les strates pour quelles soient dans l'ordre sur les graphiques
+strate_FDiv <- strate_FDiv%>%mutate(strate=case_when(strate =="p" ~ "1_p",
+                                           strate =="t" ~ "2_t",
+                                           strate =="h" ~ "3_h"),)
+
+boxplot(FDiv~strate,data=strate_FDiv)
+```
+A faire par strate et par essence/ placette/ etc.
+
+
+
