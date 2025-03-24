@@ -1,0 +1,105 @@
+---
+title: "Métriques Revues A-D"
+author: "Adrien Debout"
+date: "2025-03-24"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Activation des Libraries
+
+```{r}
+library(readxl)
+library(dplyr)
+library(tidyverse)
+library(stringr)
+library(ggplot2)
+library(FD) # pour dbFD
+library(DescTools) # pour Gini
+```
+
+# Import des fichiers initiaux et settings du working directory
+
+```{r}
+  # Working diretory
+setwd("C:/Users/adebout/Desktop/Adrien Debout Stage/STATS/Stats_coleo_AD/Data/Data placettes/DATA_placette_CANOPIX")
+  # Import
+Hauteurs <- read_excel("Hauteurs_arbres_pieges_2024.xlsx")
+```
+
+# 1. Mise en forme des données Hauteurs pour les strates
+Ajout identifiant unique arbre
+
+```{r}
+  # Réduire le massif pour adapter au jeu de données principal
+Hauteurs <- Hauteurs %>% mutate(massif = case_when(Massif == "Tronçais" ~ "T",
+                                                     Massif == "Vierzon" ~ "V",
+                                                     TRUE ~ NA_character_))
+
+  # Renommer des valeurs particulières
+Hauteurs["Num parcelle"] [Hauteurs ["Num parcelle"] == "327B"] <- "327"
+Hauteurs["Num parcelle"] [Hauteurs ["Num parcelle"] == "81 Vouzeron"] <- "81"
+
+  # Création de la colonne d'identification similaire à data_placette_Canopix
+Hauteurs <- Hauteurs %>%
+  group_by(massif, `Num parcelle`) %>%
+  mutate(placette = ifelse(massif %in% c("V", "T"), 
+                             paste0(massif, "_", `Num parcelle`), 
+                             massif)) %>%
+  ungroup()
+
+  # Création d'un dataframe pour sélectionner seulement les colonnes utiles + rename des colonnes
+Hauteurs_AD <- Hauteurs %>% select(placette, 
+                                   `Mesure pose : piège 1 / Canopix`, 
+                                   `Mesure pose : piège 2`, 
+                                   `Mesure pose : piège 3`,
+                                   `Mesure pose : piège 4`,
+                                   `Mesure pose : arbre`, 
+                                   `Mesure pose : bas houppier`)
+
+  # Pivotemment du dataframe
+Hauteurs_AD <- Hauteurs_AD %>% pivot_longer(cols = c(`Mesure pose : piège 1 / Canopix`, 
+                                   `Mesure pose : piège 2`, 
+                                   `Mesure pose : piège 3`,
+                                   `Mesure pose : piège 4`,
+                                   `Mesure pose : arbre`, 
+                                   `Mesure pose : bas houppier`),
+                       names_to = "mesure",
+                       values_to = "Hauteur")
+
+  # Création de la colonne Mesure avec des noms de variables simplifiés 
+Hauteurs_AD <- Hauteurs_AD %>% mutate(Mesure = case_when(mesure == "Mesure pose : piège 1 / Canopix" ~ "1",
+                                                     mesure == "Mesure pose : piège 2" ~ "2",
+                                                     mesure == "Mesure pose : piège 3" ~ "3",
+                                                     mesure == "Mesure pose : piège 4" ~ "4",
+                                                     mesure == "Mesure pose : arbre" ~ "5",
+                                                     mesure == "Mesure pose : bas houppier" ~ "6",
+                                                     TRUE ~ NA_character_))
+
+  # Remise en ordre pour une simplification de la lecture
+Hauteurs_AD <- Hauteurs_AD %>% select(placette, mesure, Mesure, Hauteur) ; names(Hauteurs_AD) = c("placette", "mesure", "Mesure", "Hauteur")
+
+  # Joindre les 2 data-frame
+Data_Hauteurs <- Hauteurs %>% left_join(Hauteurs_AD %>% select(c(placette, Mesure, Hauteur)), by = "placette")
+  # Déplacer la colonne placette au début
+Data_Hauteurs <- Data_Hauteurs %>% select(placette, everything())
+
+  # EXPORT
+write.table(x = Data_Hauteurs, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Hauteurs_arbres_AD.csv", row.names = FALSE, dec=".", sep=";")
+```
+
+
+# 2. Calcul des seuils des Hauteurs
+
+```{r}
+#
+H <- Data_Hauteurs %>% group_by(Mesure)
+min_values <- H %>% summarise(min = min(H$Hauteur))
+
+```
+
