@@ -328,19 +328,108 @@ names(BMP_Canopy_F) = c("placette", "Vol_BMP_Canop.m3")
 
 # Créer un tableau avec les 20 arbres et le volume BMP par strate
 BMP_PlacetteTot <- MSS %>% 
-  left_join(BMP_Canopy_F %>% 
-              select(c(everything())), by = "placette") 
-BMP_PlacetteTot <- BMP_PlacetteTot %>% 
-  left_join(BMP_Understory_F %>% 
-              select(c(everything())), by = "placette") %>%
-  select(c(placette, Vol_BMP_Under.m3, Vol_BMP_Canop.m3))
-
-# Transformation des NA en 0
+  left_join(BMP_FINAL2 %>% 
+              select(c(placette, Vol.m3, Strates_Placette)), by = "placette") %>% select(placette, Vol.m3)
+# Vérification de la présence de NAs
+BMP_PlacetteTot %>% summarise(across(everything(), ~ sum(is.na(.))))
+which(is.na(BMP_PlacetteTot$Vol.m3), arr.ind=TRUE)
+# Transformation des NAs en 0
 BMP_PlacetteTot[is.na(BMP_PlacetteTot)] = 0
+
 # Somme des BMP pour la placette
 BMP_PlacetteTot2 <- BMP_PlacetteTot %>%
-  mutate(Vol_BMP_Tot.m3 = Vol_BMP_Under.m3 + Vol_BMP_Canop.m3) %>% select(placette, Vol_BMP_Under.m3, Vol_BMP_Canop.m3, Vol_BMP_Tot.m3)
+  group_by(placette) %>%
+  summarise(Vol_BMP_Tot.m3 = sum(Vol.m3)) %>%
+  mutate(Vol_BMP_Tot.m3 = as.numeric(Vol_BMP_Tot.m3)) %>%
+  mutate(across(where(is.numeric), round, 3))
+
+# Ajout des colonnes pour under et canop
+BMP_PlacetteTot3 <- BMP_PlacetteTot2 %>% 
+  left_join(BMP_Understory_F %>% 
+              select(c(everything())), by = "placette") %>%
+  select(c(placette, Vol_BMP_Under.m3, Vol_BMP_Tot.m3))
+BMP_PlacetteTot4 <- BMP_PlacetteTot3 %>% 
+  left_join(BMP_Canopy_F %>% 
+              select(c(everything())), by = "placette") %>%
+  select(c(placette, Vol_BMP_Canop.m3, Vol_BMP_Under.m3, Vol_BMP_Tot.m3))
+# Transformation des NAs en 0
+BMP_PlacetteTot4[is.na(BMP_PlacetteTot4)] = 0
+
+#Création de la métrique Vol_BMP_Tot.m3/ha
+
+# Diamètre = 30m
+# Aire = 706.858m²
+# Hectare = 0.070686
+
+BMP_PlacetteTot5 <- BMP_PlacetteTot4 %>%
+  mutate(Vol_BMP_Tot.m3.ha = BMP_PlacetteTot4$Vol_BMP_Tot.m3 / 0.070686) %>%
+  mutate(across(where(is.numeric), round, 3))
+
+
+# Calculer la surface terrière pour les 4 arbres inventoriés
+# Calculer la surface terrière par placette (code Mathéo)
+# Pondérer Vol_BMP_Tot.m3.ha par la surface terrière 
+
+```
+
+### surface terrière (G)
+surface terrière d’un arbre (noté g) = surface du tronc coupé (pi*r²)à 1,30 m
+surface terrière d’un peuplement (noté G) = somme des surfaces terrières de tous les arbres qui le composent (m²)
+
+```{r}
+  # IMPORT
+DMH_placette <- read.table("placette_Canopix_DMH.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
+
+G <- DMH_placette %>% filter(Cat_arbre !="M" & Cat_arbre !="C" & Cat_arbre !="S") %>%
+  group_by(num_arbre) %>% summarise(g = pi*(diam/2)^2) %>% distinct()
+
+# Standardiser l'appellation de la placette 
+G <- separate(G, num_arbre, sep = "_", into = c("massif", "placette", "reste"))
+G <- G %>% unite("placette", massif, placette, sep = "_")
+
+# calcul G par placette
+G_plac <- G %>% group_by(placette) %>% summarise(Gtot.m2 = sum(g, na.rm=TRUE)) %>% distinct() ; rm(G) 
+```
+
+### Calcul surface terrière des arbres DMH
+
+```{r}
+# PASSER LE DIAMETRE EN METRE (x 0.01)
+# Ne pas oublier de rapporter à l'hectare puis comparer les valeurs surfaces terrières (50000m2/ha abbérant)
+
+G_DMH <- DMH_placette %>% filter(Cat_arbre !="M" & Cat_arbre !="C" & Cat_arbre !="S" & Cat_arbre !="V") %>%
+  group_by(num_arbre) %>% summarise(g = pi*(diam/2)^2) %>% distinct()
+
+# Calcul G par placette
+G_DMH <- separate(G_DMH, num_arbre, sep = "_", into = c("massif", "placette", "reste"))
+G_DMH <- G_DMH %>% unite("placette", massif, placette, sep = "_")
+G_DMH <- G_DMH %>% group_by(placette) %>% summarise(Gdmh.m2 = sum(g, na.rm=TRUE)) 
+
+G_plac <- G_plac %>% left_join(G_DMH, G_plac, by=c("placette")) ; G_DMH # joint
+
+# Calcul de la contribution BMP au BM tot en pondérant la proportion des 4 arbres inventoriés à la surface terrière de la placette
+G_plac$contribution_Gdmh <- G_plac$Gdmh.m2/ G_plac$Gtot.m2
+
+rAPPORTER A 30 M + RAPPORTER A HECTARE ?
+
+######################################################################
+
+BMP_PlacetteTot6 <- BMP_PlacetteTot5 %>% 
+  left_join(G_plac %>% 
+              select(c(everything())), by = "placette") %>%
+  select(c(placette, Vol_BMP_Canop.m3, Vol_BMP_Under.m3, Vol_BMP_Tot.m3))
+
+
+
 
 # EXPORT
-write.table(x = BMP_PlacetteTot2, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Placettes_AD.csv", row.names = FALSE, dec=".", sep=";")
+write.table(x = BMP_PlacetteTot5, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Placettes_AD.csv", row.names = FALSE, dec=".", sep=";")
 ```
+
+
+# 4. Bois Mort au Sol (BMS)
+
+```{r}
+
+```
+
