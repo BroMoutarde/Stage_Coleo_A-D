@@ -380,54 +380,104 @@ surface terrière d’un peuplement (noté G) = somme des surfaces terrières de
   # IMPORT
 DMH_placette <- read.table("placette_Canopix_DMH.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
 
+DMH_placette <- DMH_placette %>%
+  mutate(DBH.m = DMH_placette$diam * 0.01)
+
 G <- DMH_placette %>% filter(Cat_arbre !="M" & Cat_arbre !="C" & Cat_arbre !="S") %>%
-  group_by(num_arbre) %>% summarise(g = pi*(diam/2)^2) %>% distinct()
+  group_by(num_arbre) %>% summarise(g = pi*(DBH.m/2)^2) %>% distinct()
 
 # Standardiser l'appellation de la placette 
 G <- separate(G, num_arbre, sep = "_", into = c("massif", "placette", "reste"))
 G <- G %>% unite("placette", massif, placette, sep = "_")
 
+# Changer 169 en 170 (arbre thèse V_170 se trouvait dans la parcelle 169)
+G <- G %>% 
+  mutate(placette = ifelse(placette == "V_169", "V_170", placette))
+
 # calcul G par placette
-G_plac <- G %>% group_by(placette) %>% summarise(Gtot.m2 = sum(g, na.rm=TRUE)) %>% distinct() ; rm(G) 
-```
+G_plac <- G %>% group_by(placette) %>% summarise(Gtot.m2 = sum(g, na.rm=TRUE)) %>% distinct() ; rm(G)
 
-### Calcul surface terrière des arbres DMH
-
-```{r}
-# PASSER LE DIAMETRE EN METRE (x 0.01)
-# Ne pas oublier de rapporter à l'hectare puis comparer les valeurs surfaces terrières (50000m2/ha abbérant)
+#######################################################################
+#Calcul surface terrière des arbres DMH
 
 G_DMH <- DMH_placette %>% filter(Cat_arbre !="M" & Cat_arbre !="C" & Cat_arbre !="S" & Cat_arbre !="V") %>%
-  group_by(num_arbre) %>% summarise(g = pi*(diam/2)^2) %>% distinct()
+  group_by(num_arbre) %>% summarise(g = pi*(DBH.m/2)^2) %>% distinct()
 
 # Calcul G par placette
 G_DMH <- separate(G_DMH, num_arbre, sep = "_", into = c("massif", "placette", "reste"))
 G_DMH <- G_DMH %>% unite("placette", massif, placette, sep = "_")
-G_DMH <- G_DMH %>% group_by(placette) %>% summarise(Gdmh.m2 = sum(g, na.rm=TRUE)) 
+G_DMH <- G_DMH %>% group_by(placette) %>% summarise(Gdmh.m2 = sum(g, na.rm=TRUE))
 
-G_plac <- G_plac %>% left_join(G_DMH, G_plac, by=c("placette")) ; G_DMH # joint
+# Changer 169 en 170 (arbre thèse V_170 se trouvait dans la parcelle 169)
+G_DMH <- G_DMH %>% 
+  mutate(placette = ifelse(placette == "V_169", "V_170", placette))
 
+# joint
+G_plac <- G_plac %>% left_join(G_DMH, G_plac, by=c("placette")) ; G_DMH 
 # Calcul de la contribution BMP au BM tot en pondérant la proportion des 4 arbres inventoriés à la surface terrière de la placette
-G_plac$contribution_Gdmh <- G_plac$Gdmh.m2/ G_plac$Gtot.m2
+G_plac$Contribution_G_ArbreDMH <- G_plac$Gdmh.m2/ G_plac$Gtot.m2
 
-rAPPORTER A 30 M + RAPPORTER A HECTARE ?
+G_plac <- G_plac %>% mutate(across(where(is.numeric), round, 3))
 
 ######################################################################
 
 BMP_PlacetteTot6 <- BMP_PlacetteTot5 %>% 
   left_join(G_plac %>% 
-              select(c(everything())), by = "placette") %>%
-  select(c(placette, Vol_BMP_Canop.m3, Vol_BMP_Under.m3, Vol_BMP_Tot.m3))
+              select(c(placette, Contribution_G_ArbreDMH)), by = "placette") %>%
+  select(c(placette, Vol_BMP_Canop.m3, Vol_BMP_Under.m3, Vol_BMP_Tot.m3.ha, Contribution_G_ArbreDMH))
 
-
-
+BMP_PlacetteTot7 <- BMP_PlacetteTot6 %>%
+  mutate(Vol_BMP_Tot_Pondere.m3.ha = BMP_PlacetteTot6$Vol_BMP_Tot.m3.ha * BMP_PlacetteTot6$Contribution_G_ArbreDMH)
 
 # EXPORT
-write.table(x = BMP_PlacetteTot5, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Placettes_AD.csv", row.names = FALSE, dec=".", sep=";")
+write.table(x = BMP_PlacetteTot7, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Placettes_AD.csv", row.names = FALSE, dec=".", sep=";")
+```
+
+# 4. Bois Mort au Sol (BMS)
+
+```{r}
+
+# IMPORT - fichier sans les données des 4 arbres DMHs
+placette_Canopix <- read.table("placette_Canopix.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
+
+# création d'une fonction qui utilise la fonction de Van Wagner
+wagner <- function(x) {
+  return((pi^2/(8*120)*(x/100)^2)*10000)
+}
+
+BM_placette <- placette_Canopix %>%
+  # supprime les colonnes relative aux quarts
+  select(-c(2:5, 7:13, 18:38)) %>%
+  # supprime les colonnes avec NA dans la colonne 'transect'
+  filter(transect != "") %>%
+  # transforme les données de classe de diamètre en nombres. 'suppressWarnings()' supprime les avertissements pour conserver les NA
+  mutate(BMS_classe_diametre.cm = suppressWarnings(as.numeric(BMS_classe_diametre.cm))) %>%
+  # ajoute une colonne avec la formule de wagner calculee
+  mutate(BM_wagner.ha = wagner(BMS_classe_diametre.cm))
+
+summary(BM_placette)
+
+# Creation d'un nouveau dataframe avec le volume de BM en m3 par ha
+BM_wagner <- BM_placette %>%
+  group_by(placette) %>%
+  summarize(BMS_wagner.m3ha = sum(BM_wagner.ha, na.rm=TRUE))
+
+
+# graph
+ggplot(BM_wagner, aes(x = placette, y = BMS_wagner.m3ha)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Volume de BMS en m3 par hectare",
+       x = "Placette",
+       y = "Volume BM (m3/ha)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
+
+  # dans le nom de la placette sépare massif et n° de placette
+BM_wagner <- separate(BM_wagner, placette, sep = "_", into = c("massif", "placette"))
 ```
 
 
-# 4. Bois Mort au Sol (BMS)
+
 
 ```{r}
 
