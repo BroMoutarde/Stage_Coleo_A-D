@@ -380,6 +380,7 @@ surface terrière d’un peuplement (noté G) = somme des surfaces terrières de
   # IMPORT
 DMH_placette <- read.table("placette_Canopix_DMH.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
 
+# Diamètre en mètre
 DMH_placette <- DMH_placette %>%
   mutate(DBH.m = DMH_placette$diam * 0.01)
 
@@ -441,9 +442,13 @@ write.table(x = BMP_PlacetteTot7, file = "//no-datafile.inra.local/Biodiversite/
 placette_Canopix <- read.table("placette_Canopix.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
 
 # création d'une fonction qui utilise la fonction de Van Wagner
+# Van Wagner, C. E. (1982). Practical aspects of the line intersect      method (Vol. 12). Chalk River, Canada: Petawawa National Forestry      Institute.
 wagner <- function(x) {
-  return((pi^2/(8*120)*(x/100)^2)*10000)
-}
+  return((pi^2/(8*120)*(x/100)^2)*10000) 
+} 
+# 120 = 4*30 (transects)
+# x/100 pour passer les diamètres en mètres
+# *10000 pour passer des m3 en m3.ha
 
 BM_placette <- placette_Canopix %>%
   # supprime les colonnes relative aux quarts
@@ -472,14 +477,22 @@ ggplot(BM_wagner, aes(x = placette, y = BMS_wagner.m3ha)) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90))
 
-  # dans le nom de la placette sépare massif et n° de placette
-BM_wagner <- separate(BM_wagner, placette, sep = "_", into = c("massif", "placette"))
+# EXPORT
+write.table(x = BM_wagner, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMStot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
 ```
 
-
-
+# 5. Bois Mort Deboout (BMD)
 
 ```{r}
+# IMPORT 
+placette_Canopix <- read.table("placette_Canopix_DMH.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
+
+#Filtrer les arbres inventoriés pour le BMD
+BMD <- placette_Canopix %>% filter(Cat_arbre %in% c("M", "C", "S",))
+
+# M -> Diamètre à 1m30 = surface terrière ???
+# C -> Diamètre à 1m30 = surface terrière ???
+# S -> Diamètre médian = formule d'un cylindre pour le volume
 
 ```
 
