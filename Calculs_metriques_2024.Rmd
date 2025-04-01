@@ -21,6 +21,7 @@ library(stringr)
 library(ggplot2)
 library(FD) # pour dbFD
 library(DescTools) # pour Gini
+library(ggplot2)
 ```
 
 # Settings du Working directory
@@ -443,6 +444,42 @@ BM_placette <- placette_Canopix %>%
   # Summary
 summary(BM_placette)
 
+### Ajout des 3 souches qui sont du bois mort au sol ###
+
+  # Filtrer les souches 
+BMD_S <- BMD %>% filter(Cat_arbre %in% c("S"))
+  # Passer les Hauteurs en numérique
+BMD_S$H_arbre_mort.m <- as.numeric(BMD_S$H_arbre_mort.m)
+  # Passage Diamètre en mètre
+BMD_S <- BMD_S %>%
+  mutate(DBH.m = BMD_S$diam * 0.01,
+         surfacemediane = pi * (DBH.m^2) / 4)
+  # Calcul formule Protocol Optimix souches
+BMD_S$vol.m3 <- (BMD_S$surfacemediane * BMD_S$H_arbre_mort.m)
+  # Colonnes utiles
+BMD_S <- BMD_S %>%
+  select(placette, DBH.m, vol.m3)
+  # m3.ha
+BMD_S2 <- BMD_S %>%
+  mutate(Vol_BMD_S.m3.ha = BMD_S$vol.m3 / 0.070686) %>%
+  mutate(Vol_BMD_S.m3.ha = round(Vol_BMD_S.m3.ha, 3)) %>%
+  select(placette, vol.m3, Vol_BMD_S.m3.ha)
+
+# rattacher au BMS maintenant §§§§§
+
+  # Regrouper par placette + somme du Volume
+BMD_S4 <- BMD_S3 %>%
+  group_by(placette) %>%
+  summarise(Vol_BMD_Stot.m3.ha = sum(Vol_BMD_S.m3.ha))
+  # Jointure
+BMD_S5 <- MSS %>% 
+  select(placette) %>%
+  left_join(BMD_S4 %>%
+              select(everything()), by = "placette")
+  # NAs = 0
+BMD_S5[is.na(BMD_S5)] = 0
+
+
   # Creation d'un nouveau dataframe avec le volume de BM en m3 par ha
 BM_wagner <- BM_placette %>%
   group_by(placette) %>%
@@ -461,95 +498,15 @@ ggplot(BM_wagner, aes(x = placette, y = BMS_wagner.m3ha)) +
 write.table(x = BM_wagner, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMStot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
 ```
 
-# 5. Bois Mort Debout (BMD)
+# Préparation pour BMD
+Vérifier si on peut utiliser les arbres vivants DBH comme proxy de hauteur pour les arbres morts debout (M) : pas possible voir les graphiques.
+On va donc passer par plusieurs formules de calculs du Volume de Bois Mort pour les souches / les chandelles / les (M).
+Hypothèse de départ : les arbres mort (M) sont similaires aux arbres vivants (tiges et houppiers, peu de bois perdu), ainsi les volumes calculés par Deleuze (2014) sur les arbres vivants dont la hauteur est disponible peuvent etre associés à du bois mort au diamètre similaire et donc hauteur similaire supposée
+Souches : 
+Chandelles : 
+(M) :
 
 ```{r}
-  # IMPORT 
-placette_Canopix <- read.table("placette_Canopix_DMH.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
-
-  # Filtrer les arbres inventoriés pour le BMD
-BMD <- placette_Canopix %>% filter(Cat_arbre %in% c("M", "C", "S"))
-  # Filtrer les souches et chandelles
-BMD_CS <- BMD %>% filter(Cat_arbre %in% c("S", "C"))
-  # Passer les Hauteurs en numérique
-BMD_CS$H_arbre_mort.m <- as.numeric(BMD_CS$H_arbre_mort.m)
-  # Passage Diamètre en mètre
-BMD_CS <- BMD_CS %>%
-  mutate(DBH.m = BMD_CS$diam * 0.01)
-
-# Calcul du volume des branches mortes avec la formule de Huber : V = (pi*dm²*L)/4 #
-# Böhl, J., & Brändli, U. B. (2007). Deadwood volume assessment in the   third Swiss National Forest Inventory: methods and first results.      European Journal of Forest Research, 126, 449-457.
-BMD_CS$vol.m3 <- (pi*BMD_CS$DBH.m^2*BMD_CS$H_arbre_mort.m)/4
-
-  # m3.ha
-BMD_CS2 <- BMD_CS %>%
-  mutate(Vol_BMD_CS.m3.ha = BMD_CS$vol.m3 / 0.070686) %>%
-  mutate(across(where(is.numeric), ~ suppressWarnings(round(. + 1, 3)))) %>%
-  select(placette, vol.m3, Vol_BMD_CS.m3.ha)
-  # Enlever les doublons
-BMD_CS3 <- BMD_CS2 %>%
-  distinct(Vol_BMD_CS.m3.ha, .keep_all = T)
-  # Regrouper par placette + somme du Volume
-BMD_CS4 <- BMD_CS3 %>%
-  group_by(placette) %>%
-  summarise(Vol_BMD_CStot.m3.ha = sum(Vol_BMD_CS.m3.ha))
-  # IMPORT pour avoir la colonne placette avec les 20 ID
-MSS <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_Seuils_Strates_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
-  # Jointure
-BMD_CS5 <- MSS %>% 
-  select(placette) %>%
-  left_join(BMD_CS4 %>%
-              select(everything()), by = "placette")
-# NAs = 0
-BMD_CS5[is.na(BMD_CS5)] = 0
-
-###
-
-  # Filter les arbres morts debout
-BMD_M <- BMD %>% filter(Cat_arbre %in% c("M"))
-  # Passer les Hauteurs en numérique
-BMD_M$H_arbre_mort.m <- as.numeric(BMD_M$H_arbre_mort.m)
-  # Passage Diamètre en mètre
-BMD_M <- BMD_M %>%
-  mutate(DBH.m = BMD_M$diam * 0.01)
-  # Calcul
-BMD_M$vol.m3 <- (pi*BMD_M$DBH.m^2*BMD_M$H_arbre_mort.m)/4
-  # m3.ha
-BMD_M2 <- BMD_M %>%
-  mutate(Vol_BMD_M.m3.ha = BMD_M$vol.m3 / 0.070686) %>%
-  mutate(across(where(is.numeric), ~ suppressWarnings(round(. + 1, 3)))) %>%
-  select(placette, vol.m3, Vol_BMD_M.m3.ha)
-  # Enlever les doublons
-BMD_M3 <- BMD_M2 %>%
-  distinct(Vol_BMD_M.m3.ha, .keep_all = T)
-  # Regrouper par placette + somme du Volume
-BMD_M4 <- BMD_M3 %>%
-  group_by(placette) %>%
-  summarise(Vol_BMD_Mtot.m3.ha = sum(Vol_BMD_M.m3.ha))
-  # IMPORT pour avoir la colonne placette avec les 20 ID
-MSS <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_Seuils_Strates_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
-  # Jointure
-BMD_M5 <- MSS %>% 
-  select(placette) %>%
-  left_join(BMD_M4 %>%
-              select(everything()), by = "placette")
-# NAs = 0
-BMD_M5[is.na(BMD_M5)] = 0
-
-
-BMDtot <- BMD_M5 %>% 
-  left_join(BMD_CS5 %>%
-              select(everything()), by = "placette")
-BMDtot2 <- BMDtot %>%
-  group_by(placette) %>%
-  mutate(Vol_BMD_tot_m3.ha = )
-
-
-# M : tarif de cubage à une seule entrée, seul le diamètre est dispo
-```
-
-```{r}
-
 placette_Canopix <- read.table("placette_Canopix.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
 
 P <- placette_Canopix %>% filter(!Cat_arbre %in% c("V", "M", "C", "S"))
@@ -557,8 +514,9 @@ P <- placette_Canopix %>% filter(!Cat_arbre %in% c("V", "M", "C", "S"))
 P <- P %>% filter (!is.na(P$diam))
 
 P <- P %>%
-  select(placette, Cat_arbre, diam, H_arbre_mort.m) %>%
-  distinct(Cat_arbre, .keep_all = T)
+  select(placette, Cat_arbre, diam, H_arbre_mort.m, BMP_sp) %>%
+  distinct(Cat_arbre, .keep_all = T) %>% 
+  mutate(DBH.m = P$diam * 0.01) 
 
 P  <- P  %>% 
   mutate(Cat_arbre = ifelse(Cat_arbre == "V_169_1", "V_170_1", Cat_arbre))
@@ -580,16 +538,20 @@ Hauteurs <- Hauteurs %>%
 names(Hauteurs) = c("Cat_arbre", "H2_arbre_mort.m")
 
 Hauteurs <- Hauteurs %>%
-  mutate(Cat_arbre = paste0(Cat_arbre, "_1"))
+  mutate(Cat_arbre = paste0(Cat_arbre, "_1")) 
 
 HauteursDMH <- P %>%
   left_join(Hauteurs, by = "Cat_arbre") %>%
   mutate(H_arbre_mort.m = as.numeric(H_arbre_mort.m)) %>%
   mutate(H_arbre_mort_F.m = coalesce(H_arbre_mort.m, H2_arbre_mort.m)) %>%
   select(-H_arbre_mort.m, -H2_arbre_mort.m) %>%
-  mutate(Circonférence = HauteursDMH$diam * pi) %>%
-  mutate(Circonférence = round(Circonférence, 3))
-names(HauteursDMH) = c("placette", "Cat_arbre", "Diamètre", "Hauteurs", "Circonférence")
+  mutate(Circonférence = P$DBH.m * pi) %>%
+  mutate(Circonférence = round(Circonférence, 3)) 
+HauteursDMH <- HauteursDMH %>%
+  mutate(Massif = gsub("([A-Za-z])_[0-9]+_([1-4])", "\\1_\\2", Cat_arbre))
+names(HauteursDMH) = c("placette", "Cat_arbre", "Diamètre", "BM_sp", "DBH.m", "Hauteurs", "Circonférence", "Massif")
+
+###
 
 library(ggplot2)
 
@@ -598,19 +560,209 @@ summary(regression)
 r2 <- summary(regression)$r.squared
 slope <- coef(regression)[2]
 
-ggplot(HauteursDMH, aes(Circonférence, Hauteurs)) +
+lm_model <- lm(Hauteurs ~ Circonférence, data = subset(HauteursDMH, Massif %in% c("T_1", "V_1")))
+ar2 <- summary(lm_model)$r.squared
+aslope <- coef(lm_model)[2]
+
+lm_model2 <- lm(Hauteurs ~ Circonférence, data = subset(HauteursDMH, Massif %in% c("T_2", "T_3", "T_4" ,"V_1", "V_2", "V_3", "V_4")))
+br2 <- summary(lm_model2)$r.squared
+bslope <- coef(lm_model2)[2]
+
+plotT <- ggplot(HauteursDMH, aes(Circonférence, Hauteurs, color = Massif)) +
   geom_point() +
   geom_smooth( method = "lm", color = "red", se = F) +
   labs(title = "Circonférence des arbres DMH en fonction de la Hauteur") +
   xlim(0, 450) +  # Définir la limite de l'axe x
   ylim(0, 50) +
   annotate("text", x = 400, y = 45, label = paste("R² = ", round(r2, 3)), color = "black", size = 4) +
-    annotate("text", x = 400, y = 40, label = paste("Pente = ", round(slope, 3)), color = "black", size = 4)
+    annotate("text", x = 400, y = 40, label = paste("Pente = ", round(slope, 3)), color = "black", size = 4) +
+  scale_color_manual(values = c("T_1" = "red", "T_2" = "blue", "T_3" = "green", "T_4" = "purple"))
+
+plotV <- ggplot(HauteursDMH, aes(Circonférence, Hauteurs, color = Massif)) +
+  geom_point() +
+  geom_smooth( method = "lm", color = "red", se = F) +
+  labs(title = "Circonférence des arbres DMH en fonction de la Hauteur") +
+  xlim(0, 450) +  # Définir la limite de l'axe x
+  ylim(0, 50) +
+  annotate("text", x = 400, y = 45, label = paste("R² = ", round(r2, 3)), color = "black", size = 4) +
+    annotate("text", x = 400, y = 40, label = paste("Pente = ", round(slope, 3)), color = "black", size = 4) +
+  scale_color_manual(values = c("V_1" = "red", "V_2" = "blue", "V_3" = "green", "V_4" = "purple"))
+
+library(gridExtra)
+grid.arrange(plotT, plotV, ncol = 2)
+
+plot1 <- ggplot(HauteursDMH, aes(Circonférence, Hauteurs, color = Massif)) +
+  geom_point() +
+  geom_smooth( method = "lm", color = "red", se = F) +
+  geom_smooth(method = "lm", data = subset(HauteursDMH, Massif %in% c("T_1", "V_1")), 
+              aes(color = "Régression"), se = FALSE) +
+  labs(title = "Circonférence des arbres DMH en fonction de la Hauteur") +
+  xlim(0, 5) +  # Définir la limite de l'axe x
+  ylim(0, 50) +
+  annotate("text", x = 4, y = 40, label = paste("R² = ", round(br2, 3)), color = "black", size = 4) +
+    annotate("text", x = 4, y = 35, label = paste("Pente = ", round(bslope, 3)), color = "black", size = 4) +
+      annotate("text", x = 1, y = 40, label = paste("R² = ", round(r2, 3)), color = "red", size = 4) +
+    annotate("text", x = 1, y = 35, label = paste("Pente = ", round(slope, 3)), color = "red", size = 4) +
+  scale_color_manual(values = c("V_1" = "red", "T_1" = "blue", "Régression" = "black"))
+
+plot234 <- ggplot(HauteursDMH, aes(Circonférence, Hauteurs, color = Massif)) +
+  geom_point() +
+  geom_smooth( method = "lm", color = "red", se = F) +
+  geom_smooth(method = "lm", data = subset(HauteursDMH, Massif %in% c( "T_2", "T_3", "T_4" ,"V_1", "V_2", "V_3", "V_4")), 
+              aes(color = "Regression"), se = FALSE) +
+  labs(title = "Circonférence des arbres DMH en fonction de la Hauteur") +
+  xlim(0, 5) +  # Définir la limite de l'axe x
+  ylim(0, 50) +
+  annotate("text", x = 4, y = 40, label = paste("R² = ", round(br2, 3)), color = "black", size = 4) +
+    annotate("text", x = 4, y = 35, label = paste("Pente = ", round(bslope, 3)), color = "black", size = 4) +
+      annotate("text", x = 1, y = 40, label = paste("R² = ", round(r2, 3)), color = "red", size = 4) +
+    annotate("text", x = 1, y = 35, label = paste("Pente = ", round(slope, 3)), color = "red", size = 4) +
+  scale_color_manual(values = c("T_2" = "#EEC900", "V_2" = "yellow", "T_3" = "#008B00", "V_3" = "green", "T_4" = "#8B3A62", "V_4" = "purple", "Regression" = "black"))
+
+grid.arrange(plot1, plot234, ncol = 2)
+
+#####################################################################
+
+# espèces arbres dans data_TreMs.xlsx #
+
+  # Constante de la formule de (Deuleze et al., 2014) + circonférence
+HauteursDMH <- HauteursDMH %>%
+  mutate(constante = 0.512,
+         circonférence =  HauteursDMH$DBH.m * pi)
+HauteursDMH2 <- HauteursDMH %>%
+  mutate(VolTot = round (constante * (Hauteurs * circonférence^2) / (4 * pi * (1 - 1.3 / Hauteurs)^2), 3)) 
+
+%>%
+  mutate(VolTot.m3.ha = VolTot / 0.070686)
+  
+```
+
+# 5. Bois Mort Debout (BMD)
+
+```{r}
+  # IMPORT 
+placette_Canopix <- read.table("placette_Canopix_DMH.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
+
+  # Filtrer les arbres inventoriés pour le BMD
+BMD <- placette_Canopix %>% filter(Cat_arbre %in% c("M", "C", "S"))
+
+  # Filtrer les chandelles
+BMD_C <- BMD %>% filter(Cat_arbre %in% c("C"))
+  # Passer les Hauteurs en numérique
+BMD_C$H_arbre_mort.m <- as.numeric(BMD_C$H_arbre_mort.m)
+  # Passage Diamètre en mètre
+BMD_C <- BMD_C %>%
+  mutate(DBH.m = BMD_C$diam * 0.01)
+
+# Calcul du volume des branches mortes avec la formule de Huber : V = (pi*dm²*L)/4 #
+# Böhl, J., & Brändli, U. B. (2007). Deadwood volume assessment in the   third Swiss National Forest Inventory: methods and first results.      European Journal of Forest Research, 126, 449-457.
+
+  # Calcul
+BMD_C$vol.m3 <- (pi*BMD_C$DBH.m^2*BMD_C$H_arbre_mort.m)/4
+  # m3.ha
+BMD_C2 <- BMD_C %>%
+  mutate(Vol_BMD_C.m3.ha = BMD_C$vol.m3 / 0.070686) %>%
+  mutate(across(where(is.numeric), ~ suppressWarnings(round(. + 1, 3)))) %>%
+  select(placette, vol.m3, Vol_BMD_C.m3.ha, BMP_sp)
+  # Enlever les doublons
+BMD_C3 <- BMD_C2 %>%
+  distinct(Vol_BMD_C.m3.ha, .keep_all = T)
+  # Regrouper par placette + somme du Volume
+BMD_C4 <- BMD_C3 %>%
+  select(everything()) %>%
+  group_by(placette) %>%
+  summarise(Vol_BMD_Ctot.m3.ha = sum(Vol_BMD_C.m3.ha)) 
+  # IMPORT pour avoir la colonne placette avec les 20 ID
+MSS <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_Seuils_Strates_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
+  # Jointure
+BMD_C5 <- MSS %>% 
+  select(placette) %>%
+  left_join(BMD_C4 %>%
+              select(everything()), by = "placette")
+  # NAs = 0
+BMD_C5[is.na(BMD_C5)] = 0
+
+###
+
+  # Filtrer les souches 
+BMD_S <- BMD %>% filter(Cat_arbre %in% c("S"))
+  # Passer les Hauteurs en numérique
+BMD_S$H_arbre_mort.m <- as.numeric(BMD_S$H_arbre_mort.m)
+  # Passage Diamètre en mètre
+BMD_S <- BMD_S %>%
+  mutate(DBH.m = BMD_S$diam * 0.01)
+  # Calcul formule Huber
+BMD_S$vol.m3 <- (pi*BMD_S$DBH.m^2*BMD_S$H_arbre_mort.m)/4
+  # m3.ha
+BMD_S2 <- BMD_S %>%
+  mutate(Vol_BMD_S.m3.ha = BMD_S$vol.m3 / 0.070686) %>%
+  mutate(across(where(is.numeric), ~ suppressWarnings(round(. + 1, 3)))) %>%
+  select(placette, vol.m3, Vol_BMD_S.m3.ha, BMP_sp)
+  # Enlever les doublons
+BMD_S3 <- BMD_S2 %>%
+  distinct(Vol_BMD_S.m3.ha, .keep_all = T)
+  # Regrouper par placette + somme du Volume
+BMD_S4 <- BMD_S3 %>%
+  group_by(placette) %>%
+  summarise(Vol_BMD_Stot.m3.ha = sum(Vol_BMD_S.m3.ha))
+  # Jointure
+BMD_S5 <- MSS %>% 
+  select(placette) %>%
+  left_join(BMD_S4 %>%
+              select(everything()), by = "placette")
+  # NAs = 0
+BMD_S5[is.na(BMD_S5)] = 0
+
+###
+
+  # Filter les arbres morts debout
+BMD_M <- BMD %>% filter(Cat_arbre %in% c("M"))
+  # Passer les Hauteurs en numérique
+BMD_M$H_arbre_mort.m <- as.numeric(BMD_M$H_arbre_mort.m)
+  # Passage Diamètre en mètre
+BMD_M <- BMD_M %>%
+  mutate(DBH.m = BMD_M$diam * 0.01)
+  # Colonnes utiles
+BMD_M <- BMD_M %>%
+  select(placette, diam, DBH.m, H_arbre_mort.m, BMP_sp)
+  # Calcul
+BMD_M$vol.m3 <- (pi*BMD_M$DBH.m^2*BMD_M$H_arbre_mort.m)/4
+  # m3.ha
+BMD_M2 <- BMD_M %>%
+  mutate(Vol_BMD_M.m3.ha = BMD_M$vol.m3 / 0.070686) %>%
+  mutate(across(where(is.numeric), ~ suppressWarnings(round(. + 1, 3)))) %>%
+  select(placette, vol.m3, Vol_BMD_M.m3.ha, BMP_sp)
+  # Enlever les doublons
+BMD_M3 <- BMD_M2 %>%
+  distinct(Vol_BMD_M.m3.ha, .keep_all = T)
+  # Regrouper par placette + somme du Volume
+BMD_M4 <- BMD_M3 %>%
+  group_by(placette) %>%
+  summarise(Vol_BMD_Mtot.m3.ha = sum(Vol_BMD_M.m3.ha))
+  # Jointure
+BMD_M5 <- MSS %>% 
+  select(placette) %>%
+  left_join(BMD_M4 %>%
+              select(everything()), by = "placette")
+  # NAs = 0
+BMD_M5[is.na(BMD_M5)] = 0
+
+###
+
+BMDtot <- BMD_M5 %>% 
+  left_join(BMD_CS5 %>%
+              select(everything()), by = "placette")
+BMDtot2 <- BMDtot %>%
+  group_by(placette) %>%
+  mutate(Vol_BMD_tot_m3.ha = )
 
 
+# M : tarif de cubage à une seule entrée, seul le diamètre est dispo
+```
 
-### CALCULER A 2 ENTREE POUR LES ARBRES VIVANT
-### COMPARER AVEC UNE ENTREE LE VOLUME OBTENU
-### EVENTUELLEMENT METTRE LES ESSENCES DE COULEURS DIFF2RENTES SUR LE GRAPH ET PEUT ETRE SEPARER LES 2 MASSIFS
+# 6.
+
+```{r}
+
 ```
 
