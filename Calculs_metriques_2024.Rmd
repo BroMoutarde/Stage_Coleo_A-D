@@ -166,7 +166,7 @@ BMP <- BMP2 %>% select(placette, everything())
 BMP <- BMP %>% select(-"_")
   # Filtrer pour seulement les arbres thèses (ex : ._..._1)
 BMP <- BMP %>% filter(arbre == "1")
-  # Changer 169 en 170 (arbre thèse V_170 était dans la parcelle 169) 
+  # Changer 169 en 170 (arbre thèse V_170 était dans la parcelle 169)
 BMP <- BMP %>% 
   mutate(placette = ifelse(placette == "V_169", "V_170", placette))
 
@@ -295,8 +295,7 @@ BMP_Canopy <- BMP_FINAL3 %>%
   # Somme des BMP pour understory
 BMP_Understory_F <- BMP_Understory %>% 
   group_by(placette) %>% 
-  summarise(Vol_BMP_Tot = sum(Vol.m3)) %>%
-  mutate(across(where(is.numeric), round, 3))
+  summarise(Vol_BMP_Tot = sum(Vol.m3)) 
 names(BMP_Understory_F) = c("placette", "Vol_BMP_Under.m3")
 
   # Filtrer les NAs pour les 3 valeurs manquantes de Vol_BMP
@@ -304,8 +303,7 @@ BMP_Canopy <- BMP_Canopy %>% filter (!is.na(BMP_Canopy$Vol.m3))
   # Somme des BMP pour canopy
 BMP_Canopy_F <- BMP_Canopy %>% 
   group_by(placette) %>% 
-  summarise(Vol_BMP_Tot = sum(Vol.m3)) %>%
-  mutate(across(where(is.numeric), round, 3))
+  summarise(Vol_BMP_Tot = sum(Vol.m3)) 
 names(BMP_Canopy_F) = c("placette", "Vol_BMP_Canop.m3")
 
   # Créer un tableau avec les 20 arbres et le volume BMP totale
@@ -322,8 +320,7 @@ BMP_PlacetteTot[is.na(BMP_PlacetteTot)] = 0
 BMP_PlacetteTot2 <- BMP_PlacetteTot %>%
   group_by(placette) %>%
   summarise(Vol_BMP_Tot.m3 = sum(Vol.m3)) %>%
-  mutate(Vol_BMP_Tot.m3 = as.numeric(Vol_BMP_Tot.m3)) %>%
-  mutate(across(where(is.numeric), round, 3))
+  mutate(Vol_BMP_Tot.m3 = as.numeric(Vol_BMP_Tot.m3)) 
   # Ajout des colonnes V_BMP pour under et canop
 BMP_PlacetteTot3 <- BMP_PlacetteTot2 %>% 
   left_join(BMP_Understory_F %>% 
@@ -341,8 +338,7 @@ BMP_PlacetteTot4[is.na(BMP_PlacetteTot4)] = 0
   # Aire = 706.858m²
   # Hectare = 0.070686
 BMP_PlacetteTot5 <- BMP_PlacetteTot4 %>%
-  mutate(Vol_BMP_Tot.m3.ha = BMP_PlacetteTot4$Vol_BMP_Tot.m3 / 0.070686) %>%
-  mutate(across(where(is.numeric), round, 3))
+  mutate(Vol_BMP_Tot.m3.ha = BMP_PlacetteTot4$Vol_BMP_Tot.m3 / 0.070686) 
 
 # Calculer la surface terrière pour les 4 arbres inventoriés #
 # Calculer la surface terrière par placette (code Mathéo) #
@@ -412,10 +408,10 @@ BMP_PlacetteTot6 <- BMP_PlacetteTot5 %>%
   select(c(placette, Vol_BMP_Canop.m3, Vol_BMP_Under.m3, Vol_BMP_Tot.m3.ha, Contribution_G_ArbreDMH))
   # Pondération par la contribution 
 BMP_PlacetteTot7 <- BMP_PlacetteTot6 %>%
-  mutate(Vol_BMP_Tot_Pondere.m3.ha = BMP_PlacetteTot6$Vol_BMP_Tot.m3.ha * BMP_PlacetteTot6$Contribution_G_ArbreDMH)
+  mutate(Vol_BMP_Tot_Pondere.m3.ha = round(BMP_PlacetteTot6$Vol_BMP_Tot.m3.ha * BMP_PlacetteTot6$Contribution_G_ArbreDMH, 3))
 
   # EXPORT
-write.table(x = BMP_PlacetteTot7, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Placettes_AD.csv", row.names = FALSE, dec=".", sep=";")
+write.table(x = BMP_PlacetteTot7, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
 ```
 
 # 4. Bois Mort au Sol (BMS)
@@ -423,8 +419,10 @@ write.table(x = BMP_PlacetteTot7, file = "//no-datafile.inra.local/Biodiversite/
 ```{r}
   # IMPORT - fichier sans les données des 4 arbres DMHs
 placette_Canopix <- read.table("placette_Canopix.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
-  # IMPORT 
-placette_Canopix2 <- read.table("placette_Canopix_DMH.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
+
+  # Changer 169 en 170 (arbre thèse V_170 était dans la parcelle 169)
+placette_Canopix <- placette_Canopix %>% 
+  mutate(placette = ifelse(placette == "V_169", "V_170", placette))
 
 # création d'une fonction qui utilise la fonction de Van Wagner #
 # Van Wagner, C. E. (1982). Practical aspects of the line intersect      method (Vol. 12). Chalk River, Canada: Petawawa National Forestry      Institute. #
@@ -447,7 +445,7 @@ BM_placette <- placette_Canopix %>%
   # Summary
 summary(BM_placette)
 
-### Ajout des 3 souches qui sont du bois mort au sol ###
+### Ajout des 8 souches qui sont du bois mort au sol ###
 
   # Filtrer les souches 
 BMD_S <- placette_Canopix %>% filter(Cat_arbre %in% c("S"))
@@ -756,7 +754,7 @@ BMD_M2 <- BMD_M  %>%
   # Calculs pour le chene et l'hetre de vol.m3
 BMD_M3 <- BMD_M2 %>%
   mutate(vol.m3 = case_when(
-    BMP_sp == "pin sylvestre" ~ 
+    BMP_sp == "pin sylvestre" ~ (- 0.52616 * 10^-2) - (0.13930 * 10^-2) * BMD_M$circonférence.cm + (0.88771 * 10^-4) * BMD_M$circonférence.cm^2 + (0.14349 * 10^-7) * BMD_M$circonférence.cm^3,
     BMP_sp == "charme" ~ 0.9 *((0.19546 * 10^-1) - (0.29588 * 10^-2) * BMD_M$circonférence.cm + (0.11074 * 10^-3) * BMD_M$circonférence.cm^2 - (0.37076 * 10^-7) * BMD_M$circonférence.cm^3),
     BMP_sp == "alisier torminal" ~ 0.9 *((0.19546 * 10^-1) - (0.29588 * 10^-2) * BMD_M$circonférence.cm + (0.11074 * 10^-3) * BMD_M$circonférence.cm^2 - (0.37076 * 10^-7) * BMD_M$circonférence.cm^3),
     BMP_sp == "INC" ~ 0.9 *((0.19546 * 10^-1) - (0.29588 * 10^-2) * BMD_M$circonférence.cm + (0.11074 * 10^-3) * BMD_M$circonférence.cm^2 - (0.37076 * 10^-7) * BMD_M$circonférence.cm^3),
@@ -782,17 +780,8 @@ BMD_M7 <- MSS %>%
   # NAs = 0
 BMD_M7[is.na(BMD_M7)] = 0
 
-###
-
-BMDtot <- BMD_M7 %>% 
-  left_join(BMD_C8 %>%
-              select(everything()), by = "placette")
-BMDtot2 <- BMDtot %>%
-  group_by(placette) %>%
-  mutate(Vol_BMD_tot_m3.ha = sum(Vol_BMD_Mtot.m3.ha + VolTotC.m3.ha))
-
   # Graphique pour visualiser
-ggplot(BMDtot2, aes(x = placette, y = Vol_BMD_tot_m3.ha)) +
+ggplot(BMD_M7, aes(x = placette, y = Vol_BMD_Mtot.m3.ha)) +
   geom_bar(stat = "identity") +
   labs(title = "Volume de BMD en m3 par hectare",
        x = "Placette",
@@ -800,8 +789,27 @@ ggplot(BMDtot2, aes(x = placette, y = Vol_BMD_tot_m3.ha)) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90))
 
+###
+
+  # Jointure chandelles et (M)
+BMDtot <- BMD_M7 %>% 
+  left_join(BMD_C8 %>%
+              select(everything()), by = "placette")
+  # Somme des Vol.m3.ha chandelles et (M)
+BMDtot2 <- BMDtot %>%
+  group_by(placette) %>%
+  mutate(Vol_BMD_tot_m3.ha = sum(Vol_BMD_Mtot.m3.ha + VolTotC.m3.ha))
+  # Colonnes utiles
 BMD_tot3 <- BMDtot2 %>%
   select(placette, Vol_BMD_Mtot.m3.ha, VolTotC.m3.ha, Vol_BMD_tot_m3.ha)
+  # Graphique pour visualiser
+ggplot(BMD_tot3, aes(x = placette, y = Vol_BMD_tot_m3.ha)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Volume de BMD en m3 par hectare",
+       x = "Placette",
+       y = "Volume BM (m3/ha)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
 
   # EXPORT
 write.table(x = BMD_tot3, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMDtot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
@@ -810,13 +818,81 @@ write.table(x = BMD_tot3, file = "//no-datafile.inra.local/Biodiversite/projets/
 # 6. Bois Mort Total
 
 ```{r}
+  # IMPORT BMDtot
+metrique_BMDtot <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMDtot_Placette_AD.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
 
+  # IMPORT BMStot
+metrique_BMStot <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMStot_Placette_AD.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
+
+  # IMPORT BMPtot
+metrique_BMPtot <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Placette_AD.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
+
+  # Colonnes utiles
+metrique_BMStot <- metrique_BMStot %>%
+  select(placette, BM_Wagner_F.m3.ha) %>%
+  mutate(BM_Wagner_F.m3.ha = as.numeric(BM_Wagner_F.m3.ha))
+metrique_BMPtot <- metrique_BMPtot %>%
+  select(placette, Vol_BMP_Tot_Pondere.m3.ha) %>%
+  mutate(Vol_BMP_Tot_Pondere.m3.ha = as.numeric(Vol_BMP_Tot_Pondere.m3.ha))
+metrique_BMDtot <- metrique_BMDtot %>%
+  select(placette, Vol_BMD_Mtot.m3.ha) %>%
+  mutate(Vol_BMD_Mtot.m3.ha = as.numeric(Vol_BMD_Mtot.m3.ha))
+  # Jointure et somme du BM
+BMtot <- metrique_BMStot %>%
+  left_join(metrique_BMPtot, by = "placette") %>%
+  left_join(metrique_BMDtot, by = "placette") %>%
+  group_by(placette) %>%
+  summarise(BMtot.m3.ha = sum(BM_Wagner_F.m3.ha, Vol_BMP_Tot_Pondere.m3.ha, Vol_BMD_Mtot.m3.ha))
+  # Graphique pour visualiser
+ggplot(BMtot, aes(x = placette, y = BMtot.m3.ha)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Volume Total de BM en m3 par hectare",
+       x = "Placette",
+       y = "Volume BM (m3/ha)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
+
+  # EXPORT
+write.table(x = BMtot, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMtot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
 ```
 
 # 7. Proportion Bois Mort Perché + Bois Mort Debout / Bois Mort Total
 
 ```{r}
+  # IMPORT
+metrique_BMtot <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMtot_Placette_AD.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
 
+  # IMPORT BMDtot
+metrique_BMDtot <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMDtot_Placette_AD.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
+
+  # IMPORT BMPtot
+metrique_BMPtot <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Placette_AD.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
+
+  # Colonnes utiles
+metrique_BMPtot <- metrique_BMPtot %>%
+  select(placette, Vol_BMP_Tot_Pondere.m3.ha) %>%
+  mutate(Vol_BMP_Tot_Pondere.m3.ha = as.numeric(Vol_BMP_Tot_Pondere.m3.ha))
+metrique_BMDtot <- metrique_BMDtot %>%
+  select(placette, Vol_BMD_Mtot.m3.ha) %>%
+  mutate(Vol_BMD_Mtot.m3.ha = as.numeric(Vol_BMD_Mtot.m3.ha))
+  # Proportion de : BMP + BMD / BMT
+BMtot <- metrique_BMtot %>%
+  left_join(metrique_BMPtot, by = "placette") %>%
+  left_join(metrique_BMDtot, by = "placette") %>%
+  mutate(BMtot.m3.ha = as.numeric(BMtot.m3.ha)) %>%
+  group_by(placette) %>%
+  summarise(Proportion_BM = round(((Vol_BMP_Tot_Pondere.m3.ha + Vol_BMD_Mtot.m3.ha) / BMtot.m3.ha) * 100, 2))
+  # Graphique pour visualiser
+ggplot(BMtot, aes(x = placette, y = Proportion_BM)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Proportion de BMP + BMD sur le Bois Mort Total",
+       x = "Placette",
+       y = "Proportion BM (%)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
+
+  # EXPORT
+write.table(x = BMtot, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_ProportionBM_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
 ```
 
 # 8. Couvert (%)
@@ -834,7 +910,6 @@ str_placette <- str_placette %>%
   # supprime les colonnes avec NA dans la colonne 'transect'
 str_placette <- str_placette %>%
   filter(transect != "")
-
   # calcul le pourcentage de couvert (*1.04)
 str_placette <- str_placette %>%
   mutate(across(6:7, ~ .x * 1.04))
@@ -842,15 +917,18 @@ str_placette <- str_placette %>%
   # calcul la moyenne des pourcentages de couvert en fonction de la placette
 couvert <- str_placette %>%
   group_by(placette) %>%
-  summarise(ouverture_pc = mean(c(pts_libres_15m, pts_libres_25m), na.rm = TRUE))
+  summarise(ouverture_pc = (mean(c(pts_libres_15m, pts_libres_25m), na.rm = TRUE)))
+  # graph
+ouverture = couvert$ouverture_pc
 
-# graph
 ggplot(couvert, aes(x = placette, y = ouverture_pc)) +
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(aes(label = paste0(round(ouverture_pc, 2), "%")), vjust = -0.5, nudge_y = 0.05 * ouverture, size = 2.5) +
+  ylim(0, 50) +
   labs(title = "Ouverture du feuillage",
        x = "Placette",
        y = "Ouverture (%)") +
-  theme_classic() +
+  theme_minimal() +
   theme(axis.text.x = element_text(angle = 90))
 
   # EXPORT
@@ -860,14 +938,13 @@ write.table(x = couvert, file = "//no-datafile.inra.local/Biodiversite/projets/B
 # 9. Encombrement (%)
 
 ```{r}
-
-#### CHANGER LA DEFINITION DES STRATES
+# La strate de bas de houppier ou d'understory est au dessus ou = à 7m pour les 20 arbres, on peut donc considérer que la séparation arbustive / arborée correspond à understory / canopy #
 
   # calcul la moyenne des pourcentages de couvert en fonction de la placette
 encombrement <- str_placette %>%
   group_by(placette) %>%
-  summarise(encombrement_arbust = mean(c(arbustive_15m, arbustive_25m), na.rm = TRUE),
-            encombrement_arbo = mean(c(arboree_15m, arboree_25m), na.rm = TRUE))
+  summarise(encombrement_arbust = round(mean(c(arbustive_15m, arbustive_25m), na.rm = TRUE), 3),
+            encombrement_arbo = round(mean(c(arboree_15m, arboree_25m), na.rm = TRUE), 3))
   # transforme le tableau en longueur
 encombrement_long <- pivot_longer(encombrement, cols = 2:3, names_to ="strate",
 values_to = "encombrement_moy")
@@ -876,11 +953,89 @@ ggplot(encombrement_long, aes(x=placette, y=encombrement_moy, fill=strate)) +
   geom_bar(stat="identity", position=position_dodge()) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90))
-
-### CHECK PAR RAPPORT AUX NOUVELLES STRATES CANOPEE ET UNDERSTORY SI CA CORRESPOND ###
-
+  # Rename des colonnes
+names(encombrement) = c("placette", "Understory (arbustive)", "Canopy (arborée)")
 
   # EXPORT
-write.table(x = couvert, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_Couvert_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
+write.table(x = couvert, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_Encombrement_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
+```
+
+# 10. Notes Dépéris (mean)
+
+```{r}
+  # IMPORT 
+placette_Canopix <- read.table("placette_Canopix.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
+
+  # 169 -> 170
+placette_Canopix  <- placette_Canopix %>% 
+  mutate(placette = ifelse(placette == "V_169", "V_170", placette))
+  # Colonnes utiles
+placette_Canopix <- placette_Canopix %>%
+  select(placette, Cat_arbre, note_DEPERIS)
+  # Supprime les colonnes avec NA dans la colonne 'note_DEPERIS'
+placette_Canopix <- placette_Canopix %>%
+  filter(note_DEPERIS != "")
+
+# A = 0, B = 1, C = 2, D = 3, E = 4, F = 5 #
+
+placette_Canopix <- placette_Canopix %>%
+  mutate(AttribDEPERIS = case_when(note_DEPERIS == "A" ~ 0,
+                                   note_DEPERIS == "B" ~ 1,
+                                   note_DEPERIS == "C" ~ 2,
+                                   note_DEPERIS == "D" ~ 3,
+                                   note_DEPERIS == "E" ~ 4,
+                                   note_DEPERIS == "F" ~ 5,))
+
+placette_Canopix <- placette_Canopix %>%
+  group_by(placette) %>% 
+  summarise(meanDEPERIS = round(mean(AttribDEPERIS), 2)) %>%
+  ungroup()
+
+placette_Canopix <- placette_Canopix %>%
+  mutate(DEPERIS_m_F = case_when(meanDEPERIS > 1.6 & meanDEPERIS < 2.5 ~ "C",
+                                 meanDEPERIS > 2.6 & meanDEPERIS < 3.5 ~ "D",
+                                 meanDEPERIS > 3.6 & meanDEPERIS < 4.5 ~ "E"))
+```
+
+# 11. Taux de mortalité (%)
+Arbres morts / arbres total
+
+```{r}
+  # IMPORT 
+placette_Canopix <- read.table("placette_Canopix.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
+
+  # 169 -> 170
+placette_Canopix  <- placette_Canopix %>% 
+  mutate(placette = ifelse(placette == "V_169", "V_170", placette))
+  # Colonnes utiles
+placette_Canopix <- placette_Canopix %>%
+  select(placette, Cat_arbre)
+  # Filtre out des chandelles / souches / cases vides
+placette_Canopix <- placette_Canopix %>%
+  filter(Cat_arbre != "C",
+         Cat_arbre != "S",
+         Cat_arbre != "")
+  # Attribution de la valeur 1 à (M)
+placette_Canopix <- placette_Canopix %>%
+  mutate(Mort = case_when(Cat_arbre == "M" ~ 1))
+  # NAs = 0
+placette_Canopix[is.na(placette_Canopix)] = 0
+  # Nombre d'arbres vivants et morts
+Arbres = 1313
+  # Calcul de proportion en %
+placette_Canopix <- placette_Canopix %>%
+  group_by(placette) %>%
+  summarise(nb_Mort = sum(Mort, na.rm = T)) %>%
+  mutate(Taux_M_tot = round((nb_Mort / Arbres) * 100, 2)) %>%
+  ungroup()
+
+  # EXPORT
+write.table(x = placette_Canopix, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_TauxMortalité_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
+```
+
+# 12. Proportion G (M) sur surface terrière G total
+
+```{r}
+
 ```
 
