@@ -901,6 +901,9 @@ write.table(x = BMtot, file = "//no-datafile.inra.local/Biodiversite/projets/Boi
   # IMPORT
 placette_Canopix <- read.table("placette_Canopix.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
 
+  # Changer 169 en 170 (arbre thèse V_170 était dans la parcelle 169)
+placette_Canopix <- placette_Canopix %>% 
+  mutate(placette = ifelse(placette == "V_169", "V_170", placette))
   # supprime les colonnes relative aux quarts
 str_placette <- placette_Canopix %>%
   select(-c(5, 7, 14:34))
