@@ -108,6 +108,11 @@ harbre = subset(D, Mesure == "5")
 hbashouppier = subset(D, Mesure == "6")
 
   # Calculs hauteurs demi-houppier
+D <- D %>%
+  group_by(placette) %>%
+  mutate((harbre$Hauteur - hbashouppier$Hauteur)/2 + hbashouppier$Hauteur) %>%
+  ungroup()
+
 D2 <- (harbre$Hauteur - hbashouppier$Hauteur)/2 + hbashouppier$Hauteur
   # Switch du cacul en colonne de data.frame
 demi_houppier <- as.data.frame(D2) ; names(demi_houppier) = ("Hauteur")
@@ -160,43 +165,35 @@ MSS <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee
 BMP2 <- BMP %>% separate(id_arbre, into = c("massif", "id", "arbre", sep ="_"))
   # joindre pour créer la colonne placette
 BMP2$placette <- paste(BMP2$massif, BMP2$id, sep = "_")
-  # Placer la colonne placette devant
-BMP <- BMP2 %>% select(placette, everything())
-  # Supprimer les colonnes inutiles
-BMP <- BMP %>% select(-"_")
-  # Filtrer pour seulement les arbres thèses (ex : ._..._1)
-BMP <- BMP %>% filter(arbre == "1")
-  # Changer 169 en 170 (arbre thèse V_170 était dans la parcelle 169)
-BMP <- BMP %>% 
-  mutate(placette = ifelse(placette == "V_169", "V_170", placette))
-
 # Crée une colonne de la strate à laquelle le BMP appartient #
-  # Chargement du jeux de données bois_mort_brut
-bois_mort_brut <- read.csv("bois_mort_brut.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
-  # Mettre la longueur du vecteur à niveau du fichier BMP 
-A <- BMP %>% select(placette)
-A2 <- A %>% left_join(MSS %>% select(c(everything())), by = "placette")
-  # Assigner une nouvelle strate par rapport à la hauteur du BMP
-BMP_FINAL <- 
-  BMP %>% mutate(strate_BMP = case_when
+BMP3 <- BMP2 %>% 
+  select(placette, everything()) %>%  # Placer la colonne placette devant
+  select(-"_") %>% 
+  filter(arbre == "1") %>% # Filtrer pour seulement les arbres thèses (ex : ._..._1)
+  mutate(placette = ifelse(placette == "V_169", "V_170", placette)) %>%
+  left_join(MSS %>% select(c(everything())), by = "placette") %>%
+  mutate(strate_BMP = case_when
                           (H_BMP.m <= A2$Seuil_superieur_.BC. ~ 'BC',
                             H_BMP.m >= A2$Seuil_inferieur_.LC. & H_BMP.m <= A2$Seuil_superieur_.LC. ~ "LC",
                             H_BMP.m >= A2$Seuil_inferieur_.UC. & H_BMP.m <= A2$Seuil_superieur_.UC. ~ "UC",
-                            H_BMP.m >= A2$Seuil_inferieur_.AC. & H_BMP.m <= A2$Seuil_superieur_.AC. ~ "AC"), na.rm = T)
+                            H_BMP.m >= A2$Seuil_inferieur_.AC. & H_BMP.m <= A2$Seuil_superieur_.AC. ~ "AC"), na.rm = T)   # Assigner une nouvelle strate par rapport à la hauteur du BMP
+
   # Correction du nom de la colonne
-colnames(BMP_FINAL)[colnames(BMP_FINAL) == "vol.m2"] <- "Vol.m3"
+colnames(BMP3)[colnames(BMP3) == "vol.m2"] <- "Vol.m3"
+
   # Calcul du volume des branches mortes avec la formule de Huber : V = (pi*dm²*L)/4
 # Böhl, J., & Brändli, U. B. (2007). Deadwood volume assessment in the   third Swiss National Forest Inventory: methods and first results.      European Journal of Forest Research, 126, 449-457. #
-BMP_FINAL$vol.m3 <- (pi*BMP_FINAL$diam_BMP.m^2*BMP_FINAL$long_BMP.m)/4
+  # BMP3$vol.m3_revu <- (pi*BMP3$diam_BMP.m^2*BMP3$long_BMP.m)/4
+
   # Additionner BMP par arbre pour revenir a 20 lignes 
-BMP_Strates <- BMP_FINAL %>% select(placette, vol.m3, strate_BMP)
+BMP_Strates <- BMP3 %>% 
+  select(placette, Vol.m3, strate_BMP)
 BMP_Strates_F <- BMP_Strates %>% 
   group_by(placette, strate_BMP) %>%
-  summarise(Total_Vol.m3 = sum(vol.m3), .groups = "drop")
+  summarise(Total_Vol.m3 = sum(Vol.m3), .groups = "drop")
   # Pivoter pour avoir les strates en colonnes + Changement décimales
 BMP_Strates_M <- BMP_Strates_F %>% 
-  pivot_wider(names_from = strate_BMP, values_from = Total_Vol.m3) %>%
-  mutate(across(where(is.numeric), round, 3))
+  pivot_wider(names_from = strate_BMP, values_from = Total_Vol.m3)
   # Transformation des NA en 0
 BMP_Strates_M[is.na(BMP_Strates_M)] = 0
 
@@ -220,8 +217,8 @@ M_BMP_T <- M_BMP_S %>%
   group_by(Placette) %>% 
   summarise(Vol_BMP_Tot = sum(Vol_BMP_AC.m3, Vol_BMP_UC.m3,  Vol_BMP_LC.m3, Vol_BMP_BC.m3))
   # Autre méthode
-M_BMP_T <- M_BMP_S %>%
-  mutate(Vol_BMP_Tot = Vol_BMP_AC.m3 + Vol_BMP_UC.m3 + Vol_BMP_LC.m3 + Vol_BMP_BC.m3) %>% select(Placette, Vol_BMP_Tot)
+# M_BMP_T <- M_BMP_S %>%
+#   mutate(Vol_BMP_Tot = Vol_BMP_AC.m3 + Vol_BMP_UC.m3 + Vol_BMP_LC.m3 + Vol_BMP_BC.m3) %>% select(Placette, Vol_BMP_Tot)
 
   # EXPORT
 write.table(x = M_BMP_T, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Arbres_AD.csv", row.names = FALSE, dec=".", sep=";")
@@ -240,42 +237,33 @@ MSS <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee
 
 # Même travail que BMP des strates, cette fois sur tous les arbres DMH inventoriés #
 
-# Faire correspondre les apellations pour la Placette (ex : T_118 et non T_118_1) #
+# Faire correspondre les apellations pour la placette (ex : T_118 et non T_118_1) #
   # Séparer l'id
 BMP2 <- BMP %>% separate(id_arbre, into = c("massif", "id", "arbre", sep ="_"))
   # joindre pour créer la colonne placette
 BMP2$placette <- paste(BMP2$massif, BMP2$id, sep = "_")
-  # Placer la colonne placette devant
-BMP <- BMP2 %>% select(placette, everything())
-  # Supprimer les colonnes inutiles
-BMP <- BMP %>% select(-"_")
-  # Changer 169 en 170 (arbre thèse V_170 était dans la parcelle 169) 
-BMP <- BMP %>% 
-  mutate(placette = ifelse(placette == "V_169", "V_170", placette))
-
 # Crée une colonne de la strate à laquelle le BMP appartient #
-  # Mettre la longueur du vecteur à niveau du fichier BMP 
-A <- BMP %>% select(placette)
-A2 <- A %>% left_join(MSS %>% select(c(everything())), by = "placette")
-  # Assigner une nouvelle strate par rapport à la hauteur du BMP
-BMP_FINAL <- 
-  BMP %>% mutate(strate_BMP = case_when
+BMP3 <- BMP2 %>% 
+  select(placette, everything()) %>%  # Placer la colonne placette devant
+  select(-"_") %>% 
+  filter(arbre == "1") %>% # Filtrer pour seulement les arbres thèses (ex : ._..._1)
+  mutate(placette = ifelse(placette == "V_169", "V_170", placette)) %>%
+  left_join(MSS %>% select(c(everything())), by = "placette") %>%
+  mutate(strate_BMP = case_when
                           (H_BMP.m <= A2$Seuil_superieur_.BC. ~ 'BC',
                             H_BMP.m >= A2$Seuil_inferieur_.LC. & H_BMP.m <= A2$Seuil_superieur_.LC. ~ "LC",
                             H_BMP.m >= A2$Seuil_inferieur_.UC. & H_BMP.m <= A2$Seuil_superieur_.UC. ~ "UC",
-                            H_BMP.m >= A2$Seuil_inferieur_.AC. & H_BMP.m <= A2$Seuil_superieur_.AC. ~ "AC"), na.rm = T)
+                            H_BMP.m >= A2$Seuil_inferieur_.AC. & H_BMP.m <= A2$Seuil_superieur_.AC. ~ "AC"), na.rm = T)   # Assigner une nouvelle strate par rapport à la hauteur du BMP
   # Correction du nom de la colonne
-colnames(BMP_FINAL)[colnames(BMP_FINAL) == "vol.m2"] <- "Vol.m3"
-  # calcul du volume des branches mortes avec la formule de Huber : V = (pi*dm²*L)/4
-BMP_FINAL$vol.m3 <- (pi*BMP_FINAL$diam_BMP.m^2*BMP_FINAL$long_BMP.m)/4
+colnames(BMP3)[colnames(BMP_FINAL) == "vol.m2"] <- "Vol.m3"
 
 # Second filtrage en 2 ensembles : canopée (AC, UC, LC) et sous-canopée (BC) #
   # Situer les NA dans les hauteurs de BMP
-BMP_FINAL %>% summarise(across(everything(), ~ sum(is.na(.))))
-which(is.na(BMP_FINAL$strate_BMP), arr.ind=TRUE)
+BMP3 %>% summarise(across(everything(), ~ sum(is.na(.))))
+which(is.na(BMP3$strate_BMP), arr.ind=TRUE)
   # Répartir entre Understory / Canopy
 BMP_FINAL2 <- 
-  BMP %>% mutate(Strates_Placette = case_when
+  BMP3 %>% mutate(Strates_Placette = case_when
                           (H_BMP.m <= A2$Seuil_superieur_.BC. ~ 'Understory',
                             H_BMP.m >= A2$Seuil_inferieur_.LC. & H_BMP.m <= A2$Seuil_superieur_.LC. ~ "Canopy",
                             H_BMP.m >= A2$Seuil_inferieur_.UC. & H_BMP.m <= A2$Seuil_superieur_.UC. ~ "Canopy",
@@ -397,7 +385,7 @@ G_plac$Contribution_G_ArbreDMH <- G_plac$Gdmh.m2/ G_plac$Gtot.m2
 G_plac <- G_plac %>% mutate(across(where(is.numeric), round, 3))
 ```
 
-### BMP Placette Calcul final
+### BMP Placette Calcul final + contribution
 Origine du code : Mathéo / preparation_data
 
 ```{r}
