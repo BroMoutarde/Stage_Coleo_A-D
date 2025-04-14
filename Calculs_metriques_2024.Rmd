@@ -22,6 +22,7 @@ library(ggplot2)
 library(FD) # pour dbFD
 library(DescTools) # pour Gini
 library(ggplot2)
+library(gridExtra) # Afficher plusieurs ggplots en meme temps
 ```
 
 # Settings du Working directory
@@ -62,85 +63,35 @@ Hauteurs_AD <- Hauteurs %>% select(placette,
                                    `Mesure pose : arbre`, 
                                    `Mesure pose : bas houppier`)
 
-  # Pivotemment du dataframe (pivot_longer)
-Hauteurs_AD <- Hauteurs_AD %>% pivot_longer(cols = c(`Mesure pose : piège 1 / Canopix`, 
-                                   `Mesure pose : piège 2`, 
-                                   `Mesure pose : piège 3`,
-                                   `Mesure pose : piège 4`,
-                                   `Mesure pose : arbre`, 
-                                   `Mesure pose : bas houppier`),
-                       names_to = "mesure",
-                       values_to = "Hauteur")
-
-  # Création de la colonne Mesure = simplification des noms  
-Hauteurs_AD <- Hauteurs_AD %>% mutate(Mesure = case_when(mesure == "Mesure pose : piège 1 / Canopix" ~ "1",
-                                                     mesure == "Mesure pose : piège 2" ~ "2",
-                                                     mesure == "Mesure pose : piège 3" ~ "3",
-                                                     mesure == "Mesure pose : piège 4" ~ "4",
-                                                     mesure == "Mesure pose : arbre" ~ "5",
-                                                     mesure == "Mesure pose : bas houppier" ~ "6",
-                                                     TRUE ~ NA_character_))
-
-  # Remise en ordre pour une simplification de la lecture
-Hauteurs_AD <- Hauteurs_AD %>% select(placette, mesure, Mesure, Hauteur) ; names(Hauteurs_AD) = c("placette", "mesure", "Mesure", "Hauteur")
-  # Joindre les 2 data-frames
-Data_Hauteurs <- Hauteurs %>% left_join(Hauteurs_AD %>% select(c(placette, Mesure, Hauteur)), by = "placette")
-  # Déplacer la colonne placette au début
-Data_Hauteurs <- Data_Hauteurs %>% select(placette, everything())
-
   # EXPORT
 write.table(x = Data_Hauteurs, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Hauteurs_arbres_AD.csv", row.names = FALSE, dec=".", sep=";")
-write.table(x = Hauteurs_AD, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Hauteurs_&_infos_AD.csv", row.names = FALSE, dec=".", sep=";")
 ```
 
 # 2. Calcul des seuils des Hauteurs
 
 ```{r}
-  # Test du group_by pour calculer min/max
-  # Data_Hauteurs2 <- Data_Hauteurs %>% group_by(Mesure) %>% summarise(minimum = min(Hauteur, na.rm = T),maximum = max(Hauteur, na.rm = T),) %>% ungroup()
-
-# Calcul du demi_houppier #
-  # Selection des colonnes
-D <- Data_Hauteurs %>% select(placette, Mesure, Hauteur)
-  # Filtrer Hauteurs des arbres dans un subset
-harbre = subset(D, Mesure == "5")
-  # Filtrer Hauteurs des bas de houppiers dans un subset
-hbashouppier = subset(D, Mesure == "6")
-
   # Calculs hauteurs demi-houppier
-D <- D %>%
-  group_by(placette) %>%
-  mutate((harbre$Hauteur - hbashouppier$Hauteur)/2 + hbashouppier$Hauteur) %>%
-  ungroup()
-
-D2 <- (harbre$Hauteur - hbashouppier$Hauteur)/2 + hbashouppier$Hauteur
-  # Switch du cacul en colonne de data.frame
-demi_houppier <- as.data.frame(D2) ; names(demi_houppier) = ("Hauteur")
-
+Hauteurs_AD <- Hauteurs_AD %>%
+  mutate( Hauteur_demihouppier = (Hauteurs_AD$`Mesure pose : arbre` - Hauteurs_AD$`Mesure pose : bas houppier`) / 2 + Hauteurs_AD$`Mesure pose : bas houppier`)
   # Ajout des premiers seuils
-Metriques_Seuils <- Hauteurs %>% select(placette)
-Metriques_Seuils <- Metriques_Seuils %>% left_join(Hauteurs %>% select(c(placette, `Mesure pose : piège 1 / Canopix`, 
+Metriques_Seuils <- Hauteurs_AD %>% 
+  select(c(placette, `Mesure pose : piège 1 / Canopix`, 
                                    `Mesure pose : arbre`, 
-                                   `Mesure pose : bas houppier`,)), by = "placette")
+                                   `Mesure pose : bas houppier`,), by = "placette")
   # Renommer les colonnes
 names(Metriques_Seuils) = c("placette", "Seuil_superieur_(AC)", "Seuil_inferieur_(AC)", "Seuil_inferieur_(LC)")
 
   # Rajouter les différents seuils manquant
-Metriques_Seuils <- Metriques_Seuils %>% mutate("Seuil_superieur_(UC)" = Hauteurs$`Mesure pose : arbre`, .before = "Seuil_inferieur_(LC)")
-
-Metriques_Seuils <- Metriques_Seuils %>% mutate("Seuil_inferieur_(UC)" = demi_houppier$Hauteur, .before = "Seuil_inferieur_(LC)")
-
-Metriques_Seuils <- Metriques_Seuils %>% mutate("Seuil_superieur_(LC)" = demi_houppier$Hauteur, .before = "Seuil_inferieur_(LC)")
-
-Metriques_Seuils <- Metriques_Seuils %>% mutate("Seuil_inferieur_(LC)" = Hauteurs$`Mesure pose : bas houppier`)
-
-Metriques_Seuils <- Metriques_Seuils %>% mutate("Seuil_superieur_(BC)" = Hauteurs$`Mesure pose : bas houppier`)
-
+Metriques_Seuils <- Metriques_Seuils %>% 
+  mutate("Seuil_superieur_(UC)" = Hauteurs_AD$`Mesure pose : arbre`, .before = "Seuil_inferieur_(LC)") %>% 
+  mutate("Seuil_inferieur_(UC)" = Hauteurs_AD$Hauteur_demihouppier, .before = "Seuil_inferieur_(LC)") %>% 
+  mutate("Seuil_superieur_(LC)" = Hauteurs_AD$Hauteur_demihouppier, .before = "Seuil_inferieur_(LC)") %>% 
+  mutate("Seuil_inferieur_(LC)" = Hauteurs_AD$`Mesure pose : bas houppier`) %>% 
+  mutate("Seuil_superieur_(BC)" = Hauteurs_AD$`Mesure pose : bas houppier`)
   # Vecteur de 20 valeurs = 0 pour le Seuil_inferieur_(BC)
 A <- rep(0, 20)
   # Ajout du dernier seuil
 Metriques_Seuils <- Metriques_Seuils %>% mutate("Seuil_inferieur_(BC)" = A)
-
   # Rajout de +3 pout tous pour le seuil sup (AC) à cause d'un BMP plus haut que le seuil, ce qui donne un NA lors du cacul du vol de BMP par strates
 Metriques_Seuils <- Metriques_Seuils %>% 
   mutate(`Seuil_superieur_(AC)`  = `Seuil_superieur_(AC)` + 3) 
@@ -161,48 +112,48 @@ BMP <- read.csv("bois_mort_perche.csv", sep=";", header=TRUE, stringsAsFactors =
 MSS <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_Seuils_Strates_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
 
 # Faire correspondre les apellations pour la placette (ex : T_118 et non T_118_1) #
+
   # Séparer l'id
-BMP2 <- BMP %>% separate(id_arbre, into = c("massif", "id", "arbre", sep ="_"))
+BMP2 <- BMP %>% 
+  separate(id_arbre, into = c("massif", "id", "arbre", sep ="_"))
   # joindre pour créer la colonne placette
 BMP2$placette <- paste(BMP2$massif, BMP2$id, sep = "_")
+
 # Crée une colonne de la strate à laquelle le BMP appartient #
+
 BMP3 <- BMP2 %>% 
-  select(placette, everything()) %>%  # Placer la colonne placette devant
-  select(-"_") %>% 
+  select(placette, everything()) %>%  # Placer colonne placette devant
+  select(-"_") %>% # Supression colonne ("_")
   filter(arbre == "1") %>% # Filtrer pour seulement les arbres thèses (ex : ._..._1)
   mutate(placette = ifelse(placette == "V_169", "V_170", placette)) %>%
-  left_join(MSS %>% select(c(everything())), by = "placette") %>%
-  mutate(strate_BMP = case_when
-                          (H_BMP.m <= A2$Seuil_superieur_.BC. ~ 'BC',
-                            H_BMP.m >= A2$Seuil_inferieur_.LC. & H_BMP.m <= A2$Seuil_superieur_.LC. ~ "LC",
-                            H_BMP.m >= A2$Seuil_inferieur_.UC. & H_BMP.m <= A2$Seuil_superieur_.UC. ~ "UC",
-                            H_BMP.m >= A2$Seuil_inferieur_.AC. & H_BMP.m <= A2$Seuil_superieur_.AC. ~ "AC"), na.rm = T)   # Assigner une nouvelle strate par rapport à la hauteur du BMP
+  left_join(MSS, by = "placette") %>%
+  mutate(strate_BMP = case_when(
+    H_BMP.m <= Seuil_superieur_.BC. ~ 'BC',
+    H_BMP.m >= Seuil_inferieur_.LC. & H_BMP.m <= Seuil_superieur_.LC. ~ "LC",
+    H_BMP.m >= Seuil_inferieur_.UC. & H_BMP.m <= Seuil_superieur_.UC. ~ "UC",
+    H_BMP.m >= Seuil_inferieur_.AC. & H_BMP.m <= Seuil_superieur_.AC. ~ "AC"))   # Assigner une nouvelle strate par rapport à la hauteur du BMP
 
   # Correction du nom de la colonne
 colnames(BMP3)[colnames(BMP3) == "vol.m2"] <- "Vol.m3"
 
-  # Calcul du volume des branches mortes avec la formule de Huber : V = (pi*dm²*L)/4
 # Böhl, J., & Brändli, U. B. (2007). Deadwood volume assessment in the   third Swiss National Forest Inventory: methods and first results.      European Journal of Forest Research, 126, 449-457. #
+
+  # Calcul du volume des branches mortes avec la formule de Huber : V = (pi*dm²*L)/4
   # BMP3$vol.m3_revu <- (pi*BMP3$diam_BMP.m^2*BMP3$long_BMP.m)/4
 
   # Additionner BMP par arbre pour revenir a 20 lignes 
 BMP_Strates <- BMP3 %>% 
-  select(placette, Vol.m3, strate_BMP)
-BMP_Strates_F <- BMP_Strates %>% 
-  group_by(placette, strate_BMP) %>%
-  summarise(Total_Vol.m3 = sum(Vol.m3), .groups = "drop")
-  # Pivoter pour avoir les strates en colonnes + Changement décimales
-BMP_Strates_M <- BMP_Strates_F %>% 
-  pivot_wider(names_from = strate_BMP, values_from = Total_Vol.m3)
-  # Transformation des NA en 0
-BMP_Strates_M[is.na(BMP_Strates_M)] = 0
-
-  #Remettre les colonnes dans un ordre logique
-BMP_Strates_M <- BMP_Strates_M %>% select(placette, AC, UC, LC, BC)
+  select(placette, Vol.m3, strate_BMP) %>% # Colonnes utiles
+  group_by(placette, strate_BMP) %>% 
+  summarise(Total_Vol.m3 = sum(Vol.m3), .groups = "drop") %>% # Somme
+  pivot_wider(names_from = strate_BMP, values_from = Total_Vol.m3) %>%
+  mutate(across(everything(), ~replace_na(., 0))) %>% # NAs en 0
+  select(placette, AC, UC, LC, BC) # colonnes dans un ordre logique
   # Renommer les colonnes
-names(BMP_Strates_M) = c("Placette", "Vol_BMP_AC.m3", "Vol_BMP_UC.m3", "Vol_BMP_LC.m3", "Vol_BMP_BC.m3")
+names(BMP_Strates) = c("Placette", "Vol_BMP_AC.m3", "Vol_BMP_UC.m3", "Vol_BMP_LC.m3", "Vol_BMP_BC.m3")
+
   # EXPORT
-write.table(x = BMP_Strates_M, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMP_Strates_AD.csv", row.names = FALSE, dec=".", sep=";")
+write.table(x = BMP_Strates, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMP_Strates_AD.csv", row.names = FALSE, dec=".", sep=";")
 ```
 
 ### Sur l'arbre complet
@@ -213,18 +164,26 @@ Origine du code : Mathéo / preparation_data
 M_BMP_S <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMP_Strates_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
 
   # Somme des 4 colonnes BMP en une seul pour chaque arbre
-M_BMP_T <- M_BMP_S %>% 
+M_BMP_A <- M_BMP_S %>% 
   group_by(Placette) %>% 
   summarise(Vol_BMP_Tot = sum(Vol_BMP_AC.m3, Vol_BMP_UC.m3,  Vol_BMP_LC.m3, Vol_BMP_BC.m3))
   # Autre méthode
 # M_BMP_T <- M_BMP_S %>%
 #   mutate(Vol_BMP_Tot = Vol_BMP_AC.m3 + Vol_BMP_UC.m3 + Vol_BMP_LC.m3 + Vol_BMP_BC.m3) %>% select(Placette, Vol_BMP_Tot)
+  # Graphique pour visualiser
+ggplot(M_BMP_A, aes(x = Placette, y = Vol_BMP_Tot)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Volume de BMP par arbre",
+       x = "Placette",
+       y = "Volume BMP (m3)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
 
   # EXPORT
-write.table(x = M_BMP_T, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Arbres_AD.csv", row.names = FALSE, dec=".", sep=";")
+write.table(x = M_BMP_A, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Arbres_AD.csv", row.names = FALSE, dec=".", sep=";")
 ```
 
-### Échelle Placette
+### Début Échelle Placette
 Origine du code : Mathéo / preparation_data
 
 ```{r}
@@ -238,95 +197,102 @@ MSS <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee
 # Même travail que BMP des strates, cette fois sur tous les arbres DMH inventoriés #
 
 # Faire correspondre les apellations pour la placette (ex : T_118 et non T_118_1) #
+
   # Séparer l'id
-BMP2 <- BMP %>% separate(id_arbre, into = c("massif", "id", "arbre", sep ="_"))
+BMP2 <- BMP %>% 
+  separate(id_arbre, into = c("massif", "id", "arbre", sep ="_"))
   # joindre pour créer la colonne placette
 BMP2$placette <- paste(BMP2$massif, BMP2$id, sep = "_")
+
 # Crée une colonne de la strate à laquelle le BMP appartient #
+
 BMP3 <- BMP2 %>% 
-  select(placette, everything()) %>%  # Placer la colonne placette devant
-  select(-"_") %>% 
+  select(placette, everything()) %>%  # Placer colonne placette devant
+  select(-"_") %>% # Supression colonne ("_")
   filter(arbre == "1") %>% # Filtrer pour seulement les arbres thèses (ex : ._..._1)
   mutate(placette = ifelse(placette == "V_169", "V_170", placette)) %>%
-  left_join(MSS %>% select(c(everything())), by = "placette") %>%
-  mutate(strate_BMP = case_when
-                          (H_BMP.m <= A2$Seuil_superieur_.BC. ~ 'BC',
-                            H_BMP.m >= A2$Seuil_inferieur_.LC. & H_BMP.m <= A2$Seuil_superieur_.LC. ~ "LC",
-                            H_BMP.m >= A2$Seuil_inferieur_.UC. & H_BMP.m <= A2$Seuil_superieur_.UC. ~ "UC",
-                            H_BMP.m >= A2$Seuil_inferieur_.AC. & H_BMP.m <= A2$Seuil_superieur_.AC. ~ "AC"), na.rm = T)   # Assigner une nouvelle strate par rapport à la hauteur du BMP
+  left_join(MSS, by = "placette") %>%
+  mutate(strate_BMP = case_when(
+    H_BMP.m <= Seuil_superieur_.BC. ~ 'BC',
+    H_BMP.m >= Seuil_inferieur_.LC. & H_BMP.m <= H_bas_houppier.m ~ "LC",
+    H_BMP.m >= H_bas_houppier.m & H_BMP.m <= Seuil_superieur_.UC. ~ "UC",
+    H_BMP.m >= Seuil_inferieur_.AC. & H_BMP.m <= Seuil_superieur_.AC. ~ "AC")) %>%  # Assigner une nouvelle strate par rapport à hauteur du BMP
+  mutate(strate_BMP = case_when(
+    H_BMP.m <= Seuil_superieur_.BC. ~ 'BC',
+    H_BMP.m >= Seuil_inferieur_.LC. & H_BMP.m <= Seuil_superieur_.LC. ~ "LC",
+    H_BMP.m >= Seuil_inferieur_.UC. & H_BMP.m <= Seuil_superieur_.UC. ~ "UC",
+    H_BMP.m >= Seuil_inferieur_.AC. & H_BMP.m <= Seuil_superieur_.AC. ~ "AC", TRUE ~ "Autre_valeur")) # Pour les arbres thèses ou les données de hauteurs manquent pour les H_bas_houppier.m du jeu de données
+
   # Correction du nom de la colonne
-colnames(BMP3)[colnames(BMP_FINAL) == "vol.m2"] <- "Vol.m3"
+colnames(BMP3)[colnames(BMP3) == "vol.m2"] <- "Vol.m3"
 
 # Second filtrage en 2 ensembles : canopée (AC, UC, LC) et sous-canopée (BC) #
+
   # Situer les NA dans les hauteurs de BMP
 BMP3 %>% summarise(across(everything(), ~ sum(is.na(.))))
-which(is.na(BMP3$strate_BMP), arr.ind=TRUE)
+which(is.na(BMP3$strate_BMP), arr.ind=TRUE) # Nombre de NAs 
   # Répartir entre Understory / Canopy
-BMP_FINAL2 <- 
-  BMP3 %>% mutate(Strates_Placette = case_when
-                          (H_BMP.m <= A2$Seuil_superieur_.BC. ~ 'Understory',
-                            H_BMP.m >= A2$Seuil_inferieur_.LC. & H_BMP.m <= A2$Seuil_superieur_.LC. ~ "Canopy",
-                            H_BMP.m >= A2$Seuil_inferieur_.UC. & H_BMP.m <= A2$Seuil_superieur_.UC. ~ "Canopy",
-                            H_BMP.m >= A2$Seuil_inferieur_.AC. & H_BMP.m <= A2$Seuil_superieur_.AC. ~ "Canopy"))
-  # Correction du nom de la colonne
-colnames(BMP_FINAL2)[colnames(BMP_FINAL2) == "vol.m2"] <- "Vol.m3"
-  #  Filtrer les NAs pour les 3 valeurs manquantes de Hauteur BMP
-BMP_FINAL3 <- BMP_FINAL2 %>% filter (!is.na(BMP_FINAL2$Strates_Placette))
-
+BMP_FINAL <- 
+  BMP3 %>% mutate(Strates_Placette = case_when(
+    strate_BMP == "BC" ~ 'Understory',
+    strate_BMP %in% c("LC", "UC", "AC") ~ "Canopy",
+    ))
   # Filtrer Understory / Canopy + colonnes utiles en data.frame
-BMP_Understory <- BMP_FINAL3 %>% 
-  filter(Strates_Placette == "Understory") %>% 
-  select(placette, Vol.m3, Strates_Placette)
-BMP_Canopy <- BMP_FINAL3 %>% 
-  filter(Strates_Placette == "Canopy") %>% 
-  select(placette, Vol.m3, Strates_Placette)
+BMP_Understory <- BMP_FINAL %>% 
+  filter(Strates_Placette == "Understory") %>% # Filtrage Understory
+  select(placette, Vol.m3, Strates_Placette) # Colonnes utiles
+BMP_Canopy <- BMP_FINAL %>% 
+  filter(Strates_Placette == "Canopy") %>% # Filtrage Canopy
+  select(placette, Vol.m3, Strates_Placette) # Colonnes utiles
   # Somme des BMP pour understory
 BMP_Understory_F <- BMP_Understory %>% 
   group_by(placette) %>% 
-  summarise(Vol_BMP_Tot = sum(Vol.m3)) 
-names(BMP_Understory_F) = c("placette", "Vol_BMP_Under.m3")
-
-  # Filtrer les NAs pour les 3 valeurs manquantes de Vol_BMP
-BMP_Canopy <- BMP_Canopy %>% filter (!is.na(BMP_Canopy$Vol.m3))
+  summarise(Vol_BMP_Tot = sum(Vol.m3)) %>% # Somme
+  setNames(c("placette", "Vol_BMP_Under.m3")) # Rename
   # Somme des BMP pour canopy
 BMP_Canopy_F <- BMP_Canopy %>% 
   group_by(placette) %>% 
-  summarise(Vol_BMP_Tot = sum(Vol.m3)) 
-names(BMP_Canopy_F) = c("placette", "Vol_BMP_Canop.m3")
+  summarise(Vol_BMP_Tot = sum(Vol.m3)) %>% # Somme
+  setNames(c("placette", "Vol_BMP_Canop.m3")) # Rename
 
   # Créer un tableau avec les 20 arbres et le volume BMP totale
 BMP_PlacetteTot <- MSS %>% 
-  left_join(BMP_FINAL2 %>% 
-              select(c(placette, Vol.m3, Strates_Placette)), by = "placette") %>% select(placette, Vol.m3)
+  left_join(BMP_FINAL %>% 
+              select(c(placette, Vol.m3, Strates_Placette)), by = "placette") %>% 
+  select(placette, Vol.m3, Strates_Placette)
   # Vérification de la présence de NAs
 BMP_PlacetteTot %>% summarise(across(everything(), ~ sum(is.na(.))))
 which(is.na(BMP_PlacetteTot$Vol.m3), arr.ind=TRUE)
-  # Transformation des NAs en 0
-BMP_PlacetteTot[is.na(BMP_PlacetteTot)] = 0
 
   # Somme des BMP pour la placette
 BMP_PlacetteTot2 <- BMP_PlacetteTot %>%
   group_by(placette) %>%
-  summarise(Vol_BMP_Tot.m3 = sum(Vol.m3)) %>%
-  mutate(Vol_BMP_Tot.m3 = as.numeric(Vol_BMP_Tot.m3)) 
-  # Ajout des colonnes V_BMP pour under et canop
+  summarise(Vol_BMP_Tot.m3 = sum(Vol.m3)) %>% # Somme
+  mutate(Vol_BMP_Tot.m3 = as.numeric(Vol_BMP_Tot.m3)) # Vérif numérique 
+  # Ajout des colonnes V_BMP pour understory et canopy
 BMP_PlacetteTot3 <- BMP_PlacetteTot2 %>% 
   left_join(BMP_Understory_F %>% 
               select(c(everything())), by = "placette") %>%
-  select(c(placette, Vol_BMP_Under.m3, Vol_BMP_Tot.m3))
-BMP_PlacetteTot4 <- BMP_PlacetteTot3 %>% 
+  select(c(placette, Vol_BMP_Under.m3, Vol_BMP_Tot.m3)) %>%
   left_join(BMP_Canopy_F %>% 
               select(c(everything())), by = "placette") %>%
-  select(c(placette, Vol_BMP_Canop.m3, Vol_BMP_Under.m3, Vol_BMP_Tot.m3))
-  # Transformation des NAs en 0
-BMP_PlacetteTot4[is.na(BMP_PlacetteTot4)] = 0
+  select(c(placette, Vol_BMP_Canop.m3, Vol_BMP_Under.m3, Vol_BMP_Tot.m3)) %>%
+  mutate(across(everything(), ~replace_na(., 0)))
 
 # Création de la métrique Vol_BMP_Tot.m3/ha #
   # Diamètre = 30m
   # Aire = 706.858m²
   # Hectare = 0.070686
-BMP_PlacetteTot5 <- BMP_PlacetteTot4 %>%
-  mutate(Vol_BMP_Tot.m3.ha = BMP_PlacetteTot4$Vol_BMP_Tot.m3 / 0.070686) 
+BMP_PlacetteTot4 <- BMP_PlacetteTot3 %>%
+  mutate(Vol_BMP_Tot.m3.ha = BMP_PlacetteTot3$Vol_BMP_Tot.m3 / 0.070686)   
+# Graphique pour visualiser
+plotvolbmp <- ggplot(BMP_PlacetteTot4, aes(x = placette, y = Vol_BMP_Tot.m3.ha)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Volume de BMP par placette",
+       x = "Placette",
+       y = "Volume BMP (m3/ha)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
 
 # Calculer la surface terrière pour les 4 arbres inventoriés #
 # Calculer la surface terrière par placette (code Mathéo) #
@@ -345,22 +311,28 @@ DMH_placette <- read.table("placette_Canopix_DMH.csv", sep=";", dec=",", header=
 DMH_placette <- DMH_placette %>%
   mutate(DBH.m = DMH_placette$diam * 0.01)
   # Évincer les arbres vivants
-G <- DMH_placette %>% filter(Cat_arbre !="M" & Cat_arbre !="C" & Cat_arbre !="S") %>%
-  group_by(num_arbre) %>% summarise(g = pi*(DBH.m/2)^2) %>% distinct()
+G <- DMH_placette %>% 
+  filter(Cat_arbre !="M" & Cat_arbre !="C" & Cat_arbre !="S") %>%
+  group_by(num_arbre) %>% 
+  summarise(g = pi*(DBH.m/2)^2) %>% 
+  distinct()
   # Standardiser l'appellation de la placette 
 G <- separate(G, num_arbre, sep = "_", into = c("massif", "placette", "reste"))
-G <- G %>% unite("placette", massif, placette, sep = "_")
+G <- G %>% 
+  unite("placette", massif, placette, sep = "_")
   # Changer 169 en 170 (arbre thèse V_170 dans la parcelle 169)
 G <- G %>% 
   mutate(placette = ifelse(placette == "V_169", "V_170", placette))
   # Calcul G par placette
-G_plac <- G %>% group_by(placette) %>% 
+G_plac <- G %>% 
+  group_by(placette) %>% 
   summarise(Gtot.m2 = sum(g, na.rm=TRUE)) %>% 
   distinct() ; rm(G)
 
 #######################################################################
 
 # Calcul surface terrière des arbres DMH #
+
   # Sélection de toutes les catégories d'arbres
 G_DMH <- DMH_placette %>% 
   filter(Cat_arbre !="M" & Cat_arbre !="C" & Cat_arbre !="S" & Cat_arbre !="V") %>%
@@ -369,37 +341,52 @@ G_DMH <- DMH_placette %>%
   distinct()
 
 # Calcul G par placette #
+
   # Séparer l'id
 G_DMH <- separate(G_DMH, num_arbre, sep = "_", into = c("massif", "placette", "reste"))
   # Réunir pour former la placette (ex : T_118)
-G_DMH <- G_DMH %>% unite("placette", massif, placette, sep = "_")
-G_DMH <- G_DMH %>% group_by(placette) %>% summarise(Gdmh.m2 = sum(g, na.rm=TRUE))
-  # Changer 169 en 170 (arbre thèse V_170  dans la parcelle 169)
 G_DMH <- G_DMH %>% 
+  unite("placette", massif, placette, sep = "_") %>% 
+  group_by(placette) %>%
+  summarise(Gdmh.m2 = sum(g, na.rm=TRUE)) %>% 
   mutate(placette = ifelse(placette == "V_169", "V_170", placette))
+  # Changer 169 en 170 (arbre thèse V_170  dans la parcelle 169)
+
   # Jointure avec le calcul de la surface terrière
-G_plac <- G_plac %>% left_join(G_DMH, G_plac, by=c("placette")) ; G_DMH 
+G_plac <- G_plac %>% 
+  left_join(G_DMH, G_plac, by=c("placette")) ; G_DMH 
+
 # Calcul de la contribution BMP au BM tot en pondérant la proportion des 4 arbres inventoriés à la surface terrière de la placette #
+
 G_plac$Contribution_G_ArbreDMH <- G_plac$Gdmh.m2/ G_plac$Gtot.m2
-# Changer les décimales à n = 3
-G_plac <- G_plac %>% mutate(across(where(is.numeric), round, 3))
+
 ```
 
-### BMP Placette Calcul final + contribution
+### BMP Placette Pondération par la contribution
 Origine du code : Mathéo / preparation_data
 
 ```{r}
   # Ajout des calculs aux colonnes de V_BMP
-BMP_PlacetteTot6 <- BMP_PlacetteTot5 %>% 
+BMP_PlacetteTot5 <- BMP_PlacetteTot4 %>% 
   left_join(G_plac %>% 
               select(c(placette, Contribution_G_ArbreDMH)), by = "placette") %>%
   select(c(placette, Vol_BMP_Canop.m3, Vol_BMP_Under.m3, Vol_BMP_Tot.m3.ha, Contribution_G_ArbreDMH))
   # Pondération par la contribution 
-BMP_PlacetteTot7 <- BMP_PlacetteTot6 %>%
-  mutate(Vol_BMP_Tot_Pondere.m3.ha = round(BMP_PlacetteTot6$Vol_BMP_Tot.m3.ha * BMP_PlacetteTot6$Contribution_G_ArbreDMH, 3))
+BMP_PlacetteTot6 <- BMP_PlacetteTot5 %>% mutate(Vol_BMP_Tot_Pondere.m3.ha = (BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha * BMP_PlacetteTot5$Contribution_G_ArbreDMH))
+# Graphique pour visualiser
+plotpond <- ggplot(BMP_PlacetteTot6, aes(x = placette, y = Vol_BMP_Tot_Pondere.m3.ha)) +
+  ylim(0,6) +
+  geom_bar(stat = "identity") +
+  labs(title = "Volume de BMP par placette",
+       x = "Placette",
+       y = "Volume BMP (m3/ha)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
+  # Faire apparaître 2 ggplot en même temps
+grid.arrange(plotvolbmp, plotpond, ncol = 2)
 
   # EXPORT
-write.table(x = BMP_PlacetteTot7, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
+write.table(x = BMP_PlacetteTot6, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
 ```
 
 # 4. Bois Mort au Sol (BMS)
@@ -433,7 +420,7 @@ BM_placette <- placette_Canopix %>%
   # Summary
 summary(BM_placette)
 
-### Ajout des 8 souches qui sont du bois mort au sol ###
+### Ajout des 9 souches qui sont du bois mort au sol ###
 
   # Filtrer les souches 
 BMD_S <- placette_Canopix %>% filter(Cat_arbre %in% c("S"))
@@ -442,7 +429,7 @@ BMD_S$H_arbre_mort.m <- as.numeric(BMD_S$H_arbre_mort.m)
   # Passage Diamètre en mètre
 BMD_S <- BMD_S %>%
   mutate(DBH.m = BMD_S$diam * 0.01,
-         surfacemediane = pi * (DBH.m^2) / 4)
+         surfacemediane = pi * (DBH.m^2) / 4) # Surface médiane
   # Calcul formule Protocol Optimix souches
 BMD_S$vol.m3 <- (BMD_S$surfacemediane * BMD_S$H_arbre_mort.m)
   # Colonnes utiles
@@ -451,19 +438,18 @@ BMD_S <- BMD_S %>%
   # m3.ha
 BMD_S2 <- BMD_S %>%
   mutate(Vol_BMD_S.m3.ha = BMD_S$vol.m3 / 0.070686) %>%
-  select(placette, Vol_BMD_S.m3.ha)
-names(BMD_S2) = c("placette", "BM_Wagner.ha")
+  select(placette, Vol_BMD_S.m3.ha) %>%
+  setNames(c("placette", "BM_Wagner.ha"))
 
-  # Jointure des données des 2 tableaux
+  # Jointure des données des 2 tableaux pour ajouter les 9 souches manquantes
 BM_placette2 <- bind_rows(BM_placette, BMD_S2) %>%
-  arrange(placette) %>%
+  arrange(placette) %>% # Mettre les placette dans le meme ordre
   mutate(BM_Wagner.m3.ha = ifelse(!is.na(BM_wagner.ha), BM_wagner.ha, BM_Wagner.ha)) %>%
-  select(-BM_wagner.ha, -BM_Wagner.ha)
+  select(-BM_wagner.ha, -BM_Wagner.ha) # Suppression colonnes inutiles
   # Creation d'un nouveau dataframe avec le volume de BM en m3 par ha
 BM_wagner <- BM_placette2 %>%
   group_by(placette) %>%
-  summarize(BM_Wagner_F.m3.ha = round(sum(BM_Wagner.m3.ha, na.rm=TRUE), 3))
-
+  summarize(BM_Wagner_F.m3.ha = (sum(BM_Wagner.m3.ha, na.rm=TRUE)))
   # Graphique pour visualiser
 ggplot(BM_wagner, aes(x = placette, y = BM_Wagner_F.m3.ha)) +
   geom_bar(stat = "identity") +
@@ -489,9 +475,11 @@ Chandelles :
   #IMPORT
 placette_Canopix <- read.table("placette_Canopix.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
   # Filtre des arbres DBH (1, 2, 3, 4)
-P <- placette_Canopix %>% filter(!Cat_arbre %in% c("V", "M", "C", "S"))
+P <- placette_Canopix %>% 
+  filter(!Cat_arbre %in% c("V", "M", "C", "S"))
   # Filtre des NAs
-P <- P %>% filter (!is.na(P$diam))
+P <- P %>% 
+  filter (!is.na(P$diam))
   # Enlever les doublons + diamètre en mètres
 P <- P %>%
   select(placette, Cat_arbre, diam, H_arbre_mort.m, BMP_sp) %>%
@@ -499,15 +487,14 @@ P <- P %>%
   mutate(DBH.m = P$diam * 0.01) 
   # Mutate des 169 en 170
 P  <- P  %>% 
-  mutate(Cat_arbre = ifelse(Cat_arbre == "V_169_1", "V_170_1", Cat_arbre))
-P  <- P  %>% 
-  mutate(Cat_arbre = ifelse(Cat_arbre == "V_169_2", "V_170_2", Cat_arbre))
-P  <- P  %>% 
-  mutate(Cat_arbre = ifelse(Cat_arbre == "V_169_3", "V_170_3", Cat_arbre))
-P  <- P  %>% 
-  mutate(Cat_arbre = ifelse(Cat_arbre == "V_169_4", "V_170_4", Cat_arbre))
-P  <- P  %>% 
-  mutate(placette = ifelse(placette == "V_169", "V_170", placette))
+  mutate(Cat_arbre = case_when(Cat_arbre == "V_169_1" ~ "V_170_1",
+                            Cat_arbre == "V_169_2" ~ "V_170_2", 
+                            Cat_arbre == "V_169_3" ~ "V_170_3",
+                            Cat_arbre == "V_169_4" ~ "V_170_4",
+                            TRUE ~ Cat_arbre
+                            ), 
+         placette = ifelse(placette == "V_169", "V_170", placette)
+)
 
   # IMPORT
 Hauteurs <- read.table("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Hauteurs_arbres_AD.csv", header = T, dec=".", sep=";", stringsAsFactors = FALSE)
@@ -515,10 +502,8 @@ Hauteurs <- read.table("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/
 Hauteurs <- Hauteurs %>%
   group_by(placette) %>%
   select(placette, Mesure.pose...arbre) %>%
-  distinct(placette, .keep_all = T)
-names(Hauteurs) = c("Cat_arbre", "H2_arbre_mort.m")
-  # Ajustement de l'id des arbres
-Hauteurs <- Hauteurs %>%
+  distinct(placette, .keep_all = T) %>%
+  setNames(c("Cat_arbre", "H2_arbre_mort.m")) %>%
   mutate(Cat_arbre = paste0(Cat_arbre, "_1")) 
   # Jointure P et Hauteurs
 HauteursDMH <- P %>%
@@ -529,13 +514,12 @@ HauteursDMH <- P %>%
   mutate(Circonférence = P$DBH.m * pi) %>%
   mutate(Circonférence = round(Circonférence, 3)) 
 HauteursDMH <- HauteursDMH %>%
-  mutate(Massif = gsub("([A-Za-z])_[0-9]+_([1-4])", "\\1_\\2", Cat_arbre))
-names(HauteursDMH) = c("placette", "Cat_arbre", "Diamètre", "BM_sp", "DBH.m", "Hauteurs", "Circonférence", "Massif")
+  mutate(Massif = gsub("([A-Za-z])_[0-9]+_([1-4])", "\\1_\\2", Cat_arbre)) %>%
+  setNames(c("placette", "Cat_arbre", "Diamètre", "BM_sp", "DBH.m", "Hauteurs", "Circonférence", "Massif"))
 # HauteursDMH = 80 arbres DBH sur les 20 placettes
 
 ###
 
-library(ggplot2)
   # Différentes régressions pour les graphs
 regression <- lm(Hauteurs ~ Circonférence, data = HauteursDMH)
 summary(regression)
@@ -571,8 +555,8 @@ plotV <- ggplot(HauteursDMH, aes(Circonférence, Hauteurs, color = Massif)) +
     annotate("text", x = 400, y = 40, label = paste("Pente = ", round(slope, 3)), color = "black", size = 4) +
   scale_color_manual(values = c("V_1" = "red", "V_2" = "blue", "V_3" = "green", "V_4" = "purple"))
 
-library(gridExtra)
 grid.arrange(plotT, plotV, ncol = 2)
+
   # Graphs arbres thèses
 plot1 <- ggplot(HauteursDMH, aes(Circonférence, Hauteurs, color = Massif)) +
   geom_point() +
@@ -611,8 +595,7 @@ grid.arrange(plot1, plot234, ncol = 2)
   # Constante de la formule de (Deuleze et al., 2014) + circonférence
 HauteursDMH <- HauteursDMH %>%
   mutate(constante = 0.512,
-         circonférence =  HauteursDMH$DBH.m * pi)
-HauteursDMH2 <- HauteursDMH %>%
+         circonférence =  HauteursDMH$DBH.m * pi) %>%
   mutate(VolTot = round (constante * (Hauteurs * circonférence^2) / (4 * pi * (1 - 1.3 / Hauteurs)^2), 3)) 
 
 ### Test pour les arbres vivants on retrouve bien le volume calculé dans les tarifs à 2 entrées, malheureusement on passe à la méthode à une entrée pour les (M)
@@ -628,23 +611,25 @@ HauteursDMH2 <- HauteursDMH %>%
 placette_Canopix <- read.table("placette_Canopix.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
 
   # Filtrer les arbres inventoriés pour le BMD
-BMD <- placette_Canopix %>% filter(Cat_arbre %in% c("M", "C"))
+BMD <- placette_Canopix %>% 
+  filter(Cat_arbre %in% c("M", "C")) %>% 
+  mutate(placette = ifelse(placette == "V_169", "V_170", placette)) %>%
   # 169 -> 170
-BMD <- BMD %>% 
-  mutate(placette = ifelse(placette == "V_169", "V_170", placette))
+  filter(Cat_arbre %in% c("C"))
   # Filtrer les chandelles
-BMD_C <- BMD %>% filter(Cat_arbre %in% c("C"))
+
   # Passer les Hauteurs en numérique
-BMD_C$H_arbre_mort.m <- as.numeric(BMD_C$H_arbre_mort.m)
+BMD$H_arbre_mort.m <- as.numeric(BMD$H_arbre_mort.m)
   # Colonnes utiles
-BMD_C <- BMD_C %>%
-  select(placette, diam, BMP_sp, H_arbre_mort.m, )
-  # Passage diamètre en circonférence
-BMD_C2 <- BMD_C %>%
+BMD <- BMD %>%
+  select(placette, diam, BMP_sp, H_arbre_mort.m, ) %>%
   mutate(circonférence = diam * pi)
+  # Passage diamètre en circonférence
   # Transformation des valeurs en valeurs uniques
+
 # ATTENTION : INCONNU TRANSFOME EN HETRE #
-BMD_C3 <- BMD_C2  %>% 
+
+BMD <- BMD  %>% 
   mutate(BMP_sp = ifelse(BMP_sp == "INC", "hetre", BMP_sp),
          BMP_sp = ifelse(BMP_sp == " hetre", "hetre", BMP_sp),
          BMP_sp = ifelse(BMP_sp == "chene pedoncule", "chene", BMP_sp),
@@ -656,7 +641,7 @@ BMD_C3 <- BMD_C2  %>%
 # INC = hetre #
 # hetre : 50.5 au lieu de 50 pour inclure une circonférence à 50.2 #
 
-BMD_C4 <- BMD_C3 %>%
+BMD <- BMD %>%
   mutate(coef_k = case_when(
     BMP_sp == "charme" & circonférence > 21 & circonférence < 50 ~ 1,
     BMP_sp == "alisier torminal" & circonférence > 21 & circonférence < 50 ~ 1.5,
@@ -676,38 +661,37 @@ BMD_C4 <- BMD_C3 %>%
     TRUE ~ NA_real_))
 
   # Passage Diamètre en mètre
-BMD_C4 <- BMD_C4 %>%
-  mutate(DBH.m = BMD_C4$diam * 0.01) 
-  # Passage diamètre en circonférence
-BMD_C4 <- BMD_C4 %>%
+BMD_C <- BMD %>%
+  mutate(DBH.m = BMD$diam * 0.01) %>%
   mutate(circonférence.m = DBH.m * pi)
+  # Passage diamètre en circonférence
+
   # Calcul circonférence médiane c0,5 = c1,3 – [k × (h/2 – 1)] / 100 
-BMD_C4$circonfmed <- BMD_C4$circonférence.m - (BMD_C4$coef_k * (BMD_C4$H_arbre_mort.m / 2 - 1)) / 100
+BMD_C$circonfmed <- BMD_C$circonférence.m - (BMD_C$coef_k * (BMD_C$H_arbre_mort.m / 2 - 1)) / 100
   # Calcul Volume
-BMD_C4$vol.m3 <- BMD_C4$circonfmed^2 * (1 / (4 * pi)) * BMD_C4$H_arbre_mort.m
+BMD_C$vol.m3 <- BMD_C$circonfmed^2 * (1 / (4 * pi)) * BMD_C$H_arbre_mort.m
   # Valeurs uniques
-BMD_C5 <- BMD_C4 %>%
-  distinct(vol.m3, .keep_all = T)
-  # vol.m3 par placette
-BMD_C6 <- BMD_C5 %>%
+BMD_C <- BMD_C %>%
+  distinct(vol.m3, .keep_all = T) %>%
   group_by(placette) %>%
-  summarise(VolTotC.m3 = sum(vol.m3))
+  summarise(VolTotC.m3 = sum(vol.m3)) # vol.m3 par placette
   # Vol.m3.ha
-BMD_C7 <- BMD_C6 %>%
-  mutate(VolTotC.m3.ha = round(BMD_C6$VolTotC.m3 / 0.070686, 3)) 
+BMD_C2 <- BMD_C %>% 
+  mutate(VolTotC.m3.ha = (BMD_C$VolTotC.m3 / 0.070686)) 
+
 
   # IMPORT pour avoir la colonne placette avec les 20 ID
 MSS <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_Seuils_Strates_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
   # Jointure
-BMD_C8 <- MSS %>% 
+BMD_C3 <- MSS %>% 
   select(placette) %>%
-  left_join(BMD_C7 %>%
+  left_join(BMD_C2 %>%
               select(everything()), by = "placette")
   # NAs = 0
-BMD_C8[is.na(BMD_C8)] = 0
+BMD_C3[is.na(BMD_C3)] = 0
 
   # Graphique pour visualiser
-ggplot(BMD_C8, aes(x = placette, y = VolTotC.m3.ha)) +
+ggplot(BMD_C3, aes(x = placette, y = VolTotC.m3.ha)) +
   geom_bar(stat = "identity") +
   labs(title = "Volume de BMD chandelles en m3 par hectare",
        x = "Placette",
@@ -718,21 +702,17 @@ ggplot(BMD_C8, aes(x = placette, y = VolTotC.m3.ha)) +
 ###
 
   # Filter les arbres morts debout
-BMD_M <- BMD %>% filter(Cat_arbre %in% c("M"))
-  # 169 -> 170
-BMD_M  <- BMD_M  %>% 
+BMD_M <- placette_Canopix %>% filter(Cat_arbre %in% c("M")) %>% 
   mutate(placette = ifelse(placette == "V_169", "V_170", placette))
+  # 169 -> 170
   # Passer les Hauteurs en numérique
 BMD_M$H_arbre_mort.m <- as.numeric(BMD_M$H_arbre_mort.m)
   # Passage Diamètre en mètre
 BMD_M <- BMD_M %>%
-  mutate(DBH.m = BMD_M$diam * 0.01)
-  # Colonnes utiles
-BMD_M <- BMD_M %>%
-  select(placette, diam, DBH.m, H_arbre_mort.m, BMP_sp)
-  # Circonférence en cm
-BMD_M <- BMD_M %>%
-  mutate(circonférence.cm = diam * pi)
+  mutate(DBH.m = BMD_M$diam * 0.01) %>%
+  select(placette, diam, DBH.m, H_arbre_mort.m, BMP_sp) %>%
+  # Colonnes utiles 
+  mutate(circonférence.cm = diam * pi) # Circonférence en cm
 
   # Uniformiser les appellations de chenes et hetres
 BMD_M2 <- BMD_M  %>% 
@@ -752,24 +732,23 @@ BMD_M3 <- BMD_M2 %>%
                              ))
   # Valeurs unique de Vol.m3
 BMD_M4 <- BMD_M3 %>%
-  distinct(vol.m3, .keep_all = T)
-  # summarise par placette
-BMD_M5 <- BMD_M4 %>%
+  distinct(vol.m3, .keep_all = T) %>%
   group_by(placette) %>%
-  summarise(Vol_BMD_Mtot.m3 = sum(vol.m3))
+  summarise(Vol_BMD_Mtot.m3 = sum(vol.m3))  # summarise par placette
+
+BMD_M5 <- BMD_M4 %>%
+  mutate(Vol_BMD_Mtot.m3.ha = (BMD_M4$Vol_BMD_Mtot.m3 / 0.070686))
   # m3.ha
-BMD_M6 <- BMD_M5 %>%
-  mutate(Vol_BMD_Mtot.m3.ha = round(BMD_M5$Vol_BMD_Mtot.m3 / 0.070686, 3))
   # Jointure
-BMD_M7 <- MSS %>% 
+BMD_M6 <- MSS %>% 
   select(placette) %>%
-  left_join(BMD_M6 %>%
+  left_join(BMD_M5 %>%
               select(everything()), by = "placette")
   # NAs = 0
-BMD_M7[is.na(BMD_M7)] = 0
+BMD_M6[is.na(BMD_M6)] = 0
 
   # Graphique pour visualiser
-ggplot(BMD_M7, aes(x = placette, y = Vol_BMD_Mtot.m3.ha)) +
+ggplot(BMD_M6, aes(x = placette, y = Vol_BMD_Mtot.m3.ha)) +
   geom_bar(stat = "identity") +
   labs(title = "Volume de BMD en m3 par hectare",
        x = "Placette",
@@ -780,18 +759,16 @@ ggplot(BMD_M7, aes(x = placette, y = Vol_BMD_Mtot.m3.ha)) +
 ###
 
   # Jointure chandelles et (M)
-BMDtot <- BMD_M7 %>% 
-  left_join(BMD_C8 %>%
+BMDtot <- BMD_M6 %>% 
+  left_join(BMD_C3 %>%
               select(everything()), by = "placette")
   # Somme des Vol.m3.ha chandelles et (M)
 BMDtot2 <- BMDtot %>%
   group_by(placette) %>%
-  mutate(Vol_BMD_tot_m3.ha = sum(Vol_BMD_Mtot.m3.ha + VolTotC.m3.ha))
-  # Colonnes utiles
-BMD_tot3 <- BMDtot2 %>%
-  select(placette, Vol_BMD_Mtot.m3.ha, VolTotC.m3.ha, Vol_BMD_tot_m3.ha)
+  mutate(Vol_BMD_tot_m3.ha = sum(Vol_BMD_Mtot.m3.ha + VolTotC.m3.ha)) %>%
+  select(placette, Vol_BMD_Mtot.m3.ha, VolTotC.m3.ha, Vol_BMD_tot_m3.ha) # Colonnes utiles
   # Graphique pour visualiser
-ggplot(BMD_tot3, aes(x = placette, y = Vol_BMD_tot_m3.ha)) +
+ggplot(BMDtot2, aes(x = placette, y = Vol_BMD_tot_m3.ha)) +
   geom_bar(stat = "identity") +
   labs(title = "Volume de BMD en m3 par hectare",
        x = "Placette",
@@ -800,7 +777,7 @@ ggplot(BMD_tot3, aes(x = placette, y = Vol_BMD_tot_m3.ha)) +
   theme(axis.text.x = element_text(angle = 90))
 
   # EXPORT
-write.table(x = BMD_tot3, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMDtot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
+write.table(x = BMDtot2, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMDtot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
 ```
 
 # 6. Bois Mort Total
@@ -869,7 +846,7 @@ BMtot <- metrique_BMtot %>%
   left_join(metrique_BMDtot, by = "placette") %>%
   mutate(BMtot.m3.ha = as.numeric(BMtot.m3.ha)) %>%
   group_by(placette) %>%
-  summarise(Proportion_BM = round(((Vol_BMP_Tot_Pondere.m3.ha + Vol_BMD_Mtot.m3.ha) / BMtot.m3.ha) * 100, 2))
+  summarise(Proportion_BM = (((Vol_BMP_Tot_Pondere.m3.ha + Vol_BMD_Mtot.m3.ha) / BMtot.m3.ha) * 100))
   # Graphique pour visualiser
 ggplot(BMtot, aes(x = placette, y = Proportion_BM)) +
   geom_bar(stat = "identity") +
@@ -894,16 +871,13 @@ placette_Canopix <- placette_Canopix %>%
   mutate(placette = ifelse(placette == "V_169", "V_170", placette))
   # supprime les colonnes relative aux quarts
 str_placette <- placette_Canopix %>%
-  select(-c(5, 7, 14:34))
+  select(-c(5, 7, 14:34)) %>%
+  distinct() %>% 
   # supprime les colonnes redondantes
-str_placette <- str_placette %>%
- distinct()
+  filter(transect != "") %>%
   # supprime les colonnes avec NA dans la colonne 'transect'
-str_placette <- str_placette %>%
-  filter(transect != "")
-  # calcul le pourcentage de couvert (*1.04)
-str_placette <- str_placette %>%
   mutate(across(6:7, ~ .x * 1.04))
+  # calcul le pourcentage de couvert (*1.04)
 
   # calcul la moyenne des pourcentages de couvert en fonction de la placette
 couvert <- str_placette %>%
@@ -934,8 +908,8 @@ write.table(x = couvert, file = "//no-datafile.inra.local/Biodiversite/projets/B
   # calcul la moyenne des pourcentages de couvert en fonction de la placette
 encombrement <- str_placette %>%
   group_by(placette) %>%
-  summarise(encombrement_arbust = round(mean(c(arbustive_15m, arbustive_25m), na.rm = TRUE), 3),
-            encombrement_arbo = round(mean(c(arboree_15m, arboree_25m), na.rm = TRUE), 3))
+  summarise(encombrement_arbust = (mean(c(arbustive_15m, arbustive_25m), na.rm = TRUE)),
+            encombrement_arbo = (mean(c(arboree_15m, arboree_25m), na.rm = TRUE)))
   # transforme le tableau en longueur
 encombrement_long <- pivot_longer(encombrement, cols = 2:3, names_to ="strate",
 values_to = "encombrement_moy")
@@ -945,10 +919,10 @@ ggplot(encombrement_long, aes(x=placette, y=encombrement_moy, fill=strate)) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90))
   # Rename des colonnes
-names(encombrement) = c("placette", "Understory (arbustive)", "Canopy (arborée)")
+names(encombrement) = c("placette", "Understory (arbustive)", "Canopy (arboree)")
 
   # EXPORT
-write.table(x = couvert, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_Encombrement_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
+write.table(x = encombrement, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_Encombrement_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
 ```
 
 # 10. Notes Dépéris (mean)
@@ -1017,14 +991,39 @@ Arbres = 1313
 placette_Canopix <- placette_Canopix %>%
   group_by(placette) %>%
   summarise(nb_Mort = sum(Mort, na.rm = T)) %>%
-  mutate(Taux_M_tot = round((nb_Mort / Arbres) * 100, 2)) %>%
+  mutate(Taux_M_tot = ((nb_Mort / Arbres) * 100)) %>%
   ungroup()
 
   # EXPORT
 write.table(x = placette_Canopix, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_TauxMortalité_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
 ```
 
-# 12. Proportion G (M) sur surface terrière G total
+# 12. Diversité de BM
+
+```{r}
+  # IMPORT 
+placette_Canopix <- read.table("placette_Canopix.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
+
+DivBM <- placette_Canopix %>%
+  select(placette, Cat_arbre, 14 : 17, 22 : 26) %>%
+  mutate(across(where(is.character), ~na_if(.,""))) 
+
+DivBM2 <- DivBM %>%
+  distinct(BMS_classe_diametre.cm)
+
+DivBM3 <- DivBM %>%
+  distinct(BMS_sd_saprox)
+
+# Séparer DivBM en 3 : debout, sol, perché #
+# Créér une colonne id pour : essence, classe diamètre, spx, position #
+# Créér une ID générale d'espèces
+# Regrouper dans le tableau de départ DivBM
+# ndistinct pour chaque espèces par placette pour avoir la diversité de BM par placette
+
+```
+
+
+# 13. Proportion G (M) sur surface terrière G total
 
 ```{r}
 
