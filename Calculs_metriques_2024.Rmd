@@ -15,6 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(readxl)
+library(here)
 library(dplyr)
 library(tidyverse)
 library(stringr)
@@ -29,7 +30,8 @@ library(gridExtra) # Afficher plusieurs ggplots en meme temps
 
 ```{r}
   # Working diretory
-setwd("C:/Users/adebout/Desktop/Adrien Debout Stage/STATS/Stats_coleo_AD/Data/Data placettes/DATA_placette_CANOPIX")
+setwd(here::here("Data", "Data placettes", "DATA_placette_CANOPIX"))
+here()
 ```
 
 # 1. Mise en forme des données Hauteurs pour les strates
@@ -1003,16 +1005,111 @@ write.table(x = placette_Canopix, file = "//no-datafile.inra.local/Biodiversite/
 ```{r}
   # IMPORT 
 placette_Canopix <- read.table("placette_Canopix.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
+  #
+BMP <- read.csv("bois_mort_perche.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
+
 
 DivBM <- placette_Canopix %>%
   select(placette, Cat_arbre, 14 : 17, 22 : 26) %>%
-  mutate(across(where(is.character), ~na_if(.,""))) 
+  mutate(across(where(is.character), ~na_if(.,""))) %>% 
+  mutate(placette = ifelse(placette == "V_169", "V_170", placette))
 
-DivBM2 <- DivBM %>%
-  distinct(BMS_classe_diametre.cm)
+DivBMD <- DivBM %>%
+  select(1:2, 7:11) %>%
+  filter(Cat_arbre %in% c("M", "C")) %>%
+  mutate(BMP_sp = ifelse(BMP_sp == " hetre", "hetre", BMP_sp),
+         BMP_sp = ifelse(BMP_sp == "chene pedoncule", "chene", BMP_sp),
+         BMP_sp = ifelse(BMP_sp == "chene sessile", "chene", BMP_sp)) %>%
+  mutate(Code_sp = case_when(BMP_sp == "chene" ~ "CHE",
+                             BMP_sp == "hetre" ~ "HET",
+                             BMP_sp == "charme" ~ "CHA",
+                             BMP_sp == "alisier torminal" ~ "ALI",
+                             BMP_sp == "INC" ~ "INC",
+                             BMP_sp == "pin sylvestre" ~ "PIN")) %>%
+  mutate(Code_diam = case_when(diam >= 5 & diam <= 10 ~ 10,
+                                diam >= 10 & diam <= 15 ~ 15,
+                                diam >= 15 & diam <= 20 ~ 20,
+                                diam >= 20 & diam <= 25 ~ 25,
+                                diam >= 25 & diam <= 30 ~ 30,
+                                diam >= 30 & diam <= 35 ~ 35,
+                                diam >= 35 & diam <= 40 ~ 40,
+                                diam >= 40 & diam <= 45 ~ 45,
+                                diam >= 45 & diam <= 50 ~ 50,
+                                diam >= 60 & diam <= 65 ~ 65,
+                                diam >= 100 & diam <= 105 ~ 105)) %>%
+  mutate(Code_position = c(rep("D", 122))) %>%
+  mutate(Code_sapro = BMP_sd_saprox) %>%
+  mutate(Code_DivBMD = str_c(Code_sp, Code_diam, Code_position, Code_sapro, sep = "_")) %>%
+  filter(!is.na(Code_DivBMD))
+  #
+DivBMD2 <- DivBMD %>%
+  select(placette, Code_DivBMD) %>%
+  group_by(placette) %>%
+  distinct(Code_DivBMD) %>%
+  mutate(NBesp = 1) %>%
+  summarise(NB_espBMD_placette = sum(NBesp))
 
-DivBM3 <- DivBM %>%
+###
+
+DivBMS <- DivBM %>%
+  select(placette, 3:5) %>%
+  mutate(Code_sp = BMS_sp,
+         Code_position = "S",
+         Code_sapro = BMS_sd_saprox,
+         Code_diam = BMS_classe_diametre.cm) %>%
+    mutate(Code_DivBMS = str_c(Code_sp, Code_diam, Code_position, Code_sapro, sep = "_")) %>%
+  filter(!is.na(Code_DivBMS))
+  #
+DivBMS2 <- DivBM %>%
+  select(1:2, 7:11) %>%
+  filter(Cat_arbre %in% c("S")) %>%
+  mutate(Code_sp = case_when(BMP_sp == "hetre" ~ "HET",
+                             BMP_sp == "charme" ~ "CHA",
+                             BMP_sp == "alisier torminal" ~ "ALI",
+                             BMP_sp == "INC" ~ "INC")) %>%
+  mutate(Code_sapro = BMP_sd_saprox,
+         Code_position = Cat_arbre,
+         Code_diam = diam) %>%
+  mutate(Code_DivBMS = str_c(Code_sp, Code_diam, Code_position, Code_sapro, sep = "_")) %>%
+  filter(!is.na(Code_DivBMS)) %>%
+  select(1, 12)
+  # joindre BMS ET BMS2 PUIS faire le group by 
+
+DivBMS3 <- DivBMS2 %>%
+  left_join(DivBMS)
+
+
+DivBMS3 <- DivBMS2 %>%
+  select(placette, Code_DivBMS) %>%
+  group_by(placette) %>%
+  distinct(Code_DivBMS) %>%
+  mutate(NBesp = 1) %>%
+  summarise(NB_espBMS_placette = sum(NBesp))
+
+
+DivBMS2 <- DivBMS %>%
   distinct(BMS_sd_saprox)
+
+###
+
+DivBMP <- BMP %>%
+  select(1:2, 4:7, 13) %>%
+  mutate(placette = sub("(^[^_]+_[^_]+)_.*", "\\1", id_arbre)) %>%
+  mutate(Code_sp = case_when(sp == "Quercus" ~ "CHE",
+                             sp == "Quercus_petraea" ~ "CHE",
+                             sp == "Quercus_robur" ~ "CHE")) %>%
+  mutate(Code_diam = diam_BMP.cm) %>%
+  mutate(Code_sapro = sd_saprox_BMP) %>%
+  mutate(Code_position = c(rep("P", 635))) %>%
+  mutate(Code_DivBMP = str_c(Code_sp, Code_diam, Code_position, Code_sapro, sep = "_"))
+  #
+DivBMP2 <- DivBMP %>%
+  select(placette, Code_DivBMP) %>%
+  group_by(placette) %>%
+  distinct(Code_DivBMP) %>%
+  mutate(NBesp = 1) %>%
+  summarise(NB_espBMD_placette = sum(NBesp))
+
 
 # Séparer DivBM en 3 : debout, sol, perché #
 # Créér une colonne id pour : essence, classe diamètre, spx, position #
