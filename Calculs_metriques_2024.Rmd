@@ -845,35 +845,56 @@ metrique_BMDtot <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_
   # IMPORT BMPtot
 metrique_BMPtot <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Placette_AD.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
 
+  # IMPORT BMStot
+metrique_BMStot <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMStot_Placette_AD.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
+
   # Colonnes utiles
 metrique_BMPtot <- metrique_BMPtot %>%
   select(placette, Vol_BMP_Tot_Pondere.m3.ha) %>%
   mutate(Vol_BMP_Tot_Pondere.m3.ha = as.numeric(Vol_BMP_Tot_Pondere.m3.ha))
 metrique_BMDtot <- metrique_BMDtot %>%
   select(placette, Vol_BMD_Mtot.m3.ha) %>%
-  mutate(Vol_BMD_Mtot.m3.ha = as.numeric(Vol_BMD_Mtot.m3.ha))
+  mutate(Vol_BMD_tot.m3.ha = as.numeric(Vol_BMD_Mtot.m3.ha))
+metrique_BMStot <- metrique_BMStot %>%
+  select(placette, BMS_F.m3.ha) %>%
+  mutate(Vol_BMS_tot.m3.ha = as.numeric(BMS_F.m3.ha))
   # Proportion de : BMP + BMD / BMT
 BMtot <- metrique_BMtot %>%
   left_join(metrique_BMPtot, by = "placette") %>%
   left_join(metrique_BMDtot, by = "placette") %>%
+  left_join(metrique_BMStot, by = "placette") %>%
   mutate(BMtot.m3.ha = as.numeric(BMtot.m3.ha)) %>%
   group_by(placette) %>%
-  summarise(Proportion_BM = (((Vol_BMP_Tot_Pondere.m3.ha + Vol_BMD_Mtot.m3.ha) / BMtot.m3.ha) * 100))
+  mutate(Proportion_BM = (((Vol_BMP_Tot_Pondere.m3.ha + Vol_BMD_tot.m3.ha) / BMtot.m3.ha) * 100)) %>%
+  select(-"Vol_BMD_Mtot.m3.ha", -"BMS_F.m3.ha")
   
+BMtot_pivot <- pivot_longer(BMtot, cols = 3:5, names_to ="categorie_BM", values_to = "Vol_m3.ha")
 
+  # graph proportion des 3 types de BM
+TousBM <- ggplot(BMtot_pivot, aes(x = placette, y = Vol_m3.ha, fill = categorie_BM)) +
+  geom_bar(position="fill", stat="identity") +
+  labs(title = "Proportion de BMP, BMD & BMS par placette",
+       x = "Placette",
+       y = "Volume BM (m3/ha)") +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 90)) + geom_col(aes(fill = categorie_BM)) +
+  scale_fill_manual(values = c("black", "grey", "darkgreen"))
+# Faire le graphs des proportion de mathéo, mais cette fois avec le volume de bois mort pour BMD BMS et BMP
 
-### a expliquer avec plus de détails ###
+# Graphique pour visualiser Proportion BMP + BMD sur BMtot
+Proportion_BM <- BMtot$Proportion_BM
 
-
-
-# Graphique pour visualiser
-ggplot(BMtot, aes(x = placette, y = Proportion_BM)) +
+DPBM <- ggplot(BMtot, aes(x = placette, y = Proportion_BM)) +
   geom_bar(stat = "identity") +
+  geom_col(fill = "darkblue") +
+  geom_text(aes(label = paste0(round(Proportion_BM, 2), "%")), vjust = -0.5, nudge_y = 0.05 * Proportion_BM, size = 2.5) +
   labs(title = "Proportion de BMP + BMD sur le Bois Mort Total",
        x = "Placette",
        y = "Proportion BM (%)") +
   theme_classic() +
-  theme(axis.text.x = element_text(angle = 90))
+  theme(axis.text.x = element_text(angle = 90)) 
+  # Faire apparaître 2 ggplot en même temps
+grid.arrange(TousBM, DPBM, ncol = 2)
 
   # EXPORT
 write.table(x = BMtot, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_ProportionBM_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
@@ -1023,15 +1044,15 @@ write.table(x = placette_Canopix, file = "//no-datafile.inra.local/Biodiversite/
 ```{r}
   # IMPORT 
 placette_Canopix <- read.table("placette_Canopix.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
-  #
+  # bois_mort_perche
 BMP <- read.csv("bois_mort_perche.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
 
-
+  # Colonnes utiles pour le BM
 DivBM <- placette_Canopix %>%
   select(placette, Cat_arbre, 14 : 17, 22 : 26) %>%
   mutate(across(where(is.character), ~na_if(.,""))) %>% 
   mutate(placette = ifelse(placette == "V_169", "V_170", placette))
-
+  # BMD
 DivBMD <- DivBM %>%
   select(1:2, 7:11) %>%
   filter(Cat_arbre %in% c("M", "C")) %>%
@@ -1059,16 +1080,17 @@ DivBMD <- DivBM %>%
   mutate(Code_sapro = BMP_sd_saprox) %>%
   mutate(Code_DivBMD = str_c(Code_sp, Code_diam, Code_position, Code_sapro, sep = "_")) %>%
   filter(!is.na(Code_DivBMD))
-  #
+  # Calcul du nombre d'espèces de BMD
 DivBMD2 <- DivBMD %>%
   select(placette, Code_DivBMD) %>%
   group_by(placette) %>%
-  distinct(Code_DivBMD) %>%
-  mutate(NBesp = 1) %>%
+  distinct(Code_DivBMD) %>% # Espèces uniques
+  mutate(NBesp = 1) %>% # Ajout d'un 1 pour faire la somme des espèces uniques par placette grâce au group_by
   summarise(NB_espBMD_placette = sum(NBesp))
 
 ###
 
+  # BMS
 DivBMS <- DivBM %>%
   select(placette, 3:5) %>%
   mutate(Code_sp = BMS_sp,
@@ -1077,7 +1099,7 @@ DivBMS <- DivBM %>%
          Code_diam = BMS_classe_diametre.cm) %>%
     mutate(Code_DivBMS = str_c(Code_sp, Code_diam, Code_position, Code_sapro, sep = "_")) %>%
   filter(!is.na(Code_DivBMS))
-  #
+  # BMS seulement les souches dans le fichier du BMD
 DivBMS2 <- DivBM %>%
   select(1:2, 7:11) %>%
   filter(Cat_arbre %in% c("S")) %>%
@@ -1091,25 +1113,20 @@ DivBMS2 <- DivBM %>%
   mutate(Code_DivBMS = str_c(Code_sp, Code_diam, Code_position, Code_sapro, sep = "_")) %>%
   filter(!is.na(Code_DivBMS)) %>%
   select(1, 12)
-  # joindre BMS ET BMS2 PUIS faire le group by 
-
-DivBMS3 <- DivBMS2 %>%
-  left_join(DivBMS)
-
-
-DivBMS3 <- DivBMS2 %>%
+  # Ajout des souches aux autres BMS
+DivBMS3 <- bind_rows(DivBMS, DivBMS2) %>%
+  arrange(placette) 
+  # Calcul du nombre d'espèces de BMS
+DivBMS4 <- DivBMS3 %>%
   select(placette, Code_DivBMS) %>%
   group_by(placette) %>%
   distinct(Code_DivBMS) %>%
   mutate(NBesp = 1) %>%
   summarise(NB_espBMS_placette = sum(NBesp))
 
-
-DivBMS2 <- DivBMS %>%
-  distinct(BMS_sd_saprox)
-
 ###
 
+  # BMP
 DivBMP <- BMP %>%
   select(1:2, 4:7, 13) %>%
   mutate(placette = sub("(^[^_]+_[^_]+)_.*", "\\1", id_arbre)) %>%
@@ -1120,21 +1137,38 @@ DivBMP <- BMP %>%
   mutate(Code_sapro = sd_saprox_BMP) %>%
   mutate(Code_position = c(rep("P", 635))) %>%
   mutate(Code_DivBMP = str_c(Code_sp, Code_diam, Code_position, Code_sapro, sep = "_"))
-  #
+  # Calcul du nombre d'espèces de BMP
 DivBMP2 <- DivBMP %>%
+  mutate(placette = ifelse(placette == "V_169", "V_170", placette)) %>%
   select(placette, Code_DivBMP) %>%
   group_by(placette) %>%
   distinct(Code_DivBMP) %>%
   mutate(NBesp = 1) %>%
-  summarise(NB_espBMD_placette = sum(NBesp))
+  summarise(NB_espBMP_placette = sum(NBesp))
 
+  #
+DivBM_F <- DivBMD2 %>%
+  left_join(DivBMS4, by = "placette") %>%
+  left_join(DivBMP2, by = "placette") %>%
+  mutate(NB_espBM = NB_espBMD_placette + NB_espBMS_placette + NB_espBMP_placette)
+
+# Graphique pour visualiser
+ggplot(DivBM_F, aes(x = placette, y = NB_espBM)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Diversité spécifique de BM par placette",
+       x = "Placette",
+       y = "NB d'espèces de BM") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
+
+  # EXPORT
+write.table(x = DivBM_F, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_DiversiteBM_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
 
 # Séparer DivBM en 3 : debout, sol, perché #
 # Créér une colonne id pour : essence, classe diamètre, spx, position #
 # Créér une ID générale d'espèces
 # Regrouper dans le tableau de départ DivBM
 # ndistinct pour chaque espèces par placette pour avoir la diversité de BM par placette
-
 ```
 
 
