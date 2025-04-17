@@ -120,7 +120,7 @@ write.table(x = Metriques_Seuils, file = "//no-datafile.inra.local/Biodiversite/
 ```
 
 # 3. Bois Mort Perché (BMP) 
-### Par strates
+### 3.1 Par strates
 Origine du code : Mathéo / preparation_data
 
 ```{r}
@@ -171,11 +171,64 @@ BMP_Strates <- BMP3 %>%
   setNames(c("Placette", "Vol_BMP_UC.m3", "Vol_BMP_LC.m3", "Vol_BMP_BC.m3"))
   # Renommer les colonnes
 
+  # Format long pour le graphique ci - dessous
+BMP_Strates_pivot <- BMP_Strates %>%
+  pivot_longer(cols = 2:4, names_to ="strates_BMP", values_to = "Vol_m3")
+  # graph du volume de BM dans les trois strates
+Strates <- ggplot(BMP_Strates_pivot, aes(x = Placette, y = Vol_m3, fill = strates_BMP)) +
+  geom_bar(position = "stack", stat = "identity") +
+  labs(
+    title = "Volume de BMP dans les différentes strates de l'arbre",
+    x = "Placette",
+    y = "Vol de BMP en m3") +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 90)) + 
+  geom_col(aes(fill = strates_BMP)) +
+  scale_fill_manual(values = c("black", "grey", "darkgreen"))
+  # Graphique pour visualiser BMP_UC
+BMP_UC <- ggplot(BMP_Strates, aes(x = Placette, y = Vol_BMP_UC.m3)) +
+  geom_bar(stat = "identity", fill = "darkred") +
+  labs(title = "Volume de BMP dans la strate under-canopy",
+       x = "Placette",
+       y = "Vol de BMP en m3") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
+  # Graphique pour visualiser BMP_LC
+BMP_LC <- ggplot(BMP_Strates, aes(x = Placette, y = Vol_BMP_LC.m3)) +
+  geom_bar(stat = "identity", fill = "darkblue") +
+  labs(title = "Volume de BMP dans la strate lower-canopy",
+       x = "Placette",
+       y = "Vol de BMP en m3") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
+  # Graphique pour visualiser BMP_BC
+BMP_BC <- ggplot(BMP_Strates, aes(x = Placette, y = Vol_BMP_BC.m3)) +
+  geom_bar(stat = "identity", fill = "darkmagenta") +
+  labs(title = "Volume de BMP dans la strate below-canopy",
+       x = "Placette",
+       y = "Vol de BMP en m3") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
+  # Faire apparaître 2 ggplot en même temps
+grid.arrange(Strates, BMP_UC, BMP_LC, BMP_BC, ncol = 2:2)
+  # Ecart_type BMP UC
+sd(BMP_Strates$Vol_BMP_UC.m3) # 0.02923044
+min(BMP_Strates$Vol_BMP_UC.m3) # 0
+max(BMP_Strates$Vol_BMP_UC.m3) # 0.1138827
+  # Ecart_type BMP LC
+sd(BMP_Strates$Vol_BMP_LC.m3) # 0.1204034
+min(BMP_Strates$Vol_BMP_LC.m3) # 0
+max(BMP_Strates$Vol_BMP_LC.m3) # 0.4614214
+  # Ecart_type BMP BC
+sd(BMP_Strates$Vol_BMP_BC.m3) # 0.0447441
+min(BMP_Strates$Vol_BMP_BC.m3) # 0
+max(BMP_Strates$Vol_BMP_BC.m3) # 0.1452987
+
   # EXPORT
 write.table(x = BMP_Strates, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMP_Strates_AD.csv", row.names = FALSE, dec=".", sep=";")
 ```
 
-### Sur l'arbre complet
+### 3.2 Sur l'arbre complet
 Origine du code : Mathéo / preparation_data
 
 ```{r}
@@ -202,7 +255,7 @@ ggplot(M_BMP_A, aes(x = Placette, y = Vol_BMP_Tot)) +
 write.table(x = M_BMP_A, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Arbres_AD.csv", row.names = FALSE, dec=".", sep=";")
 ```
 
-### Début Échelle Placette
+### 3.3 Début Échelle Placette
 Origine du code : Mathéo / preparation_data
 
 ```{r}
@@ -313,7 +366,7 @@ plotvolbmp <- ggplot(BMP_PlacetteTot4, aes(x = placette, y = Vol_BMP_Tot.m3.ha))
 # Pondérer Vol_BMP_Tot.m3.ha par la surface terrière #
 ```
 
-### Surface terrière (G)
+### 3.4 Surface terrière (G)
 surface terrière d’un arbre (noté g) = surface du tronc coupé (pi*r²)à 1,30 m
 surface terrière d’un peuplement (noté G) = somme des surfaces terrières de tous les arbres qui le composent (m²)
 
@@ -376,7 +429,7 @@ G_plac$Contribution_G_ArbreDMH <- G_plac$Gdmh.m2.ha/ G_plac$Gtot.m2.ha
 
 ```
 
-### BMP Placette Pondération par la contribution
+### 3.5 BMP Placette Pondération par la contribution
 Origine du code : Mathéo / preparation_data
 
 ```{r}
@@ -475,7 +528,7 @@ ggplot(BM_wagner, aes(x = placette, y = BMS_F.m3.ha)) +
 write.table(x = BM_wagner, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMStot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
 ```
 
-# Préparation pour BMD
+### Préparation pour BMD
 Vérifier si on peut utiliser les arbres vivants DBH comme proxy de hauteur pour les arbres morts debout (M) : pas possible voir les graphiques.
 On va donc passer par plusieurs formules de calculs du Volume de Bois Mort pour les souches / les chandelles / les (M).
 Les souches sont maintenant considérées comme du Bois Mort au Sol, les 9 valeurs sont déplacées au-dessus (4).
@@ -1175,6 +1228,95 @@ write.table(x = DivBM_F, file = "//no-datafile.inra.local/Biodiversite/projets/B
 # 13. Proportion G (M) sur surface terrière G total
 
 ```{r}
+  # IMPORT
+DMH_placette <- read.table("placette_Canopix_DMH.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
 
+  # Passage Diamètre en mètre
+DMH_placette <- DMH_placette %>%
+  mutate(DBH.m = DMH_placette$diam * 0.01)
+  # Garder que les arbres morts (M)
+G <- DMH_placette %>% 
+  filter(Cat_arbre =="M") %>%
+  group_by(num_arbre) %>% 
+  summarise(g = pi*(DBH.m/2)^2) %>% 
+  distinct()
+  # Standardiser l'appellation de la placette 
+G <- separate(G, num_arbre, sep = "_", into = c("massif", "placette", "reste"))
+G <- G %>% 
+  unite("placette", massif, placette, sep = "_")
+  # Changer 169 en 170 (arbre thèse V_170 dans la parcelle 169)
+G <- G %>% 
+  mutate(placette = ifelse(placette == "V_169", "V_170", placette))
+  # Calcul G (M) par placette
+G_plac <- G %>% 
+  group_by(placette) %>% 
+  summarise(Gtot_M.m2.ha = sum(g, na.rm=TRUE)) %>% 
+  distinct() 
+
+#######################################################################
+
+# Calcul surface terrière des arbres DMH #
+
+  # Garde ques les arbres DMH
+G_tot <- DMH_placette %>%
+  group_by(num_arbre) %>% 
+  summarise(g = pi*(DBH.m/2)^2) %>% 
+  distinct()
+
+# Calcul G par placette #
+
+  # Séparer l'id
+G_tot <- separate(G_tot, num_arbre, sep = "_", into = c("massif", "placette", "reste"))
+  # Réunir pour former la placette (ex : T_118)
+G_tot <- G_tot %>% 
+  unite("placette", massif, placette, sep = "_") %>% 
+  group_by(placette) %>%
+  summarise(Gtot.m2.ha = sum(g, na.rm=TRUE)) %>% 
+  mutate(placette = ifelse(placette == "V_169", "V_170", placette))
+  # Changer 169 en 170 (arbre thèse V_170  dans la parcelle 169)
+
+  # IMPORT pour avoir la colonne placette avec les 20 ID
+MSS <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_Seuils_Strates_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
+  # Jointure
+G_F <- MSS %>% 
+  select(placette) %>%
+  left_join(G_tot %>%
+              select(everything()), by = "placette") %>%
+  left_join(G_plac, by = "placette") %>%
+  mutate(Gtot_M.m2.ha = ifelse(is.na(Gtot_M.m2.ha), 0, Gtot_M.m2.ha)) %>%
+  mutate(Proportion_arbresmorts = (Gtot_M.m2.ha / Gtot.m2.ha) * 100)
+
+  # Format long
+G_F_pivot <- G_F %>%
+  pivot_longer(cols = 2:3, names_to ="categorie_G", values_to = "G_m2_ha")
+
+  # graph proportion des 3 types de BM
+TousG <- ggplot(G_F_pivot, aes(x = placette, y = G_m2_ha, fill = categorie_G)) +
+  geom_bar(position="fill", stat="identity") +
+  labs(title = "Surface terrière des arbres morts par rapport à la surface terrière totale",
+       x = "Placette",
+       y = "Surface terrière (m².ha)") +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 90)) + 
+  geom_col(aes(fill = categorie_G)) +
+  scale_fill_manual(values = c("black", "grey"))
+
+Proportion_arbresmorts <- G_F$Proportion_arbresmorts
+
+# Graphique pour visualiser
+Prop <- ggplot(G_F, aes(x = placette, y = Proportion_arbresmorts)) +
+  geom_bar(stat = "identity", fill = "darkred") +
+  geom_text(aes(label = paste0(round(Proportion_arbresmorts, 2), "%")), vjust = -0.5, nudge_y = 0.05 * Proportion_arbresmorts, size = 2.5) +
+  labs(title = "Proportion de G des arbres (M) sur la surface G Totale",
+       x = "Placette",
+       y = "Proportion G (M)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
+
+  # Faire apparaître 2 ggplot en même temps
+grid.arrange(TousG, Prop, ncol = 2)
+
+  # EXPORT
+write.table(x = G_F, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_ProportionG_arbresmorts_AD.csv", row.names = FALSE, dec=".", sep=";")
 ```
 
