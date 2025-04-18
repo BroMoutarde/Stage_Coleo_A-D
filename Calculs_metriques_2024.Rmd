@@ -242,14 +242,26 @@ M_BMP_A <- M_BMP_S %>%
   # Autre méthode
 # M_BMP_T <- M_BMP_S %>%
 #   mutate(Vol_BMP_Tot = Vol_BMP_AC.m3 + Vol_BMP_UC.m3 + Vol_BMP_LC.m3 + Vol_BMP_BC.m3) %>% select(Placette, Vol_BMP_Tot)
+
+  # Couleur différente pour les massifs sur le ggplot
+M_BMP_A <- M_BMP_A %>%
+mutate(Massif = str_extract(Placette, "^[A-Z]"))
   # Graphique pour visualiser
-ggplot(M_BMP_A, aes(x = Placette, y = Vol_BMP_Tot)) +
+ggplot(M_BMP_A, aes(x = Placette, y = Vol_BMP_Tot, fill = Massif)) +
   geom_bar(stat = "identity") +
   labs(title = "Volume de BMP par arbre",
        x = "Placette",
        y = "Volume BMP (m3)") +
+      scale_fill_manual(values = c("T" = "steelblue", "V" = "darkorange")) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90))
+  # Ecart_type BMP Arbre
+sd(M_BMP_A$Vol_BMP_Tot) # 0.1294757
+min(M_BMP_A$Vol_BMP_Tot) # 0.003926991
+max(M_BMP_A$Vol_BMP_Tot) # 0.4751659
+  # Effacer la colonne Massif
+M_BMP_A <- M_BMP_A %>%
+select(-"Massif")
 
   # EXPORT
 write.table(x = M_BMP_A, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Arbres_AD.csv", row.names = FALSE, dec=".", sep=";")
@@ -350,16 +362,25 @@ BMP_PlacetteTot3 <- BMP_PlacetteTot2 %>%
   # Aire = 706.858m²
   # Hectare = 0.070686
 BMP_PlacetteTot4 <- BMP_PlacetteTot3 %>%
-  mutate(Vol_BMP_Tot.m3.ha = BMP_PlacetteTot3$Vol_BMP_Tot.m3 / 0.070686)   
-# Graphique pour visualiser
-plotvolbmp <- ggplot(BMP_PlacetteTot4, aes(x = placette, y = Vol_BMP_Tot.m3.ha)) +
+  mutate(Vol_BMP_Tot.m3.ha = BMP_PlacetteTot3$Vol_BMP_Tot.m3 / 0.070686)
+
+  # Couleur différente pour les massifs sur le ggplot
+BMP_PlacetteTot4 <- BMP_PlacetteTot4 %>%
+mutate(Massif = str_extract(placette, "^[A-Z]"))
+  # Graphique pour visualiser
+plotvolbmp <- ggplot(BMP_PlacetteTot4, aes(x = placette, y = Vol_BMP_Tot.m3.ha, fill = Massif)) +
+  geom_col() +
   ylim(0,90) +
   geom_bar(stat = "identity") +
   labs(title = "Volume de BMP par placette avant pondération",
        x = "Placette",
        y = "Volume BMP (m3/ha)") +
+  scale_fill_manual(values = c("T" = "steelblue", "V" = "darkorange")) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90))
+  # Effacer la colonne Massif
+BMP_PlacetteTot4 <- BMP_PlacetteTot4 %>%
+select(-"Massif")
 
 # Calculer la surface terrière pour les 4 arbres inventoriés #
 # Calculer la surface terrière par placette (code Mathéo) #
@@ -438,19 +459,36 @@ BMP_PlacetteTot5 <- BMP_PlacetteTot4 %>%
   left_join(G_plac %>% 
               select(c(placette, Contribution_G_ArbreDMH)), by = "placette") %>%
   select(c(placette, Vol_BMP_Canop.m3, Vol_BMP_Under.m3, Vol_BMP_Tot.m3.ha, Contribution_G_ArbreDMH))%>%
-  mutate(Vol_BMP_Tot_Pondere.m3.ha = (BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha / BMP_PlacetteTot5$Contribution_G_ArbreDMH))
-  # Pondération par la contribution 
+  mutate(Vol_BMP_Tot_Pondere.m3.ha = (Vol_BMP_Tot.m3.ha / Contribution_G_ArbreDMH))
+  # Pondération par la contribution
+  # Couleur différente pour les massifs sur le ggplot
+BMP_PlacetteTot5 <- BMP_PlacetteTot5 %>%
+mutate(Massif = str_extract(placette, "^[A-Z]"))
   # Graphique pour visualiser
-plotpond <- ggplot(BMP_PlacetteTot5, aes(x = placette, y = Vol_BMP_Tot_Pondere.m3.ha)) +
+plotpond <- ggplot(BMP_PlacetteTot5, aes(x = placette, y = Vol_BMP_Tot_Pondere.m3.ha, fill = Massif)) +
   ylim(0,90) +
+  geom_col () +
   geom_bar(stat = "identity") +
   labs(title = "Volume de BMP par placette après pondération",
        x = "Placette",
        y = "Volume BMP (m3/ha)") +
+    scale_fill_manual(values = c("T" = "steelblue", "V" = "darkorange")) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90))
   # Faire apparaître 2 ggplot en même temps
 grid.arrange(plotvolbmp, plotpond, ncol = 2)
+ # Enlever la colonne Massif
+BMP_PlacetteTot5 <- BMP_PlacetteTot5 %>%
+select(-"Massif")
+
+  # Ecart_type BMP par placette sans pondération
+sd(BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha) # 6.328228
+min(BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha) # 0.05555543
+max(BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha) # 24.44439
+  # Ecart_type BMP par placette avec pondération
+sd(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 24.08001
+min(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 0.3351569
+max(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 86.43693
 
   # EXPORT
 write.table(x = BMP_PlacetteTot5, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
@@ -515,14 +553,27 @@ BM_placette2 <- bind_rows(BM_placette, BMD_S2) %>%
 BM_wagner <- BM_placette2 %>%
   group_by(placette) %>%
   summarize(BMS_F.m3.ha = (sum(BM_wagner.ha, na.rm=TRUE)))
+
+  # Couleur différente pour les massifs sur le ggplot
+BM_wagner <- BM_wagner %>%
+mutate(Massif = str_extract(placette, "^[A-Z]"))
   # Graphique pour visualiser
-ggplot(BM_wagner, aes(x = placette, y = BMS_F.m3.ha)) +
+ggplot(BM_wagner, aes(x = placette, y = BMS_F.m3.ha, fill = Massif)) +
   geom_bar(stat = "identity") +
   labs(title = "Volume de BMS en m3 par hectare",
        x = "Placette",
        y = "Volume BM (m3/ha)") +
+      scale_fill_manual(values = c("T" = "darkblue", "V" = "darkorange")) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90))
+ # Enlever la colonne Massif
+BM_wagner <- BM_wagner %>%
+select(-"Massif")
+
+  # Ecart_type BMP par placette avec pondération
+sd(BM_wagner$BMS_F.m3.ha) # 29.6807
+min(BM_wagner$BMS_F.m3.ha) # 2.570209
+max(BM_wagner$BMS_F.m3.ha) # 134.936
 
   # EXPORT
 write.table(x = BM_wagner, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMStot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
@@ -755,14 +806,21 @@ BMD_C3 <- MSS %>%
   # NAs = 0
 BMD_C3[is.na(BMD_C3)] = 0
 
+  # Couleur différente pour les massifs sur le ggplot
+BMD_C3 <- BMD_C3 %>%
+mutate(Massif = str_extract(placette, "^[A-Z]"))
   # Graphique pour visualiser
-ggplot(BMD_C3, aes(x = placette, y = VolTotC.m3.ha)) +
+C <- ggplot(BMD_C3, aes(x = placette, y = VolTotC.m3.ha, fill = Massif)) +
   geom_bar(stat = "identity") +
   labs(title = "Volume de BMD chandelles en m3 par hectare",
        x = "Placette",
        y = "Volume BM (m3/ha)") +
+        scale_fill_manual(values = c("T" = "steelblue", "V" = "darkorange")) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90))
+ # Enlever la colonne Massif
+BMD_C3 <- BMD_C3 %>%
+select(-"Massif")
 
 ###
 
@@ -813,14 +871,21 @@ BMD_M6 <- MSS %>%
   # NAs = 0
 BMD_M6[is.na(BMD_M6)] = 0
 
+  # Couleur différente pour les massifs sur le ggplot
+BMD_M6 <- BMD_M6 %>%
+mutate(Massif = str_extract(placette, "^[A-Z]"))
   # Graphique pour visualiser
-ggplot(BMD_M6, aes(x = placette, y = Vol_BMD_Mtot.m3.ha)) +
+M <- ggplot(BMD_M6, aes(x = placette, y = Vol_BMD_Mtot.m3.ha, fill = Massif)) +
   geom_bar(stat = "identity") +
   labs(title = "Volume de BMD arbre mort debout en m3 par hectare",
        x = "Placette",
        y = "Volume BM (m3/ha)") +
+        scale_fill_manual(values = c("T" = "steelblue", "V" = "darkorange")) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90))
+ # Enlever la colonne Massif
+BMD_M6 <- BMD_M6 %>%
+select(-"Massif")
 
 ###
 
@@ -832,14 +897,37 @@ BMDtot2 <- BMDtot %>%
   group_by(placette) %>%
   mutate(Vol_BMD_tot_m3.ha = sum(Vol_BMD_Mtot.m3.ha + VolTotC.m3.ha)) %>%
   select(placette, Vol_BMD_Mtot.m3.ha, VolTotC.m3.ha, Vol_BMD_tot_m3.ha) # Colonnes utiles
+
+  # Couleur différente pour les massifs sur le ggplot
+BMDtot2 <- BMDtot2 %>%
+mutate(Massif = str_extract(placette, "^[A-Z]"))
   # Graphique pour visualiser
-ggplot(BMDtot2, aes(x = placette, y = Vol_BMD_tot_m3.ha)) +
+Tot <- ggplot(BMDtot2, aes(x = placette, y = Vol_BMD_tot_m3.ha, fill = Massif)) +
   geom_bar(stat = "identity") +
   labs(title = "Volume de BMD total en m3 par hectare",
        x = "Placette",
        y = "Volume BM (m3/ha)") +
+      scale_fill_manual(values = c("T" = "steelblue", "V" = "darkorange")) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90))
+ # Enlever la colonne Massif
+BMDtot2 <- BMDtot2 %>%
+select(-"Massif")
+  # Faire apparaître 2 ggplot en même temps
+grid.arrange(C, M, Tot, ncol = 2 : 2)
+
+  # Vol de BMD pour les chandelles
+sd(BMDtot2$VolTotC.m3.ha) # 9.844941
+min(BMDtot2$VolTotC.m3.ha) # 0
+max(BMDtot2$VolTotC.m3.ha) # 32.19232
+  # Vol de BMD pour les arbres mort debout (M)
+sd(BMDtot2$Vol_BMD_Mtot.m3.ha) # 49.82605
+min(BMDtot2$Vol_BMD_Mtot.m3.ha) # 0.7388666
+max(BMDtot2$Vol_BMD_Mtot.m3.ha) # 217.9143
+  # Vol de BMD totale
+sd(BMDtot2$Vol_BMD_tot_m3.ha) # 50.10593
+min(BMDtot2$Vol_BMD_tot_m3.ha) # 2.295189
+max(BMDtot2$Vol_BMD_tot_m3.ha) # 223.4094
 
   # EXPORT
 write.table(x = BMDtot2, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMDtot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
@@ -873,14 +961,26 @@ BMtot <- metrique_BMStot %>%
   left_join(metrique_BMDtot, by = "placette") %>%
   group_by(placette) %>%
   summarise(BMtot.m3.ha = sum(BMS_F.m3.ha, Vol_BMP_Tot_Pondere.m3.ha, Vol_BMD_Mtot.m3.ha))
+
+  # Couleur différente pour les massifs sur le ggplot
+BMtot <- BMtot %>%
+mutate(Massif = str_extract(placette, "^[A-Z]"))
   # Graphique pour visualiser
-ggplot(BMtot, aes(x = placette, y = BMtot.m3.ha)) +
+ggplot(BMtot, aes(x = placette, y = BMtot.m3.ha, fill = Massif)) +
   geom_bar(stat = "identity") +
   labs(title = "Volume Total de BM en m3 par hectare",
        x = "Placette",
        y = "Volume BM (m3/ha)") +
+        scale_fill_manual(values = c("T" = "darkblue", "V" = "darkorange")) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90))
+ # Enlever la colonne Massif
+BMtot <- BMtot %>%
+select(-"Massif")
+  # Vol de BM totale
+sd(BMtot$BMtot.m3.ha) # 71.46799
+min(BMtot$BMtot.m3.ha) # 14.91858
+max(BMtot$BMtot.m3.ha) # 305.0853
 
   # EXPORT
 write.table(x = BMtot, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMtot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
@@ -936,18 +1036,29 @@ TousBM <- ggplot(BMtot_pivot, aes(x = placette, y = Vol_m3.ha, fill = categorie_
 
 # Graphique pour visualiser Proportion BMP + BMD sur BMtot
 Proportion_BM <- BMtot$Proportion_BM
-
-DPBM <- ggplot(BMtot, aes(x = placette, y = Proportion_BM)) +
-  geom_bar(stat = "identity") +
-  geom_col(fill = "darkblue") +
+  # Couleur différente pour les massifs sur le ggplot
+BMtot <- BMtot %>%
+mutate(Massif = str_extract(placette, "^[A-Z]"))
+  # Graph
+DPBM <- ggplot(BMtot, aes(x = placette, y = Proportion_BM, fill = Massif)) +
+  geom_bar(stat = "identity", width = 0.2) +
+  geom_col() +
   geom_text(aes(label = paste0(round(Proportion_BM, 2), "%")), vjust = -0.5, nudge_y = 0.05 * Proportion_BM, size = 2.5) +
   labs(title = "Proportion de BMP + BMD sur le Bois Mort Total",
        x = "Placette",
        y = "Proportion BM (%)") +
+          scale_fill_manual(values = c("T" = "darkblue", "V" = "darkorange")) +
   theme_classic() +
-  theme(axis.text.x = element_text(angle = 90)) 
+  theme(axis.text.x = element_text(angle = 90))
+ # Enlever la colonne Massif
+BMtot <- BMtot %>%
+select(-"Massif")
   # Faire apparaître 2 ggplot en même temps
 grid.arrange(TousBM, DPBM, ncol = 2)
+  # Proportion de BMP + BMD sur le Bois Mort Total
+sd(BMtot$Proportion_BM) # 15.4584
+min(BMtot$Proportion_BM) # 40.54199
+max(BMtot$Proportion_BM) # 92.32504
 
   # EXPORT
 write.table(x = BMtot, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_ProportionBM_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
@@ -976,18 +1087,30 @@ str_placette <- placette_Canopix %>%
 couvert <- str_placette %>%
   group_by(placette) %>%
   summarise(ouverture_pc = (mean(c(pts_libres_15m, pts_libres_25m), na.rm = TRUE)))
+
   # graph
 ouverture = couvert$ouverture_pc
-
-ggplot(couvert, aes(x = placette, y = ouverture_pc)) +
+  # Couleur différente pour les massifs sur le ggplot
+couvert <- couvert %>%
+mutate(Massif = str_extract(placette, "^[A-Z]"))
+  #
+ggplot(couvert, aes(x = placette, y = ouverture_pc, fill = Massif)) +
   geom_bar(stat = "identity", width = 0.6) +
   geom_text(aes(label = paste0(round(ouverture_pc, 2), "%")), vjust = -0.5, nudge_y = 0.05 * ouverture, size = 2.5) +
   ylim(0, 50) +
   labs(title = "Ouverture du feuillage",
        x = "Placette",
        y = "Ouverture (%)") +
+            scale_fill_manual(values = c("T" = "lightblue", "V" = "darkorange")) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90))
+ # Enlever la colonne Massif
+couvert <- couvert %>%
+select(-"Massif")
+  # Ouverture du couvert
+sd(couvert$ouverture_pc) # 10.28983
+min(couvert$ouverture_pc) # 0.65
+max(couvert$ouverture_pc) # 45.11
 
   # EXPORT
 write.table(x = couvert, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_Couvert_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
