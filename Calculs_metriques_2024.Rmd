@@ -1698,13 +1698,16 @@ Metriques <- Metriques %>%
   select(-"placette")
 
 library(ggcorrplot)
-png("corrplot_large2.png", width = 3000, height = 3000, res = 300)
+png("corrplot_largetest.png", width = 3000, height = 3000, res = 300)
 ggcorrplot(cor(Metriques),
-           type = "lower",
-           ggtheme = theme(
-             axis.text.x = element_text(size = 1, angle = 45, hjust = 1),
-             axis.text.y = element_blank()
-           ))
+           ggtheme = ggplot2::theme_minimal(),
+             tl.cex = 5,
+             tl.srt = 45
+)
 dev.off()
+
+?ggcorrplot
+library(MuMIn)
+?MuMIn
 ```
 
