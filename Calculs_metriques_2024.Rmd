@@ -22,8 +22,11 @@ library(stringr)
 library(ggplot2)
 library(FD) # pour dbFD
 library(DescTools) # pour Gini
-library(ggplot2)
+library(ggplot2) # Graphs
+library(dplyr) # pour réagencer les graphs dans un ordre décroissant
+library(forcats) # pour réagencer les graphs dans un ordre décroissant
 library(gridExtra) # Afficher plusieurs ggplots en meme temps
+library(ggcorrplot) # Matrice de corrélation
 ```
 
 # Settings du Working directory
@@ -215,14 +218,17 @@ grid.arrange(Strates, BMP_UC, BMP_LC, BMP_BC, ncol = 2:2)
 sd(BMP_Strates$Vol_BMP_UC.m3) # 0.02923044
 min(BMP_Strates$Vol_BMP_UC.m3) # 0
 max(BMP_Strates$Vol_BMP_UC.m3) # 0.1138827
+mean(BMP_Strates$Vol_BMP_UC.m3) # 0.02081305
   # Ecart_type BMP LC
 sd(BMP_Strates$Vol_BMP_LC.m3) # 0.1204034
 min(BMP_Strates$Vol_BMP_LC.m3) # 0
 max(BMP_Strates$Vol_BMP_LC.m3) # 0.4614214
+mean(BMP_Strates$Vol_BMP_LC.m3) # 0.08335038
   # Ecart_type BMP BC
 sd(BMP_Strates$Vol_BMP_BC.m3) # 0.0447441
 min(BMP_Strates$Vol_BMP_BC.m3) # 0
 max(BMP_Strates$Vol_BMP_BC.m3) # 0.1452987
+mean(BMP_Strates$Vol_BMP_BC.m3) # 0.02581996
 
   # EXPORT
 write.table(x = BMP_Strates, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMP_Strates_AD.csv", row.names = FALSE, dec=".", sep=";")
@@ -243,25 +249,23 @@ M_BMP_A <- M_BMP_S %>%
 # M_BMP_T <- M_BMP_S %>%
 #   mutate(Vol_BMP_Tot = Vol_BMP_AC.m3 + Vol_BMP_UC.m3 + Vol_BMP_LC.m3 + Vol_BMP_BC.m3) %>% select(Placette, Vol_BMP_Tot)
 
-  # Couleur différente pour les massifs sur le ggplot
+
+  # Ordre décroissant des placettes
 M_BMP_A <- M_BMP_A %>%
-mutate(Massif = str_extract(Placette, "^[A-Z]"))
-  # Graphique pour visualiser
-ggplot(M_BMP_A, aes(x = Placette, y = Vol_BMP_Tot, fill = Massif)) +
-  geom_bar(stat = "identity") +
+  mutate(Placette = fct_reorder(Placette, Vol_BMP_Tot, .desc = TRUE))
+  # Graphique pour visualiser la variance métrique
+ggplot(M_BMP_A, aes(x = Placette, y = Vol_BMP_Tot)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
   labs(title = "Volume de BMP par arbre",
        x = "Placette",
        y = "Volume BMP (m3)") +
-      scale_fill_manual(values = c("T" = "steelblue", "V" = "darkorange")) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90))
   # Ecart_type BMP Arbre
 sd(M_BMP_A$Vol_BMP_Tot) # 0.1294757
 min(M_BMP_A$Vol_BMP_Tot) # 0.003926991
 max(M_BMP_A$Vol_BMP_Tot) # 0.4751659
-  # Effacer la colonne Massif
-M_BMP_A <- M_BMP_A %>%
-select(-"Massif")
+mean(M_BMP_A$Vol_BMP_Tot) # 0.1299834
 
   # EXPORT
 write.table(x = M_BMP_A, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Arbres_AD.csv", row.names = FALSE, dec=".", sep=";")
@@ -382,6 +386,18 @@ plotvolbmp <- ggplot(BMP_PlacetteTot4, aes(x = placette, y = Vol_BMP_Tot.m3.ha, 
 BMP_PlacetteTot4 <- BMP_PlacetteTot4 %>%
 select(-"Massif")
 
+  # Ordre décroissant des placettes
+BMP_PlacetteTot4 <- BMP_PlacetteTot4 %>%
+  mutate(placette = fct_reorder(placette, Vol_BMP_Tot.m3.ha, .desc = TRUE))
+  # Graphique pour visualiser la variance métrique
+BMPAVANT <- ggplot(BMP_PlacetteTot4, aes(x = placette, y = Vol_BMP_Tot.m3.ha))+
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  labs(title = "Volume de BMP par placette avant pondération",
+       x = "Placette",
+       y = "Volume BMP (m3/ha)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
+
 # Calculer la surface terrière pour les 4 arbres inventoriés #
 # Calculer la surface terrière par placette (code Mathéo) #
 # Pondérer Vol_BMP_Tot.m3.ha par la surface terrière #
@@ -475,20 +491,34 @@ plotpond <- ggplot(BMP_PlacetteTot5, aes(x = placette, y = Vol_BMP_Tot_Pondere.m
     scale_fill_manual(values = c("T" = "steelblue", "V" = "darkorange")) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90))
-  # Faire apparaître 2 ggplot en même temps
-grid.arrange(plotvolbmp, plotpond, ncol = 2)
  # Enlever la colonne Massif
 BMP_PlacetteTot5 <- BMP_PlacetteTot5 %>%
 select(-"Massif")
+
+  # Ordre décroissant des placettes
+BMP_PlacetteTot5 <- BMP_PlacetteTot5 %>%
+  mutate(placette = fct_reorder(placette, Vol_BMP_Tot_Pondere.m3.ha, .desc = TRUE))
+  # Graphique pour visualiser la variance métrique
+BMPAPRES <- ggplot(BMP_PlacetteTot5, aes(x = placette, y = Vol_BMP_Tot_Pondere.m3.ha))+
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  labs(title = "Volume de BMP par placette avant pondération",
+       x = "Placette",
+       y = "Volume BMP (m3/ha)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
+  # Faire apparaître 2 ggplot en même temps
+grid.arrange(plotvolbmp, plotpond, BMPAVANT, BMPAPRES, ncol = 2 : 2)
 
   # Ecart_type BMP par placette sans pondération
 sd(BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha) # 6.328228
 min(BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha) # 0.05555543
 max(BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha) # 24.44439
+mean(BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha) # 9.345811
   # Ecart_type BMP par placette avec pondération
 sd(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 24.08001
 min(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 0.3351569
 max(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 86.43693
+mean(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 38.17105
 
   # EXPORT
 write.table(x = BMP_PlacetteTot5, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
@@ -570,10 +600,23 @@ ggplot(BM_wagner, aes(x = placette, y = BMS_F.m3.ha, fill = Massif)) +
 BM_wagner <- BM_wagner %>%
 select(-"Massif")
 
+  # Ordre décroissant des placettes
+BM_wagner <- BM_wagner %>%
+  mutate(placette = fct_reorder(placette, BMS_F.m3.ha, .desc = TRUE))
+  #
+ggplot(BM_wagner, aes(x = placette, y = BMS_F.m3.ha)) +
+  geom_bar(stat = "identity", fill ="darkgreen") +
+  labs(title = "Volume de BMS en m3 par hectare",
+       x = "Placette",
+       y = "Volume BM (m3/ha)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
+
   # Ecart_type BMP par placette avec pondération
 sd(BM_wagner$BMS_F.m3.ha) # 29.6807
 min(BM_wagner$BMS_F.m3.ha) # 2.570209
 max(BM_wagner$BMS_F.m3.ha) # 134.936
+mean(BM_wagner$BMS_F.m3.ha) # 27.0312
 
   # EXPORT
 write.table(x = BM_wagner, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMStot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
@@ -822,6 +865,18 @@ C <- ggplot(BMD_C3, aes(x = placette, y = VolTotC.m3.ha, fill = Massif)) +
 BMD_C3 <- BMD_C3 %>%
 select(-"Massif")
 
+  # Ordre décroissant des placettes
+BMD_C3 <- BMD_C3 %>%
+  mutate(placette = fct_reorder(placette, VolTotC.m3.ha, .desc = TRUE))
+  #
+C2 <- ggplot(BMD_C3, aes(x = placette, y = VolTotC.m3.ha)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  labs(title = "Volume de BMD chandelles en m3 par hectare",
+       x = "Placette",
+       y = "Volume BM (m3/ha)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
+
 ###
 
   # Filter les arbres morts debout
@@ -887,6 +942,18 @@ M <- ggplot(BMD_M6, aes(x = placette, y = Vol_BMD_Mtot.m3.ha, fill = Massif)) +
 BMD_M6 <- BMD_M6 %>%
 select(-"Massif")
 
+  # Ordre décroissant des placettes
+BMD_M6 <- BMD_M6 %>%
+  mutate(placette = fct_reorder(placette, Vol_BMD_Mtot.m3.ha, .desc = TRUE))
+  #
+M2 <- ggplot(BMD_M6, aes(x = placette, y = Vol_BMD_Mtot.m3.ha)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  labs(title = "Volume de BMD arbre mort debout en m3 par hectare",
+       x = "Placette",
+       y = "Volume BM (m3/ha)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
+
 ###
 
   # Jointure chandelles et (M)
@@ -913,21 +980,38 @@ Tot <- ggplot(BMDtot2, aes(x = placette, y = Vol_BMD_tot_m3.ha, fill = Massif)) 
  # Enlever la colonne Massif
 BMDtot2 <- BMDtot2 %>%
 select(-"Massif")
+
+  # Ordre décroissant des placettes
+BMDtot2 <- BMDtot2 %>% 
+  mutate(placette = fct_reorder(placette, Vol_BMD_tot_m3.ha, .desc = TRUE))
+  # graph
+Tot2 <- ggplot(BMDtot2, aes(x = placette, y = Vol_BMD_tot_m3.ha)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  labs(title = "Volume de BMD total en m3 par hectare",
+       x = "Placette",
+       y = "Volume BM (m3/ha)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
+
   # Faire apparaître 2 ggplot en même temps
 grid.arrange(C, M, Tot, ncol = 2 : 2)
+grid.arrange(C2, M2, Tot2, ncol = 2 : 2)
 
   # Vol de BMD pour les chandelles
 sd(BMDtot2$VolTotC.m3.ha) # 9.844941
 min(BMDtot2$VolTotC.m3.ha) # 0
 max(BMDtot2$VolTotC.m3.ha) # 32.19232
+mean(BMDtot2$VolTotC.m3.ha) # 7.981241
   # Vol de BMD pour les arbres mort debout (M)
 sd(BMDtot2$Vol_BMD_Mtot.m3.ha) # 49.82605
 min(BMDtot2$Vol_BMD_Mtot.m3.ha) # 0.7388666
 max(BMDtot2$Vol_BMD_Mtot.m3.ha) # 217.9143
+mean(BMDtot2$Vol_BMD_Mtot.m3.ha) # 33.24946
   # Vol de BMD totale
 sd(BMDtot2$Vol_BMD_tot_m3.ha) # 50.10593
 min(BMDtot2$Vol_BMD_tot_m3.ha) # 2.295189
 max(BMDtot2$Vol_BMD_tot_m3.ha) # 223.4094
+mean(BMDtot2$Vol_BMD_tot_m3.ha) # 41.2307
 
   # EXPORT
 write.table(x = BMDtot2, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMDtot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
@@ -977,10 +1061,24 @@ ggplot(BMtot, aes(x = placette, y = BMtot.m3.ha, fill = Massif)) +
  # Enlever la colonne Massif
 BMtot <- BMtot %>%
 select(-"Massif")
+
+  # Ordre décroissant des placettes
+BMtot <- BMtot %>% 
+  mutate(placette = fct_reorder(placette, BMtot.m3.ha, .desc = TRUE))
+  # Graphique pour visualiser
+ggplot(BMtot, aes(x = placette, y = BMtot.m3.ha)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  labs(title = "Volume Total de BM en m3 par hectare",
+       x = "Placette",
+       y = "Volume BM (m3/ha)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
+
   # Vol de BM totale
 sd(BMtot$BMtot.m3.ha) # 71.46799
 min(BMtot$BMtot.m3.ha) # 14.91858
 max(BMtot$BMtot.m3.ha) # 305.0853
+mean(BMtot$BMtot.m3.ha) # 98.4517
 
   # EXPORT
 write.table(x = BMtot, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMtot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
