@@ -1084,7 +1084,8 @@ mean(BMtot$BMtot.m3.ha) # 98.4517
 write.table(x = BMtot, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMtot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
 ```
 
-# 7. Proportion Bois Mort Perché + Bois Mort Debout / Bois Mort Total
+# 7. Volume de BMP + BMD
+(anciennement : Proportion Bois Mort Perché + Bois Mort Debout / Bois Mort Total)
 
 ```{r}
   # IMPORT
@@ -1096,8 +1097,8 @@ metrique_BMDtot <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_
   # IMPORT BMPtot
 metrique_BMPtot <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Placette_AD.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
 
-  # IMPORT BMStot
-metrique_BMStot <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMStot_Placette_AD.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
+#   # IMPORT BMStot
+# metrique_BMStot <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMStot_Placette_AD.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
 
   # Colonnes utiles
 metrique_BMPtot <- metrique_BMPtot %>%
@@ -1106,60 +1107,78 @@ metrique_BMPtot <- metrique_BMPtot %>%
 metrique_BMDtot <- metrique_BMDtot %>%
   select(placette, Vol_BMD_Mtot.m3.ha) %>%
   mutate(Vol_BMD_tot.m3.ha = as.numeric(Vol_BMD_Mtot.m3.ha))
-metrique_BMStot <- metrique_BMStot %>%
-  select(placette, BMS_F.m3.ha) %>%
-  mutate(Vol_BMS_tot.m3.ha = as.numeric(BMS_F.m3.ha))
+
+# metrique_BMStot <- metrique_BMStot %>%
+#   select(placette, BMS_F.m3.ha) %>%
+#   mutate(Vol_BMS_tot.m3.ha = as.numeric(BMS_F.m3.ha))
+
   # Proportion de : BMP + BMD / BMT
 BMtot <- metrique_BMtot %>%
   left_join(metrique_BMPtot, by = "placette") %>%
   left_join(metrique_BMDtot, by = "placette") %>%
-  left_join(metrique_BMStot, by = "placette") %>%
+  # left_join(metrique_BMStot, by = "placette") %>%
   mutate(BMtot.m3.ha = as.numeric(BMtot.m3.ha)) %>%
   group_by(placette) %>%
-  mutate(Proportion_BM = (((Vol_BMP_Tot_Pondere.m3.ha + Vol_BMD_tot.m3.ha) / BMtot.m3.ha) * 100)) %>%
-  select(-"Vol_BMD_Mtot.m3.ha", -"BMS_F.m3.ha")
-  
-BMtot_pivot <- pivot_longer(BMtot, cols = 3:5, names_to ="categorie_BM", values_to = "Vol_m3.ha")
+  # mutate(Proportion_BM = (((Vol_BMP_Tot_Pondere.m3.ha + Vol_BMD_tot.m3.ha) / BMtot.m3.ha) * 100)) %>%
+  mutate(Volume_BMP_BMD = sum(Vol_BMP_Tot_Pondere.m3.ha, Vol_BMD_tot.m3.ha)) %>%
+  # select(-"Vol_BMD_Mtot.m3.ha", -"BMS_F.m3.ha")
+  select(-"Vol_BMD_Mtot.m3.ha")
 
+  # Pivoter pour classer les catégories de BM 
+BMtot_pivot <- pivot_longer(BMtot, cols = 3:4, names_to ="categorie_BM", values_to = "Vol_m3.ha")
+  # Ordre décroissant des placettes
+BMtot_pivot <- BMtot_pivot %>% 
+  group_by(placette) %>% 
+  summarise(total_vol = sum(Vol_m3.ha, na.rm = TRUE)) %>% 
+  right_join(BMtot_pivot, by = "placette") %>%
+  mutate(placette = fct_reorder(placette, total_vol, .desc = TRUE)) %>%
+  select(-total_vol)
   # graph proportion des 3 types de BM
-TousBM <- ggplot(BMtot_pivot, aes(x = placette, y = Vol_m3.ha, fill = categorie_BM)) +
+ggplot(BMtot_pivot, aes(x = placette, y = Vol_m3.ha, fill = categorie_BM)) +
   geom_bar(position="fill", stat="identity") +
-  labs(title = "Proportion de BMP, BMD & BMS par placette",
+  labs(title = "Volume de BMP + BMD en m3 par hectare",
        x = "Placette",
        y = "Volume BM (m3/ha)") +
+  scale_fill_manual(values = c("black", "darkgreen")) +
   theme_classic() + 
-  theme(axis.text.x = element_text(angle = 90)) + geom_col(aes(fill = categorie_BM)) +
-  scale_fill_manual(values = c("black", "grey", "darkgreen"))
-# Faire le graphs des proportion de mathéo, mais cette fois avec le volume de bois mort pour BMD BMS et BMP
+  theme(axis.text.x = element_text(angle = 90)) + geom_col(aes(fill = categorie_BM)) 
 
-# Graphique pour visualiser Proportion BMP + BMD sur BMtot
-Proportion_BM <- BMtot$Proportion_BM
-  # Couleur différente pour les massifs sur le ggplot
-BMtot <- BMtot %>%
-mutate(Massif = str_extract(placette, "^[A-Z]"))
-  # Graph
-DPBM <- ggplot(BMtot, aes(x = placette, y = Proportion_BM, fill = Massif)) +
-  geom_bar(stat = "identity", width = 0.2) +
-  geom_col() +
-  geom_text(aes(label = paste0(round(Proportion_BM, 2), "%")), vjust = -0.5, nudge_y = 0.05 * Proportion_BM, size = 2.5) +
-  labs(title = "Proportion de BMP + BMD sur le Bois Mort Total",
-       x = "Placette",
-       y = "Proportion BM (%)") +
-          scale_fill_manual(values = c("T" = "darkblue", "V" = "darkorange")) +
-  theme_classic() +
-  theme(axis.text.x = element_text(angle = 90))
- # Enlever la colonne Massif
-BMtot <- BMtot %>%
-select(-"Massif")
-  # Faire apparaître 2 ggplot en même temps
-grid.arrange(TousBM, DPBM, ncol = 2)
-  # Proportion de BMP + BMD sur le Bois Mort Total
-sd(BMtot$Proportion_BM) # 15.4584
-min(BMtot$Proportion_BM) # 40.54199
-max(BMtot$Proportion_BM) # 92.32504
+# Faire le graphs des proportion de mathéo, mais cette fois avec le volume de bois mort pour BMD BMS et BMP
+# # Graphique pour visualiser Proportion BMP + BMD sur BMtot
+# Proportion_BM <- BMtot$Proportion_BM
+#   # Couleur différente pour les massifs sur le ggplot
+# BMtot <- BMtot %>%
+# mutate(Massif = str_extract(placette, "^[A-Z]"))
+#   # Graph
+# DPBM <- ggplot(BMtot, aes(x = placette, y = Proportion_BM, fill = Massif)) +
+#   geom_bar(stat = "identity", width = 0.2) +
+#   geom_col() +
+#   geom_text(aes(label = paste0(round(Proportion_BM, 2), "%")), vjust = -0.5, nudge_y = 0.05 * Proportion_BM, size = 2.5) +
+#   labs(title = "Proportion de BMP + BMD sur le Bois Mort Total",
+#        x = "Placette",
+#        y = "Proportion BM (%)") +
+#           scale_fill_manual(values = c("T" = "darkblue", "V" = "darkorange")) +
+#   theme_classic() +
+#   theme(axis.text.x = element_text(angle = 90))
+#  # Enlever la colonne Massif
+# BMtot <- BMtot %>%
+# select(-"Massif")
+#   # Faire apparaître 2 ggplot en même temps
+# grid.arrange(TousBM, DPBM, ncol = 2)
+
+#   # Proportion de BMP + BMD sur le Bois Mort Total
+# sd(BMtot$Proportion_BM) # 15.4584
+# min(BMtot$Proportion_BM) # 40.54199
+# max(BMtot$Proportion_BM) # 92.32504
+
+   # Proportion de BMP + BMD sur le Bois Mort Total
+sd(BMtot$Volume_BMP_BMD) # 55.70878
+min(BMtot$Volume_BMP_BMD) # 6.950929
+max(BMtot$Volume_BMP_BMD) # 259.8496
+mean(BMtot$Volume_BMP_BMD) # 71.42051
 
   # EXPORT
-write.table(x = BMtot, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_ProportionBM_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
+write.table(x = BMtot, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_Vol_BMP&BMD_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
 ```
 
 # 8. Couvert (%)
@@ -1191,6 +1210,9 @@ ouverture = couvert$ouverture_pc
   # Couleur différente pour les massifs sur le ggplot
 couvert <- couvert %>%
 mutate(Massif = str_extract(placette, "^[A-Z]"))
+  # Ordre décroissant des placettes
+couvert <- couvert %>% 
+  mutate(placette = fct_reorder(placette, ouverture_pc, .desc = TRUE))
   #
 ggplot(couvert, aes(x = placette, y = ouverture_pc, fill = Massif)) +
   geom_bar(stat = "identity", width = 0.6) +
@@ -1209,6 +1231,7 @@ select(-"Massif")
 sd(couvert$ouverture_pc) # 10.28983
 min(couvert$ouverture_pc) # 0.65
 max(couvert$ouverture_pc) # 45.11
+mean(couvert$ouverture_pc) # 14.144
 
   # EXPORT
 write.table(x = couvert, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_Couvert_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
@@ -1219,26 +1242,35 @@ write.table(x = couvert, file = "//no-datafile.inra.local/Biodiversite/projets/B
 ```{r}
 # La strate de bas de houppier ou d'understory est au dessus ou = à 7m pour les 20 arbres, on peut donc considérer que la séparation arbustive / arborée correspond à understory / canopy #
 
-  # calcul la moyenne des pourcentages de couvert en fonction de la placette
+  # Somme additive des notes d'encombrement (de 0 à 8)
 encombrement <- str_placette %>%
   group_by(placette) %>%
-  summarise(encombrement_arbust = (mean(c(arbustive_15m, arbustive_25m), na.rm = TRUE)),
-            encombrement_arbo = (mean(c(arboree_15m, arboree_25m), na.rm = TRUE)))
+  summarise(encombrement_arbust = (sum(c(arbustive_15m, arbustive_25m), na.rm = TRUE)),
+            encombrement_arbo = (sum(c(arboree_15m, arboree_25m), na.rm = TRUE))) %>%
+  setNames(c("placette", "Understory (arbustive)", "Canopy (arboree)"))    # Rename des colonnes
   # transforme le tableau en longueur
 encombrement_long <- pivot_longer(encombrement, cols = 2:3, names_to ="strate",
-values_to = "encombrement_moy")
+values_to = "Encombrement")
 
+  # Ordre décroissant des placettes
+encombrement_long <- encombrement_long %>% 
+  mutate(placette = fct_reorder(placette,Encombrement, .desc = TRUE))
   # graph
-ggplot(encombrement_long, aes(x=placette, y=encombrement_moy, fill=strate)) +
+ggplot(encombrement_long, aes(x=placette, y=Encombrement, fill=strate)) +
   geom_bar(stat="identity", position=position_dodge()) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90))
-  # Rename des colonnes
-names(encombrement) = c("placette", "Understory (arbustive)", "Canopy (arboree)")
-  # Encombrement Ecart_type
-sd(encombrement_long$encombrement_moy) # 0.3272069
-min(encombrement_long$encombrement_moy) # 0
-max(encombrement_long$encombrement_moy) # 1
+
+  # Encombrement canopee
+sd(encombrement$`Canopy (arboree)`) # 1.860956
+min(encombrement$`Canopy (arboree)`) # 1
+max(encombrement$`Canopy (arboree)`) # 8
+mean(encombrement$`Canopy (arboree)`) # 6.1
+  # Encombrement understory
+sd(encombrement$`Understory (arbustive)`) # 2.504732
+min(encombrement$`Understory (arbustive)`) # 0
+max(encombrement$`Understory (arbustive)`) # 8
+mean(encombrement$`Understory (arbustive)`) # 3.2
 
   # EXPORT
 write.table(x = encombrement, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_Encombrement_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
@@ -1314,11 +1346,14 @@ placette_Canopix <- placette_Canopix %>%
             nb_Mort = sum(Mort, na.rm = T),
             Taux_M_tot = ((nb_Mort / NB_arbres) * 100))
 
-# Graphique pour visualiser Proportion BMP + BMD sur BMtot
+  # Graphique pour visualiser Proportion BMP + BMD sur BMtot
 Taux_M_tot <- placette_Canopix$Taux_M_tot
   # Couleur différente pour les massifs sur le ggplot
 placette_Canopix <- placette_Canopix %>%
 mutate(Massif = str_extract(placette, "^[A-Z]"))
+  # Ordre décroissant des placettes
+placette_Canopix <- placette_Canopix %>% 
+  mutate(placette = fct_reorder(placette, Taux_M_tot, .desc = TRUE))
   # Graph
 ggplot(placette_Canopix, aes(x = placette, y = Taux_M_tot, fill = Massif)) +
   geom_bar(stat = "identity", width = 0.2) +
@@ -1333,10 +1368,12 @@ ggplot(placette_Canopix, aes(x = placette, y = Taux_M_tot, fill = Massif)) +
  # Enlever la colonne Massif
 placette_Canopix <- placette_Canopix %>%
 select(-"Massif")
+
   # Taux de mortalité Ecart_type
 sd(placette_Canopix$Taux_M_tot) # 6.680769
 min(placette_Canopix$Taux_M_tot) # 1.25
 max(placette_Canopix$Taux_M_tot) # 21.73913
+mean(placette_Canopix$Taux_M_tot) # 7.411021
 
   # EXPORT
 write.table(x = placette_Canopix, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_TauxMortalité_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
@@ -1352,12 +1389,18 @@ BMP <- read.csv("bois_mort_perche.csv", sep=";", header=TRUE, stringsAsFactors =
 
   # Colonnes utiles pour le BM
 DivBM <- placette_Canopix %>%
-  select(placette, Cat_arbre, 14 : 17, 22 : 26) %>%
+  select(placette, Cat_arbre, 14 : 17, 22 : 27) %>%
   mutate(across(where(is.character), ~na_if(.,""))) %>% 
   mutate(placette = ifelse(placette == "V_169", "V_170", placette))
+
+  # Situer les NA dans les hauteurs de BMP
+DivBM %>% summarise(across(everything(), ~ sum(is.na(.))))
+which(is.na(DivBM$BMS_classe_diametre.cm), arr.ind=TRUE) # Nombre de NAs
+# ATTENTION VERIFIER PQ DIVBMS 671 OBS AU LIEU DE 716
+
   # BMD
 DivBMD <- DivBM %>%
-  select(1:2, 7:11) %>%
+  select(1:2, 7:12) %>%
   filter(Cat_arbre %in% c("M", "C")) %>%
   mutate(BMP_sp = ifelse(BMP_sp == " hetre", "hetre", BMP_sp),
          BMP_sp = ifelse(BMP_sp == "chene pedoncule", "chene", BMP_sp),
@@ -1368,17 +1411,12 @@ DivBMD <- DivBM %>%
                              BMP_sp == "alisier torminal" ~ "ALI",
                              BMP_sp == "INC" ~ "INC",
                              BMP_sp == "pin sylvestre" ~ "PIN")) %>%
-  mutate(Code_diam = case_when(diam >= 5 & diam <= 10 ~ 10,
-                                diam >= 10 & diam <= 15 ~ 15,
-                                diam >= 15 & diam <= 20 ~ 20,
-                                diam >= 20 & diam <= 25 ~ 25,
-                                diam >= 25 & diam <= 30 ~ 30,
-                                diam >= 30 & diam <= 35 ~ 35,
-                                diam >= 35 & diam <= 40 ~ 40,
-                                diam >= 40 & diam <= 45 ~ 45,
-                                diam >= 45 & diam <= 50 ~ 50,
-                                diam >= 60 & diam <= 65 ~ 65,
-                                diam >= 100 & diam <= 105 ~ 105)) %>%
+  mutate(Code_diam = case_when(
+      diam >= 5 & diam <= 10 ~ "petit",
+      diam > 10 & diam <= 25 ~ "moyen",
+      diam > 25 & diam <= 60 ~ "grand",
+      diam > 60 & diam <= 105 ~ "Tresgrand",
+      TRUE ~ "hors_classe")) %>%
   mutate(Code_position = c(rep("D", 122))) %>%
   mutate(Code_sapro = BMP_sd_saprox) %>%
   mutate(Code_DivBMD = str_c(Code_sp, Code_diam, Code_position, Code_sapro, sep = "_")) %>%
@@ -1395,16 +1433,33 @@ DivBMD2 <- DivBMD %>%
 
   # BMS
 DivBMS <- DivBM %>%
-  select(placette, 3:5) %>%
-  mutate(Code_sp = BMS_sp,
-         Code_position = "S",
-         Code_sapro = BMS_sd_saprox,
-         Code_diam = BMS_classe_diametre.cm) %>%
-    mutate(Code_DivBMS = str_c(Code_sp, Code_diam, Code_position, Code_sapro, sep = "_")) %>%
+  select(placette, 3:6) %>%
+  mutate(
+    Code_sol = case_when(
+      BMS_contact_sol == "Oui" ~ "GIS",
+      BMS_contact_sol == "Oui " ~ "GIS",
+      BMS_contact_sol == "Oui  " ~ "GIS",
+      BMS_contact_sol == "Oui   " ~ "GIS",
+      BMS_contact_sol == "Non" ~ "ENC",
+      BMS_contact_sol == "Non " ~ "ENC"
+      ), # gisant : GIS / encrouée : ENC
+    Code_sp = BMS_sp,
+    Code_position = "S",
+    Code_sapro = BMS_sd_saprox,
+    Code_diam = case_when(
+      BMS_classe_diametre.cm %in% c("5","10") ~ "petit",
+      BMS_classe_diametre.cm %in% c("15","20","25") ~ "moyen",
+      BMS_classe_diametre.cm %in% c("30","35","40","45", "50", "55", "60") ~ "grand",
+      BMS_classe_diametre.cm %in% c("65","70","75", "80","85", "90", "95", "100") ~ "Tresgrand",
+      BMS_classe_diametre.cm == "souche deracinee" ~ "souchederacinee",
+      TRUE ~ "hors_classe"
+      ),
+    Code_DivBMS = str_c(Code_sp, Code_diam, Code_position, Code_sapro, Code_sol, sep = "_")
+    ) %>%
   filter(!is.na(Code_DivBMS))
   # BMS seulement les souches dans le fichier du BMD
 DivBMS2 <- DivBM %>%
-  select(1:2, 7:11) %>%
+  select(1:2, 7:12) %>%
   filter(Cat_arbre %in% c("S")) %>%
   mutate(Code_sp = case_when(BMP_sp == "hetre" ~ "HET",
                              BMP_sp == "charme" ~ "CHA",
@@ -1412,10 +1467,16 @@ DivBMS2 <- DivBM %>%
                              BMP_sp == "INC" ~ "INC")) %>%
   mutate(Code_sapro = BMP_sd_saprox,
          Code_position = Cat_arbre,
-         Code_diam = diam) %>%
+         Code_diam = case_when(
+      diam >= 5 & diam <= 10 ~ "petit",
+      diam > 10 & diam <= 25 ~ "moyen",
+      diam > 25 & diam <= 60 ~ "grand",
+      diam > 60 & diam <= 100 ~ "Tresgrand",
+      TRUE ~ "hors_classe"
+      )) %>%
   mutate(Code_DivBMS = str_c(Code_sp, Code_diam, Code_position, Code_sapro, sep = "_")) %>%
   filter(!is.na(Code_DivBMS)) %>%
-  select(1, 12)
+  select(1, 13)
   # Ajout des souches aux autres BMS
 DivBMS3 <- bind_rows(DivBMS, DivBMS2) %>%
   arrange(placette) 
@@ -1431,18 +1492,24 @@ DivBMS4 <- DivBMS3 %>%
 
   # BMP
 DivBMP <- BMP %>%
-  select(1:2, 4:7, 13) %>%
+  select(1:2, 4:8, 13) %>%
   mutate(placette = sub("(^[^_]+_[^_]+)_.*", "\\1", id_arbre)) %>%
   mutate(Code_sp = case_when(sp == "Quercus" ~ "CHE",
                              sp == "Quercus_petraea" ~ "CHE",
                              sp == "Quercus_robur" ~ "CHE")) %>%
-  mutate(Code_diam = diam_BMP.cm) %>%
+  mutate(Code_diam = case_when(
+      diam_BMP.cm %in% c("5","10") ~ "petit",
+      diam_BMP.cm %in% c("15","20","25") ~ "moyen",
+      diam_BMP.cm %in% c("30","35","40","45", "50", "55", "60") ~ "grand",
+      diam_BMP.cm %in% c("65","70","75", "80","85", "90", "95", "100") ~ "Tresgrand",
+      TRUE ~ "hors_classe")) %>%
   mutate(Code_sapro = sd_saprox_BMP) %>%
   mutate(Code_position = c(rep("P", 635))) %>%
-  mutate(Code_DivBMP = str_c(Code_sp, Code_diam, Code_position, Code_sapro, sep = "_"))
+  mutate(Code_DivBMP = str_c(Code_sp, Code_diam, Code_position, Code_sapro, sep = "_")) %>%
+  filter(!is.na(Code_DivBMP)) %>%
+  mutate(placette = ifelse(placette == "V_169", "V_170", placette))
   # Calcul du nombre d'espèces de BMP
 DivBMP2 <- DivBMP %>%
-  mutate(placette = ifelse(placette == "V_169", "V_170", placette)) %>%
   select(placette, Code_DivBMP) %>%
   group_by(placette) %>%
   distinct(Code_DivBMP) %>%
@@ -1459,10 +1526,13 @@ NB_espBM <- DivBM_F$NB_espBM
   # Couleur différente pour les massifs sur le ggplot
 DivBM_F <- DivBM_F %>%
 mutate(Massif = str_extract(placette, "^[A-Z]"))
+  # Ordre décroissant des placettes
+DivBM_F <- DivBM_F %>% 
+  mutate(placette = fct_reorder(placette, NB_espBM, .desc = TRUE))
 # Graphique pour visualiser
 ggplot(DivBM_F, aes(x = placette, y = NB_espBM, fill = Massif)) +
   geom_bar(stat = "identity") +
-  geom_text(aes(label = paste0(NB_espBM)), vjust = -0.5, nudge_y = 0.05 * Taux_M_tot, size = 2.5) +
+  geom_text(aes(label = paste0(NB_espBM)), vjust = -0.5, nudge_y = 0.05 * NB_espBM, size = 2.5) +
   labs(title = "Diversité spécifique de BM par placette",
        x = "Placette",
        y = "NB d'espèces de BM") +
@@ -1472,10 +1542,48 @@ ggplot(DivBM_F, aes(x = placette, y = NB_espBM, fill = Massif)) +
  # Enlever la colonne Massif
 DivBM_F <- DivBM_F %>%
 select(-"Massif")
+
   # Diversité de BM Ecart_type
-sd(DivBM_F$NB_espBM) # 8.363297
-min(DivBM_F$NB_espBM) # 13
-max(DivBM_F$NB_espBM) # 42
+sd(DivBM_F$NB_espBM) # 7.188441
+min(DivBM_F$NB_espBM) # 11
+max(DivBM_F$NB_espBM) # 36
+mean(DivBM_F$NB_espBM) # 23.1
+
+###################################################################
+
+# Diversité BM pour les strates #
+
+DivBMD2
+
+DivBMS_F <- DivBMS3 %>%
+  mutate(Strate = "Understory") 
+
+
+
+%>%
+  select(placette, Code_DivBMS) %>%
+  group_by(placette) %>%
+  distinct(Code_DivBMS) %>%
+  mutate(NBesp = 1) %>%
+  summarise(NB_espBMS_placette = sum(NBesp))
+
+  # Avoir le seuil des arbres thèses pour le bas de houppier
+MSS <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_Seuils_Strates_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
+
+DivBMP_F <- DivBMP %>%
+  left_join(MSS %>%
+              select(placette, Seuil_superieur_.BC.), by = "placette") %>%
+  mutate(Strate = case_when(
+    H_BMP.m >= Seuil_superieur_.BC. ~ "Understory",
+    H_BMP.m < Seuil_superieur_.BC. ~ "Canopy"
+    )) %>%
+  filter(!is.na(H_BMP.m)) # 1 Na H_BMP.m
+which(is.na(DivBMP_F$Strate), arr.ind=TRUE) # Vérifier si NAS
+
+DivBMcanopBMP <- DivBMP_F %>%
+  filter(Strate == "Canopy")
+DivBMUnderBMP <- DivBMP_F %>%
+  filter(Strate == "Understory")
 
   # EXPORT
 write.table(x = DivBM_F, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_DiversiteBM_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
@@ -1489,112 +1597,115 @@ write.table(x = DivBM_F, file = "//no-datafile.inra.local/Biodiversite/projets/B
 
 
 # 13. Proportion G (M) sur surface terrière G total
+=> PEU INTERESSANT, abandon de la métrique
 
 ```{r}
-  # IMPORT
-DMH_placette <- read.table("placette_Canopix_DMH.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
-
-  # Passage Diamètre en mètre
-DMH_placette <- DMH_placette %>%
-  mutate(DBH.m = DMH_placette$diam * 0.01)
-  # Garder que les arbres morts (M)
-G <- DMH_placette %>% 
-  filter(Cat_arbre =="M") %>%
-  group_by(num_arbre) %>% 
-  summarise(g = pi*(DBH.m/2)^2) %>% 
-  distinct()
-  # Standardiser l'appellation de la placette 
-G <- separate(G, num_arbre, sep = "_", into = c("massif", "placette", "reste"))
-G <- G %>% 
-  unite("placette", massif, placette, sep = "_")
-  # Changer 169 en 170 (arbre thèse V_170 dans la parcelle 169)
-G <- G %>% 
-  mutate(placette = ifelse(placette == "V_169", "V_170", placette))
-  # Calcul G (M) par placette
-G_plac <- G %>% 
-  group_by(placette) %>% 
-  summarise(Gtot_M.m2.ha = sum(g, na.rm=TRUE)) %>% 
-  distinct() 
-
-#######################################################################
-
-# Calcul surface terrière des arbres DMH #
-
-  # Garde ques les arbres DMH
-G_tot <- DMH_placette %>%
-  group_by(num_arbre) %>% 
-  summarise(g = pi*(DBH.m/2)^2) %>% 
-  distinct()
-
-# Calcul G par placette #
-
-  # Séparer l'id
-G_tot <- separate(G_tot, num_arbre, sep = "_", into = c("massif", "placette", "reste"))
-  # Réunir pour former la placette (ex : T_118)
-G_tot <- G_tot %>% 
-  unite("placette", massif, placette, sep = "_") %>% 
-  group_by(placette) %>%
-  summarise(Gtot.m2.ha = sum(g, na.rm=TRUE)) %>% 
-  mutate(placette = ifelse(placette == "V_169", "V_170", placette))
-  # Changer 169 en 170 (arbre thèse V_170  dans la parcelle 169)
-
-  # IMPORT pour avoir la colonne placette avec les 20 ID
-MSS <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_Seuils_Strates_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
-  # Jointure
-G_F <- MSS %>% 
-  select(placette) %>%
-  left_join(G_tot %>%
-              select(everything()), by = "placette") %>%
-  left_join(G_plac, by = "placette") %>%
-  mutate(Gtot_M.m2.ha = ifelse(is.na(Gtot_M.m2.ha), 0, Gtot_M.m2.ha)) %>%
-  mutate(Proportion_arbresmorts = (Gtot_M.m2.ha / Gtot.m2.ha) * 100)
-
-  # Format long
-G_F_pivot <- G_F %>%
-  pivot_longer(cols = 2:3, names_to ="categorie_G", values_to = "G_m2_ha")
-
-  # graph proportion des 3 types de BM
-TousG <- ggplot(G_F_pivot, aes(x = placette, y = G_m2_ha, fill = categorie_G)) +
-  geom_bar(position="fill", stat="identity") +
-  labs(title = "Surface terrière des arbres morts par rapport à la surface terrière totale",
-       x = "Placette",
-       y = "Surface terrière (m².ha)") +
-  theme_classic() + 
-  theme(axis.text.x = element_text(angle = 90)) + 
-  geom_col(aes(fill = categorie_G)) +
-  scale_fill_manual(values = c("black", "grey"))
-
-
+#   # IMPORT
+# DMH_placette <- read.table("placette_Canopix_DMH.csv", sep=";", dec=",", header=TRUE, stringsAsFactors = FALSE)
 # 
-Proportion_arbresmorts <- G_F$Proportion_arbresmorts
-  # Couleur différente pour les massifs sur le ggplot
-G_F <- G_F %>%
-mutate(Massif = str_extract(placette, "^[A-Z]"))
-# Graphique pour visualiser
-Prop <- ggplot(G_F, aes(x = placette, y = Proportion_arbresmorts, fill = Massif)) +
-  geom_bar(stat = "identity") +
-  geom_text(aes(label = paste0(round(Proportion_arbresmorts, 2), "%")), vjust = -0.5, nudge_y = 0.05 * Proportion_arbresmorts, size = 2.5) +
-  labs(title = "Proportion de G des arbres (M) sur la surface G Totale",
-       x = "Placette",
-       y = "Proportion G (M)") +
-  scale_fill_manual(values = c("T" = "darkred", "V" = "darkblue")) +
-  theme_classic() +
-  theme(axis.text.x = element_text(angle = 90))
-  # Faire apparaître 2 ggplot en même temps
-grid.arrange(TousG, Prop, ncol = 2)
- # Enlever la colonne Massif
-G_F <- G_F %>%
-select(-"Massif")
-  # Proportion G des arbres morts sur tous les arbres Ecart_type
-sd(G_F$Proportion_arbresmorts) # 2.876768
-min(G_F$Proportion_arbresmorts) # 0
-max(G_F$Proportion_arbresmorts) # 12.44391
-
-  # EXPORT
-write.table(x = G_F, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_ProportionG_arbresmorts_AD.csv", row.names = FALSE, dec=".", sep=";")
+#   # Passage Diamètre en mètre
+# DMH_placette <- DMH_placette %>%
+#   mutate(DBH.m = DMH_placette$diam * 0.01)
+#   # Garder que les arbres morts (M)
+# G <- DMH_placette %>% 
+#   filter(Cat_arbre =="M") %>%
+#   group_by(num_arbre) %>% 
+#   summarise(g = pi*(DBH.m/2)^2) %>% 
+#   distinct()
+#   # Standardiser l'appellation de la placette 
+# G <- separate(G, num_arbre, sep = "_", into = c("massif", "placette", "reste"))
+# G <- G %>% 
+#   unite("placette", massif, placette, sep = "_")
+#   # Changer 169 en 170 (arbre thèse V_170 dans la parcelle 169)
+# G <- G %>% 
+#   mutate(placette = ifelse(placette == "V_169", "V_170", placette))
+#   # Calcul G (M) par placette
+# G_plac <- G %>% 
+#   group_by(placette) %>% 
+#   summarise(Gtot_M.m2.ha = sum(g, na.rm=TRUE)) %>% 
+#   distinct() 
+# 
+# #######################################################################
+# 
+# # Calcul surface terrière des arbres DMH #
+# 
+#   # Garde ques les arbres DMH
+# G_tot <- DMH_placette %>%
+#   group_by(num_arbre) %>% 
+#   summarise(g = pi*(DBH.m/2)^2) %>% 
+#   distinct()
+# 
+# # Calcul G par placette #
+# 
+#   # Séparer l'id
+# G_tot <- separate(G_tot, num_arbre, sep = "_", into = c("massif", "placette", "reste"))
+#   # Réunir pour former la placette (ex : T_118)
+# G_tot <- G_tot %>% 
+#   unite("placette", massif, placette, sep = "_") %>% 
+#   group_by(placette) %>%
+#   summarise(Gtot.m2.ha = sum(g, na.rm=TRUE)) %>% 
+#   mutate(placette = ifelse(placette == "V_169", "V_170", placette))
+#   # Changer 169 en 170 (arbre thèse V_170  dans la parcelle 169)
+# 
+#   # IMPORT pour avoir la colonne placette avec les 20 ID
+# MSS <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_Seuils_Strates_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
+#   # Jointure
+# G_F <- MSS %>% 
+#   select(placette) %>%
+#   left_join(G_tot %>%
+#               select(everything()), by = "placette") %>%
+#   left_join(G_plac, by = "placette") %>%
+#   mutate(Gtot_M.m2.ha = ifelse(is.na(Gtot_M.m2.ha), 0, Gtot_M.m2.ha)) %>%
+#   mutate(Proportion_arbresmorts = (Gtot_M.m2.ha / Gtot.m2.ha) * 100)
+# 
+#   # Format long
+# G_F_pivot <- G_F %>%
+#   pivot_longer(cols = 2:3, names_to ="categorie_G", values_to = "G_m2_ha")
+# 
+#   # graph proportion des 3 types de BM
+# TousG <- ggplot(G_F_pivot, aes(x = placette, y = G_m2_ha, fill = categorie_G)) +
+#   geom_bar(position="fill", stat="identity") +
+#   labs(title = "Surface terrière des arbres morts par rapport à la surface terrière totale",
+#        x = "Placette",
+#        y = "Surface terrière (m².ha)") +
+#   theme_classic() + 
+#   theme(axis.text.x = element_text(angle = 90)) + 
+#   geom_col(aes(fill = categorie_G)) +
+#   scale_fill_manual(values = c("black", "grey"))
+# 
+# 
+# # 
+# Proportion_arbresmorts <- G_F$Proportion_arbresmorts
+#   # Couleur différente pour les massifs sur le ggplot
+# G_F <- G_F %>%
+# mutate(Massif = str_extract(placette, "^[A-Z]"))
+# # Graphique pour visualiser
+# Prop <- ggplot(G_F, aes(x = placette, y = Proportion_arbresmorts, fill = Massif)) +
+#   geom_bar(stat = "identity") +
+#   geom_text(aes(label = paste0(round(Proportion_arbresmorts, 2), "%")), vjust = -0.5, nudge_y = 0.05 * Proportion_arbresmorts, size = 2.5) +
+#   labs(title = "Proportion de G des arbres (M) sur la surface G Totale",
+#        x = "Placette",
+#        y = "Proportion G (M)") +
+#   scale_fill_manual(values = c("T" = "darkred", "V" = "darkblue")) +
+#   theme_classic() +
+#   theme(axis.text.x = element_text(angle = 90))
+#   # Faire apparaître 2 ggplot en même temps
+# grid.arrange(TousG, Prop, ncol = 2)
+#  # Enlever la colonne Massif
+# G_F <- G_F %>%
+# select(-"Massif")
+#   # Proportion G des arbres morts sur tous les arbres Ecart_type
+# sd(G_F$Proportion_arbresmorts) # 2.876768
+# min(G_F$Proportion_arbresmorts) # 0
+# max(G_F$Proportion_arbresmorts) # 12.44391
+# 
+#   # EXPORT
+# write.table(x = G_F, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_ProportionG_arbresmorts_AD.csv", row.names = FALSE, dec=".", sep=";")
 ```
 
 # 14. Matrice de corrélation des métriques
+1 : toutes les métriques
+2 : filtrage par critère de corrélation (+0.6 ou -0.6) pour garder seulement les relations intéressantes entre les métriques
 
 ```{r}
 
