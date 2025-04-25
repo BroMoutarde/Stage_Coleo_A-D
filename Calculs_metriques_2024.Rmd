@@ -1390,15 +1390,17 @@ BMP <- read.csv("bois_mort_perche.csv", sep=";", header=TRUE, stringsAsFactors =
   # Colonnes utiles pour le BM
 DivBM <- placette_Canopix %>%
   select(placette, Cat_arbre, 14 : 17, 22 : 27) %>%
-  mutate(across(where(is.character), ~na_if(.,""))) %>% 
+  mutate(across(where(is.character), ~na_if(.,""))) %>%
+  # Transformation des espaces vides en NAs
   mutate(placette = ifelse(placette == "V_169", "V_170", placette))
+  # 169 = 170
 
-  # Situer les NA dans les hauteurs de BMP
+  # Situer les NAs dans les hauteurs de BMP
 DivBM %>% summarise(across(everything(), ~ sum(is.na(.))))
-which(is.na(DivBM$BMS_classe_diametre.cm), arr.ind=TRUE) # Nombre de NAs
-# ATTENTION VERIFIER PQ DIVBMS 671 OBS AU LIEU DE 716
+which(is.na(DivBM$BMS_classe_diametre.cm), arr.ind=TRUE) 
+  # Nombre de NAs
 
-  # BMD
+  # Diversité du BMD
 DivBMD <- DivBM %>%
   select(1:2, 7:12) %>%
   filter(Cat_arbre %in% c("M", "C")) %>%
@@ -1412,15 +1414,16 @@ DivBMD <- DivBM %>%
                              BMP_sp == "INC" ~ "INC",
                              BMP_sp == "pin sylvestre" ~ "PIN")) %>%
   mutate(Code_diam = case_when(
-      diam >= 5 & diam <= 10 ~ "petit",
-      diam > 10 & diam <= 25 ~ "moyen",
-      diam > 25 & diam <= 60 ~ "grand",
-      diam > 60 & diam <= 105 ~ "Tresgrand",
+      diam >= 5 & diam <= 22.5 ~ "petit",
+      diam > 22.5 & diam <= 47.5 ~ "moyen",
+      diam > 47.5 & diam <= 67.5 ~ "grand",
+      diam > 67.5 & diam <= 105 ~ "Tresgrand",
       TRUE ~ "hors_classe")) %>%
   mutate(Code_position = c(rep("D", 122))) %>%
   mutate(Code_sapro = BMP_sd_saprox) %>%
   mutate(Code_DivBMD = str_c(Code_sp, Code_diam, Code_position, Code_sapro, sep = "_")) %>%
-  filter(!is.na(Code_DivBMD))
+  filter(!is.na(Code_DivBMD)) 
+  # Filtrage des Nas dues aux trous de données
   # Calcul du nombre d'espèces de BMD
 DivBMD2 <- DivBMD %>%
   select(placette, Code_DivBMD) %>%
@@ -1431,7 +1434,7 @@ DivBMD2 <- DivBMD %>%
 
 ###
 
-  # BMS
+  # Diversité du BMS
 DivBMS <- DivBM %>%
   select(placette, 3:6) %>%
   mutate(
@@ -1447,17 +1450,17 @@ DivBMS <- DivBM %>%
     Code_position = "S",
     Code_sapro = BMS_sd_saprox,
     Code_diam = case_when(
-      BMS_classe_diametre.cm %in% c("5","10") ~ "petit",
-      BMS_classe_diametre.cm %in% c("15","20","25") ~ "moyen",
-      BMS_classe_diametre.cm %in% c("30","35","40","45", "50", "55", "60") ~ "grand",
-      BMS_classe_diametre.cm %in% c("65","70","75", "80","85", "90", "95", "100") ~ "Tresgrand",
+      BMS_classe_diametre.cm %in% c("5","10", "15", "20") ~ "petit",
+      BMS_classe_diametre.cm %in% c("25","30","35", "40", "45") ~ "moyen",
+      BMS_classe_diametre.cm %in% c("50","55","60","65") ~ "grand",
+      BMS_classe_diametre.cm %in% c("70","75", "80","85","90", "95","100", "105") ~ "Tresgrand",
       BMS_classe_diametre.cm == "souche deracinee" ~ "souchederacinee",
       TRUE ~ "hors_classe"
       ),
     Code_DivBMS = str_c(Code_sp, Code_diam, Code_position, Code_sapro, Code_sol, sep = "_")
     ) %>%
   filter(!is.na(Code_DivBMS))
-  # BMS seulement les souches dans le fichier du BMD
+  # BMS avec seulement les souches dans le fichier du BMD
 DivBMS2 <- DivBM %>%
   select(1:2, 7:12) %>%
   filter(Cat_arbre %in% c("S")) %>%
@@ -1468,10 +1471,10 @@ DivBMS2 <- DivBM %>%
   mutate(Code_sapro = BMP_sd_saprox,
          Code_position = Cat_arbre,
          Code_diam = case_when(
-      diam >= 5 & diam <= 10 ~ "petit",
-      diam > 10 & diam <= 25 ~ "moyen",
-      diam > 25 & diam <= 60 ~ "grand",
-      diam > 60 & diam <= 100 ~ "Tresgrand",
+      diam >= 5 & diam <= 22.5 ~ "petit",
+      diam > 22.5 & diam <= 47.5 ~ "moyen",
+      diam > 47.5 & diam <= 67.5 ~ "grand",
+      diam > 67.5 & diam <= 105 ~ "Tresgrand",
       TRUE ~ "hors_classe"
       )) %>%
   mutate(Code_DivBMS = str_c(Code_sp, Code_diam, Code_position, Code_sapro, sep = "_")) %>%
@@ -1490,7 +1493,7 @@ DivBMS4 <- DivBMS3 %>%
 
 ###
 
-  # BMP
+  # Diversité du BMP
 DivBMP <- BMP %>%
   select(1:2, 4:8, 13) %>%
   mutate(placette = sub("(^[^_]+_[^_]+)_.*", "\\1", id_arbre)) %>%
@@ -1515,13 +1518,13 @@ DivBMP2 <- DivBMP %>%
   distinct(Code_DivBMP) %>%
   mutate(NBesp = 1) %>%
   summarise(NB_espBMP_placette = sum(NBesp))
-  #
+  # Jointure de tous les BM
 DivBM_F <- DivBMD2 %>%
   left_join(DivBMS4, by = "placette") %>%
   left_join(DivBMP2, by = "placette") %>%
   mutate(NB_espBM = NB_espBMD_placette + NB_espBMS_placette + NB_espBMP_placette)
 
-# Graphique pour visualiser Proportion BMP + BMD sur BMtot
+  # Labels
 NB_espBM <- DivBM_F$NB_espBM
   # Couleur différente pour les massifs sur le ggplot
 DivBM_F <- DivBM_F %>%
@@ -1530,7 +1533,7 @@ mutate(Massif = str_extract(placette, "^[A-Z]"))
 DivBM_F <- DivBM_F %>% 
   mutate(placette = fct_reorder(placette, NB_espBM, .desc = TRUE))
 # Graphique pour visualiser
-ggplot(DivBM_F, aes(x = placette, y = NB_espBM, fill = Massif)) +
+placette <- ggplot(DivBM_F, aes(x = placette, y = NB_espBM, fill = Massif)) +
   geom_bar(stat = "identity") +
   geom_text(aes(label = paste0(NB_espBM)), vjust = -0.5, nudge_y = 0.05 * NB_espBM, size = 2.5) +
   labs(title = "Diversité spécifique de BM par placette",
@@ -1543,50 +1546,167 @@ ggplot(DivBM_F, aes(x = placette, y = NB_espBM, fill = Massif)) +
 DivBM_F <- DivBM_F %>%
 select(-"Massif")
 
-  # Diversité de BM Ecart_type
-sd(DivBM_F$NB_espBM) # 7.188441
+  # Diversité de BM sd, min, max et mean
+sd(DivBM_F$NB_espBM) # 5.412218
 min(DivBM_F$NB_espBM) # 11
-max(DivBM_F$NB_espBM) # 36
-mean(DivBM_F$NB_espBM) # 23.1
+max(DivBM_F$NB_espBM) # 31
+mean(DivBM_F$NB_espBM) # 21.15
 
 ###################################################################
 
-# Diversité BM pour les strates #
-
-DivBMD2
-
-DivBMS_F <- DivBMS3 %>%
-  mutate(Strate = "Understory") 
-
-
-
-%>%
-  select(placette, Code_DivBMS) %>%
-  group_by(placette) %>%
-  distinct(Code_DivBMS) %>%
-  mutate(NBesp = 1) %>%
-  summarise(NB_espBMS_placette = sum(NBesp))
+# Diversité BM pour les strates # Le but ici est d'assigné une strate à la hauteur du BM (sous-étage = Understory / canopée = Canopy), à l'aide de la hauteur des arbres thèses pour les placettes, notamment du seuil de hauteur du bas de houppier
 
   # Avoir le seuil des arbres thèses pour le bas de houppier
 MSS <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_Seuils_Strates_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
 
+  # Les arbres morts debouts (M) sont considérés de fait dans les 2 strates en même temps puisqu'ils sont similaires aux arbres vivants en hauteur et forme du houppier
+DivBMD_F <- DivBMD %>%
+  left_join(MSS %>%
+              select(placette, Seuil_superieur_.BC.), by = "placette") %>% # Ajout du seuil de bas de houppier
+  mutate(H_arbre_mort.m = as.numeric(H_arbre_mort.m)) %>%
+  mutate(
+    H_arbre_mort.m = coalesce(H_arbre_mort.m, 50),
+    Strate_under = case_when(
+    H_arbre_mort.m < Seuil_superieur_.BC. ~ "Understory",
+    H_arbre_mort.m == 50 ~ "Understory",
+    TRUE ~ NA_character_
+    ),
+    Strate_canop = case_when(
+    H_arbre_mort.m >= Seuil_superieur_.BC. ~ "Canopy",
+    H_arbre_mort.m == 50 ~ "Canopy",
+    TRUE ~ NA_character_
+    )) 
+
+DivBMD_F_longer <- DivBMD_F %>%
+  pivot_longer(cols = 15 : 16, names_to ="Strates", values_to = "Presence") %>%
+  filter(!is.na(Presence))
+  # Séparation entre canopy et Understory pour plus tard
+DivBMD_F_Canop <- DivBMD_F_longer %>%
+  filter(Presence == "Canopy") %>% # Canopée
+  select(1, 13) %>%
+  setNames(c("placette", "CodeDivBM"))
+DivBMD_F_Under <- DivBMD_F_longer %>%
+  filter(Presence == "Understory") %>% # Sous-étage
+  select(1, 13) %>%
+  setNames(c("placette", "CodeDivBM"))
+
+###
+
+  # Strate Understory uniquement pour le BMS puisque au sol
+DivBMS_F <- DivBMS3 %>%
+  mutate(Strate = "Understory") %>%
+  select(1, 11) %>%
+  setNames(c("placette", "CodeDivBM"))
+
+###
+
+  # Attribution des strates au BMP
 DivBMP_F <- DivBMP %>%
   left_join(MSS %>%
-              select(placette, Seuil_superieur_.BC.), by = "placette") %>%
+              select(placette, Seuil_superieur_.BC.), by = "placette") %>% # Ajout du seuil de bas de houppier
   mutate(Strate = case_when(
     H_BMP.m >= Seuil_superieur_.BC. ~ "Understory",
     H_BMP.m < Seuil_superieur_.BC. ~ "Canopy"
     )) %>%
   filter(!is.na(H_BMP.m)) # 1 Na H_BMP.m
-which(is.na(DivBMP_F$Strate), arr.ind=TRUE) # Vérifier si NAS
-
+which(is.na(DivBMP_F$Strate), arr.ind=TRUE) # Vérifier NAs restants
+  # Séparation entre canopy et Understory pour plus tard
 DivBMcanopBMP <- DivBMP_F %>%
-  filter(Strate == "Canopy")
+  filter(Strate == "Canopy") %>% # Canopée
+  select(1, 14) %>%
+  setNames(c("placette", "CodeDivBM")) %>%
+  mutate(placette = gsub("_\\d+$", "", placette))
 DivBMUnderBMP <- DivBMP_F %>%
-  filter(Strate == "Understory")
+  filter(Strate == "Understory") %>% # Sous-étage
+  select(1, 14) %>%
+  setNames(c("placette", "CodeDivBM")) %>%
+  mutate(placette = gsub("_\\d+$", "", placette))
+
+###
+
+BM_DivCanop_F <- bind_rows(DivBMcanopBMP, DivBMD_F_Canop) %>%
+  arrange(placette) 
+BM_DivUnder_F <- bind_rows(DivBMUnderBMP, DivBMD_F_Under, DivBMS_F) %>%
+  arrange(placette) 
+
+BM_DivCanop_F <- BM_DivCanop_F %>%
+  select(placette, CodeDivBM) %>%
+  group_by(placette) %>%
+  distinct(CodeDivBM) %>%
+  mutate(NBesp = 1) %>%
+  summarise(NB_espBM_canopy_placette = sum(NBesp))
+
+BM_DivUnder_F <- BM_DivUnder_F %>%
+  select(placette, CodeDivBM) %>%
+  group_by(placette) %>%
+  distinct(CodeDivBM) %>%
+  mutate(NBesp = 1) %>%
+  summarise(NB_espBM_under_placette = sum(NBesp))
+
+BM_Div_Placette <- DivBM_F %>%
+  left_join(BM_DivCanop_F, by = "placette") %>%
+  left_join(BM_DivUnder_F, by = "placette")
+
+  # Labels
+NB_espBMC <- BM_DivCanop_F$NB_espBM_canopy_placette
+  # Couleur différente pour les massifs sur le ggplot
+BM_DivCanop_F <- BM_DivCanop_F %>%
+mutate(Massif = str_extract(placette, "^[A-Z]"))
+  # Ordre décroissant des placettes
+BM_DivCanop_F <- BM_DivCanop_F %>% 
+  mutate(placette = fct_reorder(placette, NB_espBMC, .desc = TRUE))
+# Graphique pour visualiser
+canop <- ggplot(BM_DivCanop_F, aes(x = placette, y = NB_espBMC, fill = Massif)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = paste0(NB_espBMC)), vjust = -0.5, nudge_y = 0.05 * NB_espBMC, size = 2.5) +
+  labs(title = "Diversité spécifique de BM par placette en canopée",
+       x = "Placette",
+       y = "NB d'espèces de BM") +
+            scale_fill_manual(values = c("T" = "lightblue", "V" = "darkorange")) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
+ # Enlever la colonne Massif
+BM_DivCanop_F <- BM_DivCanop_F %>%
+select(-"Massif")
+
+  # Labels
+NB_espBMU <- BM_DivUnder_F$NB_espBM_under_placette
+  # Couleur différente pour les massifs sur le ggplot
+BM_DivUnder_F <- BM_DivUnder_F %>%
+mutate(Massif = str_extract(placette, "^[A-Z]"))
+  # Ordre décroissant des placettes
+BM_DivUnder_F <- BM_DivUnder_F %>% 
+  mutate(placette = fct_reorder(placette, NB_espBMU, .desc = TRUE))
+# Graphique pour visualiser
+under <- ggplot(BM_DivUnder_F, aes(x = placette, y = NB_espBMU, fill = Massif)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = paste0(NB_espBMU)), vjust = -0.5, nudge_y = 0.05 * NB_espBMU, size = 2.5) +
+  labs(title = "Diversité spécifique de BM par placette dans le sous-étage",
+       x = "Placette",
+       y = "NB d'espèces de BM") +
+            scale_fill_manual(values = c("T" = "lightblue", "V" = "darkorange")) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90))
+ # Enlever la colonne Massif
+BM_DivUnder_F <- BM_DivUnder_F %>%
+select(-"Massif")
+
+grid.arrange(placette, canop, under, ncol = 2 : 2)
+
+  # Diversité de BM canopée sd, min, max et mean
+sd(BM_DivCanop_F$NB_espBM_canopy_placette) # 2.459191
+min(BM_DivCanop_F$NB_espBM_canopy_placette) # 1
+max(BM_DivCanop_F$NB_espBM_canopy_placette) # 9
+mean(BM_DivCanop_F$NB_espBM_canopy_placette) # 4.380952
+
+  # Diversité de BM under sd, min, max et mean
+sd(BM_DivUnder_F$NB_espBM_under_placette) # 6.982632
+min(BM_DivUnder_F$NB_espBM_under_placette) # 2
+max(BM_DivUnder_F$NB_espBM_under_placette) # 31
+mean(BM_DivUnder_F$NB_espBM_under_placette) # 19.57143
 
   # EXPORT
-write.table(x = DivBM_F, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_DiversiteBM_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
+write.table(x = BM_Div_Placette, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_DiversiteBM_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
 
 # Séparer DivBM en 3 : debout, sol, perché #
 # Créér une colonne id pour : essence, classe diamètre, spx, position #
@@ -1597,7 +1717,7 @@ write.table(x = DivBM_F, file = "//no-datafile.inra.local/Biodiversite/projets/B
 
 
 # 13. Proportion G (M) sur surface terrière G total
-=> PEU INTERESSANT, abandon de la métrique
+=> PEU INTERESSANT écologiquement, abandon de la métrique
 
 ```{r}
 #   # IMPORT
@@ -1733,7 +1853,7 @@ Taux_mortalite_Placettes <- read.csv("//no-datafile.inra.local/Biodiversite/proj
 
 Div_BM_Placettes <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_DiversiteBM_Placette_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
 
-Prop_G_Arbresmorts_Placettes <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_ProportionG_arbresmorts_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
+# Prop_G_Arbresmorts_Placettes <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_ProportionG_arbresmorts_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
 
 Metriques_Arbre_RB <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/metriques_RB/metriques_arbre.csv", sep=",", header=TRUE, stringsAsFactors = FALSE)
 
@@ -1759,8 +1879,8 @@ Taux_mortalite_Placettes <- Taux_mortalite_Placettes %>%
   rename(Taux_M_Placette = Taux_M_tot)
 Div_BM_Placettes <- Div_BM_Placettes %>%
   rename(NB_espBM_Placette = NB_espBM)
-Prop_G_Arbresmorts_Placettes <- Prop_G_Arbresmorts_Placettes %>%
-  rename(Proportion_ArbresM_Placette = Proportion_arbresmorts)
+# Prop_G_Arbresmorts_Placettes <- Prop_G_Arbresmorts_Placettes %>%
+#   rename(Proportion_ArbresM_Placette = Proportion_arbresmorts)
 
 Metriques_Arbre_RB <- Metriques_Arbre_RB %>% 
   mutate(id_arbre = ifelse(id_arbre == "V_169", "V_170", id_arbre))
@@ -1878,7 +1998,7 @@ Metriques <- MSS %>%
   select(-"Vol_BMD_Mtot.m3.ha", -"VolTotC.m3.ha") %>%
   left_join(BMT_Placettes, by = "placette") %>%
   left_join(Prop_BM_Placettes, by = "placette") %>%
-  select(-"BMtot.m3.ha.y", -"Vol_BMP_Tot_Pondere.m3.ha", -"Vol_BMD_tot.m3.ha", -"Vol_BMS_tot.m3.ha") %>%
+  select(-"BMtot.m3.ha.y", -"Vol_BMP_Tot_Pondere.m3.ha", -"Vol_BMD_tot.m3.ha") %>%
   rename(BMtot.m3.ha = BMtot.m3.ha.x) %>%
   left_join(Couvert_Placettes, by = "placette") %>%
   left_join(Encombrement_Placettes, by = "placette") %>%
@@ -1886,8 +2006,8 @@ Metriques <- MSS %>%
   select(-"NB_arbres", -"nb_Mort") %>%
   left_join(Div_BM_Placettes, by = "placette") %>%
   select(-"NB_espBMD_placette", -"NB_espBMS_placette", -"NB_espBMP_placette") %>%
-  left_join(Prop_G_Arbresmorts_Placettes, by = "placette") %>%
-  select(-"Gtot.m2.ha", -"Gtot_M.m2.ha") %>%
+  # left_join(Prop_G_Arbresmorts_Placettes, by = "placette") %>%
+  # select(-"Gtot.m2.ha", -"Gtot_M.m2.ha") %>%
   left_join(metriques_arbresRB, by = "placette") %>%
   relocate(names(metriques_arbresRB), .before = "Vol_BMP_Tot_Arbre") %>%
   left_join(metriques_strateUC, by = "placette") %>%
@@ -1902,21 +2022,22 @@ Metriques <- MSS %>%
   relocate(names(Metriques_Placettes_seRB), .before = "Vol_BMP_Under.m3") %>%
   left_join(Metriques_Placettes_canopeeRB, by = "placette") %>%
   relocate(names(Metriques_Placettes_canopeeRB), .before = "Vol_BMP_Canop.m3")
-  
+
+  # Enlever la colonne placette (character) 
 Metriques <- Metriques %>%
   select(-"placette")
-
+  # Matrice de corrélation
 library(ggcorrplot)
-png("corrplot_largetest.png", width = 3000, height = 3000, res = 300)
-ggcorrplot(cor(Metriques),
+png("corrplot_largetest.png", width = 3000, height = 3000, res = 300) # Ouverture png
+corr_matrix <- cor(Metriques) # Corrélation
+filtered_corr <- ifelse(abs(corr_matrix) >= 0.6, corr_matrix, NA)
+# Filtrer seulement les corrélations intéressantes
+ggcorrplot(filtered_corr,
+           tl.col = "black",
+           tl.srt = 45,
            ggtheme = ggplot2::theme_minimal(),
-             tl.cex = 5,
-             tl.srt = 45
-)
-dev.off()
+           tl.cex = 5)
+dev.off() # fermeture png
 
-?ggcorrplot
-library(MuMIn)
-?MuMIn
 ```
 
