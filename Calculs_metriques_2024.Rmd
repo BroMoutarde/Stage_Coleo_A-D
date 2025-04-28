@@ -2031,13 +2031,134 @@ library(ggcorrplot)
 png("corrplot_largetest.png", width = 3000, height = 3000, res = 300) # Ouverture png
 corr_matrix <- cor(Metriques) # Corrélation
 filtered_corr <- ifelse(abs(corr_matrix) >= 0.6, corr_matrix, NA)
+filtered_corr_clean <- filtered_corr
+  # Na en 0 pour le classement hiérarchique hc.order
+filtered_corr_clean[!is.finite(filtered_corr_clean)] <- 0
 # Filtrer seulement les corrélations intéressantes
-ggcorrplot(filtered_corr,
-           tl.col = "black",
+ggcorrplot(filtered_corr_clean,
+           hc.order = TRUE,
+           outline.color = "black",
+           tl.col = "white",
            tl.srt = 45,
-           ggtheme = ggplot2::theme_minimal(),
+           ggtheme = ggplot2::theme_minimal() +
+             theme(axis.text = element_text(size = 1),
+                   plot.margin = margin(1, 1, 1, 1, "cm")),
            tl.cex = 5)
+ggsave("correlation_plot_large.png", plot = p, width = 30, height = 30, units = "cm", dpi = 300)
+
+
 dev.off() # fermeture png
 
+# Sous-matrice pour mieux voir les corrélations #
+  # metriques de vol BM + div BM
+seMetriques <- Metriques %>%
+  select(21 , 34, 47, 60, 69, 78, 87 : 91, 96 : 98)
+corr_sousmatrix <- cor(seMetriques)
+filtered_corr <- ifelse(abs(corr_sousmatrix) >= 0.6, corr_sousmatrix, NA)
+filtered_corr_clean <- filtered_corr
+  # Na en 0 pour le classement hiérarchique hc.order
+filtered_corr_clean[!is.finite(filtered_corr_clean)] <- 0
+ggcorrplot(filtered_corr_clean ,
+           hc.order = TRUE,
+           outline.color = "black",
+           tl.col = "white",
+           tl.srt = 90,
+           ggtheme = ggplot2::theme_minimal() +
+             theme(axis.text = element_text(size = 1),
+                   axis.ticks = element_line(size = 1),
+                   axis.ticks.length = unit(0.2, "cm"),
+                   plot.margin = margin(1, 1, 1, 1, "cm")),
+           tl.cex = 10,
+           lab = TRUE,
+           lab_size = 3)
+  # Metriques Adrien
+AD_Metriques <- Metriques %>%
+  select(21 , 34, 47, 60, 69, 78, 87 : 98)
+corr_AD_matrix <- cor(AD_Metriques)
+filtered_corr <- ifelse(abs(corr_AD_matrix) >= 0.6, corr_AD_matrix, NA)
+filtered_corr_clean <- filtered_corr
+  # Na en 0 pour le classement hiérarchique hc.order
+filtered_corr_clean[!is.finite(filtered_corr_clean)] <- 0
+ggcorrplot(filtered_corr_clean ,
+           hc.order = TRUE,
+           outline.color = "black",
+           tl.col = "white",
+           tl.srt = 90,
+           ggtheme = ggplot2::theme_minimal() +
+             theme(axis.text = element_text(color = "black", size = 1),
+                   axis.ticks = element_line(size = 1),
+                   axis.ticks.length = unit(0.2, "cm"),
+                   plot.margin = margin(1, 1, 1, 1, "cm")),
+           tl.cex = 10,
+           lab = TRUE,
+           lab_size = 3,
+           lab_col = "black") 
+
+  # Metriques R_Balvay placette
+RB_placette_Metriques <- Metriques %>%
+  select(61 : 68, 70 : 77, 79 : 86)
+RB_placette_matrix <- cor(RB_placette_Metriques)
+filtered_corr <- ifelse(abs(RB_placette_matrix) >= 0.6, RB_placette_matrix, NA)
+filtered_corr_clean <- filtered_corr
+  # Na en 0 pour le classement hiérarchique hc.order
+filtered_corr_clean[!is.finite(filtered_corr_clean)] <- 0
+ggcorrplot(filtered_corr_clean ,
+           hc.order = TRUE,
+           outline.color = "black",
+           tl.col = "white",
+           tl.srt = 90,
+           ggtheme = ggplot2::theme_minimal() +
+             theme(axis.text = element_text(size = 1),
+                   axis.ticks = element_line(size = 1),
+                   axis.ticks.length = unit(0.2, "cm"),
+                   plot.margin = margin(1, 1, 1, 1, "cm")),
+           tl.cex = 10,
+           lab = TRUE,
+           lab_size = 2)
+
+  # Metriques R_Balvay arbre
+RB_arbre_Metriques <- Metriques %>%
+  select(48 : 59)
+RB_arbre_matrix <- cor(RB_arbre_Metriques)
+filtered_corr <- ifelse(abs(RB_arbre_matrix) >= 0.6, RB_arbre_matrix, NA)
+filtered_corr_clean <- filtered_corr
+  # Na en 0 pour le classement hiérarchique hc.order
+filtered_corr_clean[!is.finite(filtered_corr_clean)] <- 0
+ggcorrplot(filtered_corr_clean ,
+           hc.order = TRUE,
+           outline.color = "black",
+           tl.col = "white",
+           tl.srt = 90,
+           ggtheme = ggplot2::theme_minimal() +
+             theme(axis.text = element_text(size = 1),
+                   axis.ticks = element_line(size = 1),
+                   axis.ticks.length = unit(0.2, "cm"),
+                   plot.margin = margin(1, 1, 1, 1, "cm")),
+           tl.cex = 10,
+           lab = TRUE,
+           lab_size = 2)
+
+  # Metriques R_Balvay strates arbres
+RB_strates_Metriques <- Metriques %>%
+  select(9 : 20, 22 : 33, 35 : 46)
+RB_strates_matrix <- cor(RB_strates_Metriques)
+filtered_corr <- ifelse(abs(RB_strates_matrix) >= 0.6, RB_strates_matrix, NA)
+filtered_corr_clean <- filtered_corr
+  # Na en 0 pour le classement hiérarchique hc.order
+filtered_corr_clean[!is.finite(filtered_corr_clean)] <- 0
+ggcorrplot(filtered_corr_clean ,
+           hc.order = TRUE,
+           outline.color = "black",
+           tl.col = "white",
+           tl.srt = 90,
+           ggtheme = ggplot2::theme_minimal() +
+             theme(axis.text = element_text(size = 1),
+                   axis.ticks = element_line(size = 1),
+                   axis.ticks.length = unit(0.2, "cm"),
+                   plot.margin = margin(1, 1, 1, 1, "cm")),
+           tl.cex = 10,
+           lab = TRUE,
+           lab_size = 1.5,
+           )
 ```
 
