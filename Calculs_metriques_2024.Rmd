@@ -51,7 +51,7 @@ Hauteurs <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Ca
 
 Hauteurs_AD <- Hauteurs %>%
   mutate(hauteur_piège1 = H_arbre + 3) %>%
-  select(placette, hauteur_piège1, H_arbre, H_mi_canop, H_bas_houp) %>%
+  select(id_arbre, hauteur_piège1, H_arbre, H_mi_canop, H_bas_houp) %>%
   setNames(c("placette", "Piege_1", "H_arbre", "H_mi_canop", "H_bas_houp")) %>%
   mutate(placette = ifelse(placette == "V_169", "V_170", placette))
 
@@ -98,9 +98,11 @@ Metriques_Seuils <- Hauteurs_AD %>%
          "Seuil_inferieur_(UC)" = H_mi_canop,
          "Seuil_inferieur_(LC)" = H_bas_houp,
          "Seuil_superieur_(BC)" = H_bas_houp,
-         "Seuil_inferieur_(BC)" = 0) %>%
-  select(placette, Piege_1, H_arbre, H_arbre, "Seuil_superieur_(UC)", "Seuil_inferieur_(UC)", H_mi_canop, "Seuil_inferieur_(LC)", "Seuil_superieur_(BC)", "Seuil_inferieur_(BC)") %>%
-  setNames(c("placette", "Seuil_superieur_(AC)", "Seuil_inferieur_(AC)", "Seuil_superieur_(UC)", "Seuil_inferieur_(UC)", "Seuil_superieur_(LC)", "Seuil_inferieur_(LC)", "Seuil_superieur_(BC)", "Seuil_inferieur_(BC)"))
+         "Seuil_inferieur_(BC)" = 2,
+         "Seuil_superieur_(FT)" = 2,
+         "Seuil_inferieur_(FT)" = 0) %>%
+  select(placette, Piege_1, H_arbre, H_arbre, "Seuil_superieur_(UC)", "Seuil_inferieur_(UC)", H_mi_canop, "Seuil_inferieur_(LC)", "Seuil_superieur_(BC)", "Seuil_inferieur_(BC)", "Seuil_superieur_(FT)", "Seuil_inferieur_(FT)") %>%
+  setNames(c("placette", "Seuil_superieur_(AC)", "Seuil_inferieur_(AC)", "Seuil_superieur_(UC)", "Seuil_inferieur_(UC)", "Seuil_superieur_(LC)", "Seuil_inferieur_(LC)", "Seuil_superieur_(BC)", "Seuil_inferieur_(BC)", "Seuil_superieur_(FT)", "Seuil_inferieur_(FT)"))
 
 
 #   # Rajouter les différents seuils manquant
@@ -150,7 +152,8 @@ BMP3 <- BMP2 %>%
   mutate(placette = ifelse(placette == "V_169", "V_170", placette)) %>%
   left_join(MSS, by = "placette") %>%
   mutate(strate_BMP = case_when(
-    H_BMP.m <= Seuil_superieur_.BC. ~ 'BC',
+    H_BMP.m <= Seuil_superieur_.FT. ~ "FT",
+    H_BMP.m > Seuil_inferieur_.BC. & H_BMP.m <= Seuil_superieur_.BC. ~ "BC",
     H_BMP.m >= Seuil_inferieur_.LC. & H_BMP.m <= Seuil_superieur_.LC. ~ "LC",
     H_BMP.m >= Seuil_inferieur_.UC. & H_BMP.m <= Seuil_superieur_.UC. ~ "UC",
     H_BMP.m >= Seuil_inferieur_.AC. & H_BMP.m <= Seuil_superieur_.AC. ~ "AC"))   # Assigner une nouvelle strate par rapport à la hauteur du BMP
@@ -2042,6 +2045,8 @@ ggcorrplot(filtered_corr_clean,
            tl.srt = 45,
            ggtheme = ggplot2::theme_minimal() +
              theme(axis.text = element_text(size = 1),
+                   axis.ticks = element_line(linewidth = 1),
+                   axis.ticks.length = unit(0.2, "cm"),
                    plot.margin = margin(1, 1, 1, 1, "cm")),
            tl.cex = 5)
 ggsave("correlation_plot_large.png", plot = p, width = 30, height = 30, units = "cm", dpi = 300)
@@ -2052,7 +2057,7 @@ dev.off() # fermeture png
 # Sous-matrice pour mieux voir les corrélations #
   # metriques de vol BM + div BM
 seMetriques <- Metriques %>%
-  select(21 , 34, 47, 60, 69, 78, 87 : 91, 96 : 98)
+  select(23 , 36, 49, 62, 71, 80, 89 : 93, 98 : 100)
 corr_sousmatrix <- cor(seMetriques)
 filtered_corr <- ifelse(abs(corr_sousmatrix) >= 0.6, corr_sousmatrix, NA)
 filtered_corr_clean <- filtered_corr
@@ -2065,7 +2070,7 @@ ggcorrplot(filtered_corr_clean ,
            tl.srt = 90,
            ggtheme = ggplot2::theme_minimal() +
              theme(axis.text = element_text(size = 1),
-                   axis.ticks = element_line(size = 1),
+                   axis.ticks = element_line (linewidth = 1),
                    axis.ticks.length = unit(0.2, "cm"),
                    plot.margin = margin(1, 1, 1, 1, "cm")),
            tl.cex = 10,
@@ -2073,7 +2078,7 @@ ggcorrplot(filtered_corr_clean ,
            lab_size = 3)
   # Metriques Adrien
 AD_Metriques <- Metriques %>%
-  select(21 , 34, 47, 60, 69, 78, 87 : 98)
+  select(23 , 36, 49, 62, 71, 80, 89 : 100)
 corr_AD_matrix <- cor(AD_Metriques)
 filtered_corr <- ifelse(abs(corr_AD_matrix) >= 0.6, corr_AD_matrix, NA)
 filtered_corr_clean <- filtered_corr
@@ -2086,7 +2091,7 @@ ggcorrplot(filtered_corr_clean ,
            tl.srt = 90,
            ggtheme = ggplot2::theme_minimal() +
              theme(axis.text = element_text(color = "black", size = 1),
-                   axis.ticks = element_line(size = 1),
+                   axis.ticks = element_line(linewidth = 1),
                    axis.ticks.length = unit(0.2, "cm"),
                    plot.margin = margin(1, 1, 1, 1, "cm")),
            tl.cex = 10,
@@ -2096,7 +2101,7 @@ ggcorrplot(filtered_corr_clean ,
 
   # Metriques R_Balvay placette
 RB_placette_Metriques <- Metriques %>%
-  select(61 : 68, 70 : 77, 79 : 86)
+  select(63 : 70, 72 : 79, 81 : 88)
 RB_placette_matrix <- cor(RB_placette_Metriques)
 filtered_corr <- ifelse(abs(RB_placette_matrix) >= 0.6, RB_placette_matrix, NA)
 filtered_corr_clean <- filtered_corr
@@ -2109,7 +2114,7 @@ ggcorrplot(filtered_corr_clean ,
            tl.srt = 90,
            ggtheme = ggplot2::theme_minimal() +
              theme(axis.text = element_text(size = 1),
-                   axis.ticks = element_line(size = 1),
+                   axis.ticks = element_line(linewidth = 1),
                    axis.ticks.length = unit(0.2, "cm"),
                    plot.margin = margin(1, 1, 1, 1, "cm")),
            tl.cex = 10,
@@ -2118,7 +2123,7 @@ ggcorrplot(filtered_corr_clean ,
 
   # Metriques R_Balvay arbre
 RB_arbre_Metriques <- Metriques %>%
-  select(48 : 59)
+  select(50 : 61)
 RB_arbre_matrix <- cor(RB_arbre_Metriques)
 filtered_corr <- ifelse(abs(RB_arbre_matrix) >= 0.6, RB_arbre_matrix, NA)
 filtered_corr_clean <- filtered_corr
@@ -2131,29 +2136,29 @@ ggcorrplot(filtered_corr_clean ,
            tl.srt = 90,
            ggtheme = ggplot2::theme_minimal() +
              theme(axis.text = element_text(size = 1),
-                   axis.ticks = element_line(size = 1),
+                   axis.ticks = element_line(linewidth = 1),
                    axis.ticks.length = unit(0.2, "cm"),
                    plot.margin = margin(1, 1, 1, 1, "cm")),
            tl.cex = 10,
            lab = TRUE,
            lab_size = 2)
 
-  # Metriques R_Balvay strates arbres
+  # Metriques R_Balvay strates sur les arbres
 RB_strates_Metriques <- Metriques %>%
-  select(9 : 20, 22 : 33, 35 : 46)
+  select(11 : 22, 24 : 35, 37 : 48)
 RB_strates_matrix <- cor(RB_strates_Metriques)
 filtered_corr <- ifelse(abs(RB_strates_matrix) >= 0.6, RB_strates_matrix, NA)
 filtered_corr_clean <- filtered_corr
   # Na en 0 pour le classement hiérarchique hc.order
 filtered_corr_clean[!is.finite(filtered_corr_clean)] <- 0
-ggcorrplot(filtered_corr_clean ,
+ggcorrplot(filtered_corr_clean,
            hc.order = TRUE,
            outline.color = "black",
            tl.col = "white",
            tl.srt = 90,
            ggtheme = ggplot2::theme_minimal() +
              theme(axis.text = element_text(size = 1),
-                   axis.ticks = element_line(size = 1),
+                   axis.ticks = element_line(linewidth = 1),
                    axis.ticks.length = unit(0.2, "cm"),
                    plot.margin = margin(1, 1, 1, 1, "cm")),
            tl.cex = 10,
