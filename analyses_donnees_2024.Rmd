@@ -1,0 +1,99 @@
+---
+title: "Analyses_donnees_2024"
+author: "Adrien Debout"
+date: "2025-04-30"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 1. Environnement
+
+```{r}
+library(here)
+library(readxl)
+library(dplyr)
+library(tidyverse)
+library(stringr)
+library(ggplot2)
+```
+
+# 2. working directory
+
+```{r}
+  # Working diretory
+setwd(here::here("Data", "Data entomo"))
+here()
+```
+
+# 3. 
+
+```{r}
+  # IMPORT Jeu de données coléoptères
+Coleo <- read.table("jeu_donnees_coleo.txt", sep = "\t", dec = ".", quote = "\"", stringsAsFactors = F, header = T) %>%
+  select(6 : 7, 10 : 20)
+
+abondance <- Coleo %>%
+  group_by(Numero_de_piege) %>%
+  summarise(Abondance = sum(Abondance))
+
+barplot(abondance$Numero_de_piege, abondance$Abondance)
+
+ggplot(abondance, aes(x = Numero_de_piege, y = Abondance)) +
+  geom_bar(stat = "identity", fill = c("darkblue", "darkred", "darkgreen", "darkmagenta")) +
+  geom_text(aes(label = Abondance), vjust = -0.5, size = 3) +
+  labs(title = "Abondance de coléoptères saproxyliques le long d'un gradient vertical",
+       x = "Pièges entomologiques",
+       y = "Abondance") +
+  ylim(0, 10000) +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 9, face = "bold"),
+    axis.text.x = element_text(angle = 0))
+
+Div1 <- Coleo %>%
+  filter(Numero_de_piege == "1") %>%
+  distinct(SP, .keep_all = T) %>%
+  select(9, 13) %>%
+  mutate(nbesp = 1) %>%
+  summarise(nbesp = sum(nbesp)) %>%
+  mutate(piege = "Piege_1")
+Div2 <- Coleo %>%
+  filter(Numero_de_piege == "2") %>%
+  distinct(SP, .keep_all = T) %>%
+  select(9, 13) %>%
+  mutate(nbesp = 1) %>%
+  summarise(nbesp = sum(nbesp)) %>%
+  mutate(piege = "Piege_2")
+Div3 <- Coleo %>%
+  filter(Numero_de_piege == "3") %>%
+  distinct(SP, .keep_all = T) %>%
+  select(9, 13) %>%
+  mutate(nbesp = 1) %>%
+  summarise(nbesp = sum(nbesp)) %>%
+  mutate(piege = "Piege_3")
+Div4 <- Coleo %>%
+  filter(Numero_de_piege == "4") %>%
+  distinct(SP, .keep_all = T) %>%
+  select(9, 13) %>%
+  mutate(nbesp = 1) %>%
+  summarise(nbesp = sum(nbesp)) %>%
+  mutate(piege = "Piege_4")
+Div <- bind_rows(Div1, Div2, Div3, Div4) %>%
+  arrange(piege)
+
+div_coleo <- Coleo %>%
+  distinct(SP, .keep_all = T) %>%
+  select(9, 13) %>%
+  mutate(SP = ifelse(SP == "", NA, SP),
+         nbesp = 1) %>%
+  filter(!is.na(SP)) 
+
+%>%
+  group_by(Numero_de_piege) %>%
+  summarise(nbesp = sum(nbesp)) 
+```
+
