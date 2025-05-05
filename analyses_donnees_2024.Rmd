@@ -20,6 +20,7 @@ library(dplyr)
 library(tidyverse)
 library(stringr)
 library(ggplot2)
+library(gridExtra) # Afficher plusieurs ggplots en meme temps
 ```
 
 # 2. working directory
@@ -37,63 +38,93 @@ here()
 Coleo <- read.table("jeu_donnees_coleo.txt", sep = "\t", dec = ".", quote = "\"", stringsAsFactors = F, header = T) %>%
   select(6 : 7, 10 : 20)
 
+  # Calcul de l'abondance par piège
 abondance <- Coleo %>%
   group_by(Numero_de_piege) %>%
   summarise(Abondance = sum(Abondance))
-
-barplot(abondance$Numero_de_piege, abondance$Abondance)
-
-ggplot(abondance, aes(x = Numero_de_piege, y = Abondance)) +
-  geom_bar(stat = "identity", fill = c("darkblue", "darkred", "darkgreen", "darkmagenta")) +
+  # Graphique de visualisation 
+ab <- ggplot(abondance, aes(x = Numero_de_piege, y = Abondance)) +
+  geom_bar(stat = "identity", fill = c("darkgreen", "#458B00", "#556B2F", "#9ACD32")) +
   geom_text(aes(label = Abondance), vjust = -0.5, size = 3) +
-  labs(title = "Abondance de coléoptères saproxyliques le long d'un gradient vertical",
+  labs(title = "Abondance de coléoptères saproxyliques le long des arbres Thèses",
        x = "Pièges entomologiques",
-       y = "Abondance") +
+       y = "Abondance (n)") +
   ylim(0, 10000) +
   theme_minimal() +
   theme(plot.title = element_text(size = 9, face = "bold"),
     axis.text.x = element_text(angle = 0))
 
-Div1 <- Coleo %>%
-  filter(Numero_de_piege == "1") %>%
-  distinct(SP, .keep_all = T) %>%
-  select(9, 13) %>%
-  mutate(nbesp = 1) %>%
-  summarise(nbesp = sum(nbesp)) %>%
-  mutate(piege = "Piege_1")
-Div2 <- Coleo %>%
-  filter(Numero_de_piege == "2") %>%
-  distinct(SP, .keep_all = T) %>%
-  select(9, 13) %>%
-  mutate(nbesp = 1) %>%
-  summarise(nbesp = sum(nbesp)) %>%
-  mutate(piege = "Piege_2")
-Div3 <- Coleo %>%
-  filter(Numero_de_piege == "3") %>%
-  distinct(SP, .keep_all = T) %>%
-  select(9, 13) %>%
-  mutate(nbesp = 1) %>%
-  summarise(nbesp = sum(nbesp)) %>%
-  mutate(piege = "Piege_3")
-Div4 <- Coleo %>%
-  filter(Numero_de_piege == "4") %>%
-  distinct(SP, .keep_all = T) %>%
-  select(9, 13) %>%
-  mutate(nbesp = 1) %>%
-  summarise(nbesp = sum(nbesp)) %>%
-  mutate(piege = "Piege_4")
-Div <- bind_rows(Div1, Div2, Div3, Div4) %>%
-  arrange(piege)
+# Div1 <- Coleo %>%
+#   filter(Numero_de_piege == "1") %>%
+#   distinct(SP, .keep_all = T) %>%
+#   select(9, 13) %>%
+#   mutate(nbesp = 1) %>%
+#   summarise(nbesp = sum(nbesp)) %>%
+#   mutate(piege = "Piege_1")
+# Div2 <- Coleo %>%
+#   filter(Numero_de_piege == "2") %>%
+#   distinct(SP, .keep_all = T) %>%
+#   select(9, 13) %>%
+#   mutate(nbesp = 1) %>%
+#   summarise(nbesp = sum(nbesp)) %>%
+#   mutate(piege = "Piege_2")
+# Div3 <- Coleo %>%
+#   filter(Numero_de_piege == "3") %>%
+#   distinct(SP, .keep_all = T) %>%
+#   select(9, 13) %>%
+#   mutate(nbesp = 1) %>%
+#   summarise(nbesp = sum(nbesp)) %>%
+#   mutate(piege = "Piege_3")
+# Div4 <- Coleo %>%
+#   filter(Numero_de_piege == "4") %>%
+#   distinct(SP, .keep_all = T) %>%
+#   select(9, 13) %>%
+#   mutate(nbesp = 1) %>%
+#   summarise(nbesp = sum(nbesp)) %>%
+#   mutate(piege = "Piege_4")
+# Div <- bind_rows(Div1, Div2, Div3, Div4) %>%
+#   arrange(piege)
 
+  # 
 div_coleo <- Coleo %>%
   distinct(SP, .keep_all = T) %>%
   select(9, 13) %>%
   mutate(SP = ifelse(SP == "", NA, SP),
          nbesp = 1) %>%
-  filter(!is.na(SP)) 
-
-%>%
+  filter(!is.na(SP)) %>%
   group_by(Numero_de_piege) %>%
-  summarise(nbesp = sum(nbesp)) 
+  summarise(nbesp = sum(nbesp))
+
+div <- ggplot(div_coleo, aes(x = Numero_de_piege, y = nbesp)) +
+  geom_bar(stat = "identity", fill = c("darkgreen", "#458B00", "#556B2F", "#9ACD32")) +
+  geom_text(aes(label = nbesp), vjust = -0.5, size = 3) +
+  labs(title = "Diversité spécifique dans chaque pièges des arbres Thèses",
+       x = "Pièges entomologiques",
+       y = "Diversité spécifique") +
+  ylim(0, 100) +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 9, face = "bold"),
+        axis.text.x = element_text(angle = 0))
+  # Faire apparaître 2 ggplot en même temps
+grid.arrange(ab, div, ncol = 2)
+
+library(FactoMineR)
+Coleopca <- Coleo %>%
+  select(8, 9, 11, 13) %>%
+  mutate(code_sp = ifelse((is.na(GEN) | GEN == "") & (is.na(SP) | SP == ""), "INC",
+         paste(GEN, SP, sep = "_"))) %>%
+  filter(!is.na(code_sp)) # Vérif des NAs
+
+Coleopca <- Coleopca %>%
+  setNames(c("GEN", "SP", "AB", "Num_piege", "code_sp")) %>%
+  mutate(AB = as.numeric(AB)) %>%
+  pivot_longer(cols = 4 : 5, names_to = "code_sp", values_to = "AB") 
+
+
+
+coleo.pca = PCA(Coleo[, 8 : 13], scale.unit = T, quali.sup = 8 : 10, graph = T)
+plot.PCA(coleo.pca, axes = c(1,2), choix = , habillage = )
+
+
 ```
 
