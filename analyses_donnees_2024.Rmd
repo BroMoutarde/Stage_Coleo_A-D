@@ -86,14 +86,33 @@ ab <- ggplot(abondance, aes(x = Numero_de_piege, y = Abondance)) +
 #   arrange(piege)
 
   # 
+# div_coleo <- Coleo %>%
+#   distinct(SP, .keep_all = T) %>%
+#   select(9, 13) %>%
+#   mutate(SP = ifelse(SP == "", NA, SP),
+#          nbesp = 1) %>%
+#   filter(!is.na(SP)) %>%
+#   group_by(Numero_de_piege) %>%
+#   summarise(nbesp = sum(nbesp))
+
+
 div_coleo <- Coleo %>%
-  distinct(SP, .keep_all = T) %>%
-  select(9, 13) %>%
-  mutate(SP = ifelse(SP == "", NA, SP),
-         nbesp = 1) %>%
-  filter(!is.na(SP)) %>%
-  group_by(Numero_de_piege) %>%
-  summarise(nbesp = sum(nbesp))
+  distinct(Espece, Numero_de_piege, .keep_all = T) %>%
+  select(6, 11, 13)
+#
+div1 <- div_coleo %>%
+  filter(Numero_de_piege == 1)
+#
+div2 <- div_coleo %>%
+  filter(Numero_de_piege == 2)
+#
+div3 <- div_coleo %>%
+  filter(Numero_de_piege == 3)
+#
+div4 <- div_coleo %>%
+  filter(Numero_de_piege == 4)
+
+#
 
 div <- ggplot(div_coleo, aes(x = Numero_de_piege, y = nbesp)) +
   geom_bar(stat = "identity", fill = c("darkgreen", "#458B00", "#556B2F", "#9ACD32")) +
@@ -108,23 +127,45 @@ div <- ggplot(div_coleo, aes(x = Numero_de_piege, y = nbesp)) +
   # Faire apparaître 2 ggplot en même temps
 grid.arrange(ab, div, ncol = 2)
 
-library(FactoMineR)
-Coleopca <- Coleo %>%
+#
+
+Coleobis <- Coleo %>%
   select(8, 9, 11, 13) %>%
   mutate(code_sp = ifelse((is.na(GEN) | GEN == "") & (is.na(SP) | SP == ""), "INC",
          paste(GEN, SP, sep = "_"))) %>%
   filter(!is.na(code_sp)) # Vérif des NAs
 
-Coleopca <- Coleopca %>%
+Coleobis<- Coleobis %>%
   setNames(c("GEN", "SP", "AB", "Num_piege", "code_sp")) %>%
   mutate(AB = as.numeric(AB)) %>%
-  pivot_longer(cols = 4 : 5, names_to = "code_sp", values_to = "AB") 
+  select(3 : 5) 
 
+Coleo1 <- Coleobis %>%
+  filter(Num_piege == 1) %>%
+  group_by(code_sp) %>%
+  summarise(AB = sum(AB))
+ggplot(Coleo1, aes(x = code_sp, y = AB)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = AB), vjust = -0.5, size = 3) +
+  labs(title = "Abondance des espèces capturées dans les pièges 1 des arbres Thèses",
+       x = "Pièges entomologiques",
+       y = "Abondance (n)") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 9, face = "bold"),
+        axis.text.x = element_text(angle = 0))
 
-
-coleo.pca = PCA(Coleo[, 8 : 13], scale.unit = T, quali.sup = 8 : 10, graph = T)
-plot.PCA(coleo.pca, axes = c(1,2), choix = , habillage = )
-
-
+Coleo2 <- Coleobis %>%
+  filter(Num_piege == 2) %>%
+  group_by(code_sp) %>%
+  summarise(AB = sum(AB))
+ggplot(Coleo2, aes(x = code_sp, y = AB)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = AB), vjust = -0.5, size = 3) +
+  labs(title = "Abondance des espèces capturées dans les pièges 1 des arbres Thèses",
+       x = "Pièges entomologiques",
+       y = "Abondance (n)") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 9, face = "bold"),
+        axis.text.x = element_text(angle = 0))
 ```
 
