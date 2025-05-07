@@ -167,5 +167,68 @@ ggplot(Coleo2, aes(x = code_sp, y = AB)) +
   theme_minimal() +
   theme(plot.title = element_text(size = 9, face = "bold"),
         axis.text.x = element_text(angle = 0))
+
+###################################################################
+
+```
+
+# 4. Analyses
+
+```{r}
+
+# l’ICA est-elle un milieu singulier en termes de diversité, d’abondance et de composition des assemblages de coléoptères saproxyliques ?
+
+BMP_Strates <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMP_Strates_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
+
+BMP_Arbres <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Arbres_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
+
+BMP_Placettes <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Placette_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
+
+entomo <- read.table(here::here("Data", "Data placettes", "DATA_placette_CANOPIX", "metriques_CB", "metric_entomo2024.txt"), sep = "\t", dec = ".", quote = "\"", stringsAsFactors = F, header = T)
+
+library(fitdistrplus)
+descdist(entomo$ab.colsx,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$ab.colsx,"norm"))
+
+fitnb<-fitdist(entomo$ab.colsx,"nbinom")
+plot(fitdist(entomo$ab.colsx,"nbinom"))
+
+fitp<-fitdist(entomo$ab.colsx,"pois")
+plot(fitp)
+
+fitn<-fitdist(entomo$ab.colsx,"norm")
+plot(fitn) # oui
+
+fitlnorm<-fitdist(entomo$ab.colsx,"lnorm")
+plot(fitlnorm) # oui
+
+fitexp<-fitdist(entomo$ab.colsx,"exp")
+plot(fitexp)
+
+fitgeom<-fitdist(entomo$ab.colsx,"geom")
+plot(fitgeom)
+
+fitbeta<-fitdist(entomo$ab.colsx,"beta") # Pas possible, pas 0/1
+
+
+fitunif<-fitdist(entomo$ab.colsx,"unif")
+plot(fitunif)
+
+fitg<-fitdist(entomo$ab.colsx,"gamma",method="mme")
+plot(fitg) # oui
+
+BMP_Strates <- BMP_Strates %>%
+  mutate(Vol_BMP_AC.m3 = 0, .before = "Vol_BMP_UC.m3") %>%
+  pivot_longer(cols = 2 : 5, names_to = , values_to = )
+
+model <- glmmTMB(rs.scol.non.ambrosia ~ entomo$ab.colsx+(1|cluster)+(1|idtrapyear)+exp(pos+0|ID),family="nbinom1",data=Rscolytexoticfcircul,na.action=na.fail)
+
+#diagnostic glmm : ajustement, surdispersion, outliers
+library(DHARMa)
+sim<-simulateResiduals(model3)
+testUniformity(sim)#le qqplot est issu de cette commande 
+#KS Test p-value # Dispersion test  # Outliers 
+testOutliers(sim)
+
 ```
 

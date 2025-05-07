@@ -347,6 +347,9 @@ BMP_PlacetteTot <- MSS %>%
   # Vérification de la présence de NAs
 BMP_PlacetteTot %>% summarise(across(everything(), ~ sum(is.na(.))))
 which(is.na(BMP_PlacetteTot$Vol.m3), arr.ind=TRUE)
+which(is.na(BMP_PlacetteTot$strate_BMP), arr.ind=TRUE)
+BMP_PlacetteTot <- BMP_PlacetteTot %>%
+  filter(!is.na(strate_BMP)) # Enlever le NA lié a la valeur manquante de H_BMP.m
 
   # Somme des BMP pour la placette
 BMP_PlacetteTot2 <- BMP_PlacetteTot %>%
@@ -421,8 +424,9 @@ DMH_placette <- DMH_placette %>%
 G <- DMH_placette %>% 
   filter(Cat_arbre !="M" & Cat_arbre !="C" & Cat_arbre !="S") %>%
   group_by(num_arbre) %>% 
-  summarise(g = pi*(DBH.m/2)^2) %>% 
-  distinct()
+  mutate(g = pi*(DBH.m/2)^2) %>% 
+  distinct() %>%
+  filter(BMP_sp != "hetre" & != "charme" & != "pin sylvestre")
   # Standardiser l'appellation de la placette 
 G <- separate(G, num_arbre, sep = "_", into = c("massif", "placette", "reste"))
 G <- G %>% 
