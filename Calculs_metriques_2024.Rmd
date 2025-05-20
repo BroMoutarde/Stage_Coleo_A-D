@@ -410,7 +410,7 @@ BMPAVANT <- ggplot(BMP_PlacetteTot4, aes(x = placette, y = Vol_BMP_Tot.m3.ha))+
 ```
 
 ### 3.4 Surface terrière (G)
-surface terrière d’un arbre (noté g) = surface du tronc coupé (pi*r²)à 1,30 m
+surface terrière d’un arbre (noté g) = surface du tronc coupé (pi*r²) à 1,30 m
 surface terrière d’un peuplement (noté G) = somme des surfaces terrières de tous les arbres qui le composent (m²)
 
 ```{r}
@@ -423,10 +423,10 @@ DMH_placette <- DMH_placette %>%
   # Garder que les arbres vivants (remarque : les 4 arbres DMH sont vivants)
 G <- DMH_placette %>% 
   filter(Cat_arbre !="M" & Cat_arbre !="C" & Cat_arbre !="S") %>%
+  filter(!BMP_sp %in% c("hetre", "charme", "pin sylvestre", "alisier torminal")) %>%
   group_by(num_arbre) %>% 
-  mutate(g = pi*(DBH.m/2)^2) %>% 
-  distinct() %>%
-  filter(BMP_sp != "hetre" & != "charme" & != "pin sylvestre")
+  mutate(g = pi*(DBH.m/2)^2) %>%
+  distinct(g , .keep_all = T)
   # Standardiser l'appellation de la placette 
 G <- separate(G, num_arbre, sep = "_", into = c("massif", "placette", "reste"))
 G <- G %>% 
@@ -442,9 +442,9 @@ G_plac <- G %>%
 
 #######################################################################
 
-# Calcul surface terrière des arbres DMH #
+# Calcul surface terrière des arbres DMH seulement #
 
-  # Garde ques les arbres DMH
+  # On ne garde que les arbres DMH
 G_DMH <- DMH_placette %>% 
   filter(Cat_arbre !="M" & Cat_arbre !="C" & Cat_arbre !="S" & Cat_arbre !="V") %>%
   group_by(num_arbre) %>% 
@@ -508,7 +508,7 @@ BMP_PlacetteTot5 <- BMP_PlacetteTot5 %>%
   # Graphique pour visualiser la variance métrique
 BMPAPRES <- ggplot(BMP_PlacetteTot5, aes(x = placette, y = Vol_BMP_Tot_Pondere.m3.ha))+
   geom_bar(stat = "identity", fill = "darkgreen") +
-  labs(title = "Volume de BMP par placette avant pondération",
+  labs(title = "Volume de BMP par placette après pondération",
        x = "Placette",
        y = "Volume BMP (m3/ha)") +
   theme_classic() +
@@ -517,15 +517,15 @@ BMPAPRES <- ggplot(BMP_PlacetteTot5, aes(x = placette, y = Vol_BMP_Tot_Pondere.m
 grid.arrange(plotvolbmp, plotpond, BMPAVANT, BMPAPRES, ncol = 2 : 2)
 
   # Ecart_type BMP par placette sans pondération
-sd(BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha) # 6.328228
+sd(BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha) # 6.293047
 min(BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha) # 0.05555543
 max(BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha) # 24.44439
-mean(BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha) # 9.345811
+mean(BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha) # 9.306923
   # Ecart_type BMP par placette avec pondération
-sd(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 24.08001
-min(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 0.3351569
-max(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 86.43693
-mean(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 38.17105
+sd(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 22.14602
+min(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 0.3290758
+max(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 85.84921
+mean(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 34.91436
 
   # EXPORT
 write.table(x = BMP_PlacetteTot5, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")

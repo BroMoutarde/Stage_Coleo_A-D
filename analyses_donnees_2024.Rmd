@@ -21,6 +21,8 @@ library(tidyverse)
 library(stringr)
 library(ggplot2)
 library(gridExtra) # Afficher plusieurs ggplots en meme temps
+library(fitdistrplus) # Regarder la distribution la mieux adaptée
+library(glmmTMB)
 ```
 
 # 2. working directory
@@ -217,11 +219,29 @@ plot(fitunif)
 fitg<-fitdist(entomo$ab.colsx,"gamma",method="mme")
 plot(fitg) # oui
 
-BMP_Strates <- BMP_Strates %>%
-  mutate(Vol_BMP_AC.m3 = 0, .before = "Vol_BMP_UC.m3") %>%
-  pivot_longer(cols = 2 : 5, names_to = , values_to = )
 
-model <- glmmTMB(rs.scol.non.ambrosia ~ entomo$ab.colsx+(1|cluster)+(1|idtrapyear)+exp(pos+0|ID),family="nbinom1",data=Rscolytexoticfcircul,na.action=na.fail)
+# Modifier le jeu de données entomo pour créer une colonne placette
+
+entomo <- entomo %>%
+  mutate(placette = paste0(substr(LOCA, 1, 1), "_", parcelle), .before = LOCA) %>%
+  arrange(placette)
+
+  # Passage en tableau long pour l'analyse du modèle
+BMP_Strates <- BMP_Strates %>%
+  mutate(Vol_BMP_AC.m3 = 0, .before = "Vol_BMP_UC.m3") %>% 
+  # Rajout de la colonne AC pour avoir les 4 strates
+  pivot_longer(cols = 2 : 5, names_to = "strates", values_to = "Volume_BMP.m3") %>%
+  rename(placette = Placette) 
+
+Final <- entomo %>% 
+  left_join(BMP_Strates, by = "placette")
+
+
+
+
+modeltest <- glmmTMB(BMP_Strates$strates ~ entomo$ab.colsx, family="lognormal", data = ,na.action=na.fail)
+
+model <- glmmTMB(BMP_Strates$strates ~ entomo$ab.colsx + (1|cluster) + (1|idtrapyear) + exp(pos+0|ID),family="nbinom1",data=Rscolytexoticfcircul,na.action=na.fail)
 
 #diagnostic glmm : ajustement, surdispersion, outliers
 library(DHARMa)
