@@ -219,27 +219,43 @@ plot(fitunif)
 fitg<-fitdist(entomo$ab.colsx,"gamma",method="mme")
 plot(fitg) # oui
 
+####
 
 # Modifier le jeu de données entomo pour créer une colonne placette
 
+  # Modification de entomo pour left_join avec les métriques X
 entomo <- entomo %>%
   mutate(placette = paste0(substr(LOCA, 1, 1), "_", parcelle), .before = LOCA) %>%
   arrange(placette)
-
   # Passage en tableau long pour l'analyse du modèle
 BMP_Strates <- BMP_Strates %>%
   mutate(Vol_BMP_AC.m3 = 0, .before = "Vol_BMP_UC.m3") %>% 
   # Rajout de la colonne AC pour avoir les 4 strates
   pivot_longer(cols = 2 : 5, names_to = "strates", values_to = "Volume_BMP.m3") %>%
-  rename(placette = Placette) 
+  mutate(num.trap = case_when(strates == "Vol_BMP_AC.m3" ~ 1,
+                             strates == "Vol_BMP_UC.m3" ~ 2,
+                             strates == "Vol_BMP_LC.m3" ~ 3,
+                             strates == "Vol_BMP_BC.m3" ~ 4)) %>%
+  rename(placette = Placette) %>%
+  arrange(placette)
+  # Ligne de code pour ajouter les métriques X à entomo
 
-Final <- entomo %>% 
-  left_join(BMP_Strates, by = "placette")
+Final <- BMP_Strates %>% 
+  left_join(entomo, by = c("placette" = "placette", "num.trap" = "num.trap")) 
 
 
+####
 
+?fitdist
+?glmmTMB
+#
+Final <- Final %>%
+  mutate(Volume_BMP.m3 = ifelse(Volume_BMP.m3 == 0, Volume_BMP.m3 + 0.000000001, Volume_BMP.m3))
+#
+modeltest <- glmmTMB(Volume_BMP.m3 ~ ab.colsx + strates, family = "lognormal", data = Final, na.action = na.fail) # Problème avec l'aléatoire de strates
+#
+summary(modeltest)
 
-modeltest <- glmmTMB(BMP_Strates$strates ~ entomo$ab.colsx, family="lognormal", data = ,na.action=na.fail)
 
 model <- glmmTMB(BMP_Strates$strates ~ entomo$ab.colsx + (1|cluster) + (1|idtrapyear) + exp(pos+0|ID),family="nbinom1",data=Rscolytexoticfcircul,na.action=na.fail)
 
