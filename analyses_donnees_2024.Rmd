@@ -14,15 +14,21 @@ knitr::opts_chunk$set(echo = TRUE)
 # 1. Environnement
 
 ```{r}
-library(here)
+library(here) # environnement de travail
 library(readxl)
-library(dplyr)
+library(dplyr) # mise en forme des tableaux
 library(tidyverse)
 library(stringr)
-library(ggplot2)
+library(ggplot2) # ggplot graphiques
 library(gridExtra) # Afficher plusieurs ggplots en meme temps
 library(fitdistrplus) # Regarder la distribution la mieux adaptée
-library(glmmTMB)
+library(glmmTMB) # modèles mixtes
+library(AICcmodavg) # Comparaison de modèles
+library(fitdistrplus) # Distribution la mieux adaptée
+library(DHARMa) # Vérification des présuposés des modèles
+library(emmeans)
+library(multcomp)
+library(vegan)
 ```
 
 # 2. working directory
@@ -33,7 +39,7 @@ setwd(here::here("Data", "Data entomo"))
 here()
 ```
 
-# 3. 
+# 3. Tests & graphs initiaux
 
 ```{r}
   # IMPORT Jeu de données coléoptères
@@ -174,54 +180,43 @@ ggplot(Coleo2, aes(x = code_sp, y = AB)) +
 
 ```
 
-# 4. Analyses
+
+# 4. Data loader
 
 ```{r}
-
-# l’ICA est-elle un milieu singulier en termes de diversité, d’abondance et de composition des assemblages de coléoptères saproxyliques ?
-
+  # BMP Strates
 BMP_Strates <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMP_Strates_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
-
+  # BMP Arbres
 BMP_Arbres <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Arbres_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
-
+  # BMP Placettes
 BMP_Placettes <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Placette_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
-
+  # Data entomo
 entomo <- read.table(here::here("Data", "Data placettes", "DATA_placette_CANOPIX", "metriques_CB", "metric_entomo2024.txt"), sep = "\t", dec = ".", quote = "\"", stringsAsFactors = F, header = T)
+  # Data matrices CB
+matrices <- read.table(here::here("Data", "Data placettes", "DATA_placette_CANOPIX", "metriques_CB", "matrix_spcolsx_pieges.txt"), sep = "\t", dec = ".", quote = "\"", stringsAsFactors = F, header = T)
+dimnames(matrices) # attention 1 à 6 (7: 381)
+  # Data longitude et latitude
+GPS <- read.csv(here::here("Data", "Data placettes", "DATA_placette_CANOPIX", "metriques_CB", "info_arbre.csv"),
+sep=",", header=TRUE, stringsAsFactors = FALSE)
 
-library(fitdistrplus)
-descdist(entomo$ab.colsx,discrete=TRUE,boot=1001)
-plot(fitdist(entomo$ab.colsx,"norm"))
+library(vegan)
 
-fitnb<-fitdist(entomo$ab.colsx,"nbinom")
-plot(fitdist(entomo$ab.colsx,"nbinom"))
+distsupra<-vegdist(matrices[,7 : 381], method="bray",na.rm = TRUE)
+adonis2(matrices[,7 : 381] ~ strate, matrices, permutations = 999, method = "bray",strata = LOCA)
 
-fitp<-fitdist(entomo$ab.colsx,"pois")
-plot(fitp)
+library(emmeans)
+emmeans()
+?emmeans # glmmm peut expliqué attendre CB
 
-fitn<-fitdist(entomo$ab.colsx,"norm")
-plot(fitn) # oui
-
-fitlnorm<-fitdist(entomo$ab.colsx,"lnorm")
-plot(fitlnorm) # oui
-
-fitexp<-fitdist(entomo$ab.colsx,"exp")
-plot(fitexp)
-
-fitgeom<-fitdist(entomo$ab.colsx,"geom")
-plot(fitgeom)
-
-fitbeta<-fitdist(entomo$ab.colsx,"beta") # Pas possible, pas 0/1
+# refaire TOUT les modèles en séparant Final par relevé 
+# Réfléchir à intégrer relevé et strates dans modèles (strate * relevé)
+# Partition de variance : approche multi-variable ( proposition des métriques dendro, qui influence signif le plus et qui sur l'abondance de coleo) avec VARPAR pour mesurer la proportion de variance mais également inertie 
 
 
-fitunif<-fitdist(entomo$ab.colsx,"unif")
-plot(fitunif)
 
-fitg<-fitdist(entomo$ab.colsx,"gamma",method="mme")
-plot(fitg) # oui
+###
 
-####
-
-# Modifier le jeu de données entomo pour créer une colonne placette
+# Modifier Jeu de données entomo pour créer une colonne placette #
 
   # Modification de entomo pour left_join avec les métriques X
 entomo <- entomo %>%
@@ -239,32 +234,215 @@ BMP_Strates <- BMP_Strates %>%
   rename(placette = Placette) %>%
   arrange(placette)
   # Ligne de code pour ajouter les métriques X à entomo
+  # Ajout de la localisation des placettes
+GPS <- GPS %>%
+  mutate(id_arbre = ifelse(id_arbre == "V_169", "V_170", id_arbre)) %>%
+  arrange(id_arbre) %>%
+  rename(placette = id_arbre,
+         latitude = Y_L93,
+         longitude = X_L93) %>%
+  select(3, 4, 9) 
 
 Final <- BMP_Strates %>% 
-  left_join(entomo, by = c("placette" = "placette", "num.trap" = "num.trap")) 
+  left_join(entomo, by = c("placette" = "placette", "num.trap" = "num.trap")) %>%
+  left_join(GPS, by = "placette") %>%
+  select(placette, longitude, latitude, everything())
+#
+Final <- Final %>%
+  mutate(Volume_BMP.m3 = ifelse(Volume_BMP.m3 == 0, Volume_BMP.m3 + 0.000000001, Volume_BMP.m3),
+         strates = case_when(strates == "Vol_BMP_AC.m3" ~ "AC",
+                             strates == "Vol_BMP_UC.m3" ~ "UC",
+                             strates == "Vol_BMP_LC.m3" ~ "LC",
+                             strates == "Vol_BMP_BC.m3" ~ "BC")) %>%
+  mutate(id = paste0(placette, "_", num.trap))
 
+Final$strates <- as.factor(Final$strates)
+Final$placette <- as.factor(Final$placette)
+Final$id <- as.factor(Final$id)
+```
+
+# 5. Analyses : effet strates
+Différence de strates 
+## 5.1. Ab_col_all
+
+```{r}
+descdist(entomo$ab.colsx,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$ab.colsx,"norm"))
+#
+fitnb<-fitdist(entomo$ab.colsx,"nbinom")
+plot(fitdist(entomo$ab.colsx,"nbinom"))
+#
+fitp<-fitdist(entomo$ab.colsx,"pois")
+plot(fitp)
+#
+fitn<-fitdist(entomo$ab.colsx,"norm")
+plot(fitn) # oui
+#
+fitlnorm<-fitdist(entomo$ab.colsx,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(entomo$ab.colsx,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$ab.colsx,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo$ab.colsx,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$ab.colsx,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$ab.colsx,"gamma",method="mme")
+plot(fitg) # oui
 
 ####
 
-?fitdist
+  # Modèle pour l'abondance, richesse spécifique
+attach(Final)
+pos<-numFactor((as.numeric(longitude)),(as.numeric(latitude)))
+ID <- id
+GEO <- exp(pos + 0 |ID)
+  # Vérifier si id.trap bien identifiant unique pour chaque ligne
+#
 ?glmmTMB
+model_ABX_BMPS <- glmmTMB(
+  ab.colsx ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = "lognormal", 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABX_BMPS) # effet strate
 #
-Final <- Final %>%
-  mutate(Volume_BMP.m3 = ifelse(Volume_BMP.m3 == 0, Volume_BMP.m3 + 0.000000001, Volume_BMP.m3))
+AICc(model_ABX_BMPS)
 #
-modeltest <- glmmTMB(Volume_BMP.m3 ~ ab.colsx + strates, family = "lognormal", data = Final, na.action = na.fail) # Problème avec l'aléatoire de strates
+model_ABX_BMPS2 <- glmmTMB(
+  ab.colsx ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "lognormal", 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABX_BMPS2)
 #
-summary(modeltest)
+AICc(model_ABX_BMPS2) # au minimum un delta de 2 pour l'ajustement des modèles
+#
+anova(model_ABX_BMPS, model_ABX_BMPS2) # 3.78e-06
 
-
-model <- glmmTMB(BMP_Strates$strates ~ entomo$ab.colsx + (1|cluster) + (1|idtrapyear) + exp(pos+0|ID),family="nbinom1",data=Rscolytexoticfcircul,na.action=na.fail)
+####
 
 #diagnostic glmm : ajustement, surdispersion, outliers
-library(DHARMa)
-sim<-simulateResiduals(model3)
-testUniformity(sim)#le qqplot est issu de cette commande 
+sim<-simulateResiduals(model_ABX_BMPS)
+testUniformity(sim)#le qqplot est issu de cette commande
+# id.trap si disersion (ex : (1 | LOCA / placette / id.trap)
+# KS test : problème de distribution
 #KS Test p-value # Dispersion test  # Outliers 
 testOutliers(sim)
 
+####
+
+  # Test post-hoc de Tukey pour faire comparaison 2 à 2
+RES<-glht(model_ABX_BMPS, linfct = mcp(strate = "Tukey"))
+summary(RES)
+
+# Est ce que supra diffère du reste : strate2 avec supra et autre canopée ou autre appellation (2 eme temps pas urgent)
+
+####
+
+detach(Final)
+```
+
+## 5.2. Sr_col_all
+
+```{r}
+descdist(entomo$sr.colsx,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$sr.colsx,"norm")) # oui
+#
+fitnb<-fitdist(entomo$sr.colsx,"nbinom")
+plot(fitdist(entomo$sr.colsx,"nbinom"))
+#
+fitp<-fitdist(entomo$sr.colsx,"pois")
+plot(fitp)
+#
+fitn<-fitdist(entomo$sr.colsx,"norm")
+plot(fitn) # oui
+#
+fitlnorm<-fitdist(entomo$sr.colsx,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(entomo$sr.colsx,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$sr.colsx,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo$sr.colsx,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$sr.colsx,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$sr.colsx,"gamma",method="mme")
+plot(fitg) # oui
+
+####
+
+model_SRX_BMPS <- glmmTMB(
+  Volume_BMP.m3 ~ sr.colsx * strate, 
+  family = "gaussian", 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRX_BMPS)
+# Interaction enlevée puisque pas significatif
+model_SRX2_BMPS <- glmmTMB(
+  Volume_BMP.m3 ~ sr.colsx + strate, 
+  family = "gaussian", 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRX2_BMPS)
+# comparaison des modèles
+AICc(model_SRX_BMPS) # -195.9065
+AICc(model_SRX2_BMPS) # -199.9332
+
+####
+
+#diagnostic glmm : ajustement, surdispersion, outliers
+sim<-simulateResiduals(model_SRX2_BMPS)
+testUniformity(sim)#le qqplot est issu de cette commande 
+#KS Test p-value # Dispersion test  # Outliers 
+testOutliers(sim)
+```
+
+## 5.3. Ab_col_rar
+
+```{r}
+modelABRAR <- glmmTMB(
+  Volume_BMP.m3 ~ ab.colsxrar + strate, 
+  family = "lognormal", 
+  data = Final, 
+  na.action = na.fail) ; summary(modeltest)
+```
+
+## 5.4. Sr_col_rar
+
+```{r}
+modelSRRAR <- glmmTMB(
+  Volume_BMP.m3 ~ sr.colsxrar + strate, 
+  family = "lognormal", 
+  data = Final, 
+  na.action = na.fail) ; summary(modeltest)
+```
+
+## 5.5. Ab_col_com
+
+```{r}
+modelABCOM <- glmmTMB(
+  Volume_BMP.m3 ~ ab.colsxcom + strate, 
+  family = "lognormal", 
+  data = Final, 
+  na.action = na.fail) ; summary(modeltest)
+```
+
+## 5.6. Sr_col_com
+
+```{r}
+modelSRCOM <- glmmTMB(
+  Volume_BMP.m3 ~ sr.colsxcom + strate, 
+  family = "lognormal", 
+  data = Final, 
+  na.action = na.fail) ; summary(modeltest)
 ```
 
