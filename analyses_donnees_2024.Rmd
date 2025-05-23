@@ -29,6 +29,7 @@ library(DHARMa) # Vérification des présuposés des modèles
 library(emmeans)
 library(multcomp)
 library(vegan)
+library(tidyr)
 ```
 
 # 2. working directory
@@ -198,6 +199,10 @@ dimnames(matrices) # attention 1 à 6 (7: 381)
   # Data longitude et latitude
 GPS <- read.csv(here::here("Data", "Data placettes", "DATA_placette_CANOPIX", "metriques_CB", "info_arbre.csv"),
 sep=",", header=TRUE, stringsAsFactors = FALSE)
+colnames(GPS) <- "raw"
+options(digits = 15)
+GPS <- separate(GPS, raw, into = c("massif", "plot", "X_L93", "Y_L93", "X_WGS84", "Y_WGS84", "sp", "note_DEPERIS", "DBH.cm", "H_arbre.m", "id_arbre"), sep = ",", convert = TRUE)
+options(digits = 15)
 
 library(vegan)
 
@@ -236,12 +241,14 @@ BMP_Strates <- BMP_Strates %>%
   # Ligne de code pour ajouter les métriques X à entomo
   # Ajout de la localisation des placettes
 GPS <- GPS %>%
-  mutate(id_arbre = ifelse(id_arbre == "V_169", "V_170", id_arbre)) %>%
   arrange(id_arbre) %>%
   rename(placette = id_arbre,
          latitude = Y_L93,
          longitude = X_L93) %>%
-  select(3, 4, 9) 
+  select(3, 4, 11)
+GPS$placette <- gsub('"', '', GPS$placette) # guillements en trop
+GPS <- GPS %>%
+  mutate(placette = ifelse(placette == "V_169", "V_170", placette)) 
 
 Final <- BMP_Strates %>% 
   left_join(entomo, by = c("placette" = "placette", "num.trap" = "num.trap")) %>%
@@ -259,6 +266,7 @@ Final <- Final %>%
 Final$strates <- as.factor(Final$strates)
 Final$placette <- as.factor(Final$placette)
 Final$id <- as.factor(Final$id)
+Final$strate <- as.factor(Final$strate)
 ```
 
 # 5. Analyses : effet strates
@@ -300,14 +308,20 @@ plot(fitg) # oui
 
   # Modèle pour l'abondance, richesse spécifique
 attach(Final)
-pos<-numFactor((as.numeric(longitude)),(as.numeric(latitude)))
-ID <- id
-GEO <- exp(pos + 0 |ID)
-  # Vérifier si id.trap bien identifiant unique pour chaque ligne
-#
-?glmmTMB
+longitude <- as.numeric(longitude) ; longitude
+latitude <- as.numeric(latitude)
+coords <- unique(Final[, c("id", "latitude", "longitude")])
+coords$pos <- numFactor(scale(coords$latitude), scale(coords$longitude))
+Final <- merge(Final, coords[, c("id", "pos")], by = "id", all.x = TRUE)
+pos<-numFactor(scale(longitude),scale(latitude)) ; pos
+ID <- id ; ID
+strate <- as.factor(strate)
+is.factor(strate)
+is.numeric(ab.colsx)
+detach(Final)
+# Vérifier si id.trap bien identifiant unique pour chaque ligne #
 model_ABX_BMPS <- glmmTMB(
-  ab.colsx ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  ab.colsx ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
   family = "lognormal", 
   data = Final, 
   na.action = na.fail) ; summary(model_ABX_BMPS) # effet strate
@@ -341,10 +355,6 @@ RES<-glht(model_ABX_BMPS, linfct = mcp(strate = "Tukey"))
 summary(RES)
 
 # Est ce que supra diffère du reste : strate2 avec supra et autre canopée ou autre appellation (2 eme temps pas urgent)
-
-####
-
-detach(Final)
 ```
 
 ## 5.2. Sr_col_all
