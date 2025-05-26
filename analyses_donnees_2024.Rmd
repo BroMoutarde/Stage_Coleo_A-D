@@ -262,11 +262,6 @@ Final <- Final %>%
                              strates == "Vol_BMP_LC.m3" ~ "LC",
                              strates == "Vol_BMP_BC.m3" ~ "BC")) %>%
   mutate(id = paste0(placette, "_", num.trap))
-
-Final$strates <- as.factor(Final$strates)
-Final$placette <- as.factor(Final$placette)
-Final$id <- as.factor(Final$id)
-Final$strate <- as.factor(Final$strate)
 ```
 
 # 5. Analyses : effet strates
@@ -310,22 +305,25 @@ plot(fitg) # oui
 attach(Final)
 longitude <- as.numeric(longitude) ; longitude
 latitude <- as.numeric(latitude)
-coords <- unique(Final[, c("id", "latitude", "longitude")])
-coords$pos <- numFactor(scale(coords$latitude), scale(coords$longitude))
-Final <- merge(Final, coords[, c("id", "pos")], by = "id", all.x = TRUE)
+strates <- as.factor(strates)
+placette <- as.factor(placette)
+id <- as.factor(id)
+is.numeric(num.trap)
+strate <- as.factor(strate)
 pos<-numFactor(scale(longitude),scale(latitude)) ; pos
 ID <- id ; ID
-strate <- as.factor(strate)
 is.factor(strate)
 is.numeric(ab.colsx)
+is.numeric(num.trap)
+num.trap <- as.factor (num.trap)
 detach(Final)
 # Vérifier si id.trap bien identifiant unique pour chaque ligne #
 model_ABX_BMPS <- glmmTMB(
-  ab.colsx ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  ab.colsx ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)),
   family = "lognormal", 
   data = Final, 
   na.action = na.fail) ; summary(model_ABX_BMPS) # effet strate
-#
+ #
 AICc(model_ABX_BMPS)
 #
 model_ABX_BMPS2 <- glmmTMB(
@@ -353,7 +351,7 @@ testOutliers(sim)
   # Test post-hoc de Tukey pour faire comparaison 2 à 2
 RES<-glht(model_ABX_BMPS, linfct = mcp(strate = "Tukey"))
 summary(RES)
-
+0.0031270 **
 # Est ce que supra diffère du reste : strate2 avec supra et autre canopée ou autre appellation (2 eme temps pas urgent)
 ```
 
@@ -373,7 +371,7 @@ fitn<-fitdist(entomo$sr.colsx,"norm")
 plot(fitn) # oui
 #
 fitlnorm<-fitdist(entomo$sr.colsx,"lnorm")
-plot(fitlnorm) # oui
+plot(fitlnorm) # 
 #
 fitexp<-fitdist(entomo$sr.colsx,"exp")
 plot(fitexp)
@@ -388,42 +386,96 @@ fitunif<-fitdist(entomo$sr.colsx,"unif")
 plot(fitunif)
 #
 fitg<-fitdist(entomo$sr.colsx,"gamma",method="mme")
-plot(fitg) # oui
+plot(fitg) # 
 
 ####
 
 model_SRX_BMPS <- glmmTMB(
-  Volume_BMP.m3 ~ sr.colsx * strate, 
+  sr.colsx ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
   family = "gaussian", 
   data = Final, 
   na.action = na.fail) ; summary(model_SRX_BMPS)
-# Interaction enlevée puisque pas significatif
+#
 model_SRX2_BMPS <- glmmTMB(
-  Volume_BMP.m3 ~ sr.colsx + strate, 
+  sr.colsx ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
   family = "gaussian", 
   data = Final, 
   na.action = na.fail) ; summary(model_SRX2_BMPS)
 # comparaison des modèles
-AICc(model_SRX_BMPS) # -195.9065
-AICc(model_SRX2_BMPS) # -199.9332
-
+AICc(model_SRX_BMPS) # 636.4873
+AICc(model_SRX2_BMPS) # 646.2442
+#
+anova(model_SRX_BMPS, model_SRX2_BMPS) # 0.0049384 **
 ####
-
 #diagnostic glmm : ajustement, surdispersion, outliers
-sim<-simulateResiduals(model_SRX2_BMPS)
+sim<-simulateResiduals(model_SRX_BMPS)
 testUniformity(sim)#le qqplot est issu de cette commande 
 #KS Test p-value # Dispersion test  # Outliers 
 testOutliers(sim)
+
+  # Test post-hoc de Tukey pour faire comparaison 2 à 2
+RES<-glht(model_SRX_BMPS, linfct = mcp(strate = "Tukey"))
+summary(RES)
+# 0.0048236 **
 ```
 
 ## 5.3. Ab_col_rar
 
 ```{r}
+descdist(entomo$ab.colsxrar,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$ab.colsxrar,"norm")) # oui
+#
+fitnb<-fitdist(entomo$ab.colsxrar,"nbinom")
+plot(fitdist(entomo$ab.colsxrar,"nbinom"))
+#
+fitp<-fitdist(entomo$ab.colsxrar,"pois")
+plot(fitp)
+#
+fitn<-fitdist(entomo$ab.colsxrar,"norm")
+plot(fitn) # oui
+#
+fitlnorm<-fitdist(entomo$ab.colsxrar,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo$ab.colsxrar,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$ab.colsxrar,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo$ab.colsxrar,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$ab.colsxrar,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$ab.colsxrar,"gamma",method="mme")
+plot(fitg) # 
+#
 modelABRAR <- glmmTMB(
-  Volume_BMP.m3 ~ ab.colsxrar + strate, 
-  family = "lognormal", 
+  ab.colsxrar ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "gaussian", 
   data = Final, 
-  na.action = na.fail) ; summary(modeltest)
+  na.action = na.fail) ; summary(modelABRAR)
+#
+modelABRAR2 <- glmmTMB(
+  ab.colsxrar ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "gaussian", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelABRAR2)
+# comparaison des modèles
+AICc(modelABRAR) # 620.6581
+AICc(modelABRAR2) # 660.7834
+#
+anova(modelABRAR, modelABRAR2) # 3.2334e-10 ***
+#
+sim<-simulateResiduals(modelABRAR)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelABRAR, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***
+
 ```
 
 ## 5.4. Sr_col_rar
