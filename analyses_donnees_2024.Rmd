@@ -304,7 +304,7 @@ plot(fitg) # oui
   # Modèle pour l'abondance, richesse spécifique
 attach(Final)
 longitude <- as.numeric(longitude) ; longitude
-latitude <- as.numeric(latitude)
+latitude <- as.numeric(latitude) ; latitude
 strates <- as.factor(strates)
 placette <- as.factor(placette)
 id <- as.factor(id)
@@ -324,6 +324,13 @@ model_ABX_BMPS <- glmmTMB(
   data = Final, 
   na.action = na.fail) ; summary(model_ABX_BMPS) # effet strate
  #
+library(lme4)
+?glmer
+model_ABX_BMPS <- glmer(
+  ab.colsx ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)) + exp(pos + 0 | ID),
+  family = "gaussian"(link = "log"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABX_BMPS)
 AICc(model_ABX_BMPS)
 #
 model_ABX_BMPS2 <- glmmTMB(
@@ -481,30 +488,1116 @@ summary(RES) # < 0.001 ***
 ## 5.4. Sr_col_rar
 
 ```{r}
+descdist(entomo$sr.colsxrar,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$sr.colsxrar,"norm")) #
+#
+?glmmTMB
+fitnb<-fitdist(entomo$sr.colsxrar,"nbinom")
+plot(fitdist(entomo$sr.colsxrar,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo$sr.colsxrar,"pois")
+plot(fitp) # oui
+#
+fitn<-fitdist(entomo$sr.colsxrar,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$sr.colsxrar,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo$sr.colsxrar,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$sr.colsxrar,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo$sr.colsxrar,"beta") # 
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$sr.colsxrar,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$sr.colsxrar,"gamma",method="mme")
+plot(fitg) # 
+#
+?glmmTMB
 modelSRRAR <- glmmTMB(
-  Volume_BMP.m3 ~ sr.colsxrar + strate, 
-  family = "lognormal", 
+  sr.colsxrar ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "genpois", 
   data = Final, 
-  na.action = na.fail) ; summary(modeltest)
+  na.action = na.fail) ; summary(modelSRRAR)
+#
+modelSRRAR2 <- glmmTMB(
+  sr.colsxrar ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "genpois", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelSRRAR2)
+#
+AICc(modelSRRAR) # 330.9763
+AICc(modelSRRAR2) # 374.6217
+#
+anova(modelSRRAR, modelSRRAR2) # 5.759e-11 ***
+#
+sim<-simulateResiduals(modelSRRAR)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelSRRAR, linfct = mcp(strate = "Tukey"))
+summary(RES) # 0.00511 ** 
 ```
 
 ## 5.5. Ab_col_com
 
 ```{r}
+descdist(entomo$ab.colsxcom,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$ab.colsxcom,"norm")) #
+#
+fitnb<-fitdist(entomo$ab.colsxcom,"nbinom")
+plot(fitdist(entomo$ab.colsxcom,"nbinom")) # 
+# 
+fitp<-fitdist(entomo$ab.colsxcom,"pois")
+plot(fitp) # 
+#
+fitn<-fitdist(entomo$ab.colsxcom,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$ab.colsxcom,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(entomo$ab.colsxcom,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$ab.colsxcom,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo$ab.colsxcom,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$ab.colsxcom,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$ab.colsxcom,"gamma",method="mme")
+plot(fitg) # oui
+#
 modelABCOM <- glmmTMB(
-  Volume_BMP.m3 ~ ab.colsxcom + strate, 
+  ab.colsxcom ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
   family = "lognormal", 
   data = Final, 
-  na.action = na.fail) ; summary(modeltest)
+  na.action = na.fail) ; summary(modelABCOM)
+#
+modelABCOM2 <- glmmTMB(
+  ab.colsxcom ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "lognormal", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelABCOM2)
+#
+AICc(modelABCOM) # 930.4896
+AICc(modelABCOM2) # 949.2164
+#
+anova(modelABCOM, modelABCOM2) # 1.076e-05 ***
+#
+sim<-simulateResiduals(modelABCOM)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelABCOM, linfct = mcp(strate = "Tukey"))
+summary(RES) # 0.01575 * 
 ```
 
 ## 5.6. Sr_col_com
 
 ```{r}
+descdist(entomo$sr.colsxcom,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$sr.colsxcom,"norm")) #
+#
+fitnb<-fitdist(entomo$sr.colsxcom,"nbinom")
+plot(fitdist(entomo$sr.colsxcom,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo$sr.colsxcom,"pois")
+plot(fitp) # 
+#
+fitn<-fitdist(entomo$sr.colsxcom,"norm")
+plot(fitn) # oui
+#
+fitlnorm<-fitdist(entomo$sr.colsxcom,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo$sr.colsxcom,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$sr.colsxcom,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo$sr.colsxcom,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$sr.colsxcom,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$sr.colsxcom,"gamma",method="mme")
+plot(fitg) # 
+#
 modelSRCOM <- glmmTMB(
-  Volume_BMP.m3 ~ sr.colsxcom + strate, 
+  sr.colsxcom ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "gaussian", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelSRCOM)
+#
+modelSRCOM2 <- glmmTMB(
+  sr.colsxcom ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "gaussian", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelSRCOM2)
+#
+AICc(modelSRCOM) # 614.1401
+AICc(modelSRCOM2) # 618.5605
+#
+anova(modelSRCOM, modelSRCOM2) # 0.009558 **
+#
+sim<-simulateResiduals(modelSRCOM)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelSRCOM, linfct = mcp(strate = "Tukey"))
+summary(RES) # 0.0079 ** 
+```
+
+## 5.7. ab_cav
+
+```{r}
+descdist(entomo$ab.cav,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$ab.cav,"norm")) #
+#
+fitnb<-fitdist(entomo$ab.cav,"nbinom")
+plot(fitdist(entomo$ab.cav,"nbinom")) # 
+# 
+fitp<-fitdist(entomo$ab.cav,"pois")
+plot(fitp) # 
+#
+fitn<-fitdist(entomo$ab.cav,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$ab.cav,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(entomo$ab.cav,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$ab.cav,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo$ab.cav,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$ab.cav,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$ab.cav,"gamma",method="mme")
+plot(fitg) # oui
+#
+modelABCAV <- glmmTMB(
+  ab.cav ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
   family = "lognormal", 
   data = Final, 
-  na.action = na.fail) ; summary(modeltest)
+  na.action = na.fail) ; summary(modelABCAV)
+#
+modelABCAV2 <- glmmTMB(
+  ab.cav ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "lognormal", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelABCAV2)
+#
+AICc(modelABCAV) # 685.2339
+AICc(modelABCAV2) # 702.1384
+#
+anova(modelABCAV,modelABCAV2) # 2.588e-05 ***
+#
+sim<-simulateResiduals(modelABCAV)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelABCAV, linfct = mcp(strate = "Tukey"))
+summary(RES) # 0.0079 ** 
+```
+
+## 5.8. sr_cav
+
+```{r}
+descdist(entomo$sr.cav,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$sr.cav,"norm")) #
+#
+fitnb<-fitdist(entomo$sr.cav,"nbinom")
+plot(fitdist(entomo$sr.cav,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo$sr.cav,"pois")
+plot(fitp) # oui
+#
+fitn<-fitdist(entomo$sr.cav,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$sr.cav,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo$sr.cav,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$sr.cav,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo$sr.cav,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$sr.cav,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$sr.cav,"gamma",method="mme")
+plot(fitg) # 
+#
+modelSRCAV <- glmmTMB(
+  sr.cav ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "genpois", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelSRCAV)
+#
+modelSRCAV2 <- glmmTMB(
+  sr.cav ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "genpois", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelSRCAV2)
+#
+AICc(modelSRCAV) # 453.7887
+AICc(modelSRCAV2) # 467.9944
+#
+anova(modelSRCAV,modelSRCAV2) # 9.44e-05 ***
+#
+sim<-simulateResiduals(modelSRCAV)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelABCAV, linfct = mcp(strate = "Tukey"))
+summary(RES) # 0.0079 ** 
+```
+
+## 5.9. ab_fon
+
+```{r}
+descdist(entomo$ab.fon,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$ab.fon,"norm")) #
+#
+fitnb<-fitdist(entomo$ab.fon,"nbinom")
+plot(fitdist(entomo$ab.fon,"nbinom")) # 
+# 
+fitp<-fitdist(entomo$ab.fon,"pois")
+plot(fitp) # 
+#
+fitn<-fitdist(entomo$ab.fon,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$ab.fon,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(entomo$ab.fon,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$ab.fon,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo$ab.fon,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$ab.fon,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$ab.fon,"gamma",method="mme")
+plot(fitg) # 
+#
+modelABFON <- glmmTMB(
+  ab.fon ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "lognormal", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelABFON)
+#
+modelABFON2 <- glmmTMB(
+  ab.fon ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "lognormal", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelABFON2)
+#
+AICc(modelABFON) # 861.6836
+AICc(modelABFON2) # 863.6748
+#
+anova(modelABFON,modelABFON2) # 0.02911 *
+#
+sim<-simulateResiduals(modelABFON)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelABFON, linfct = mcp(strate = "Tukey"))
+summary(RES) # 0.0079 ** 
+```
+
+## 5.10. sr_fon
+
+```{r}
+descdist(entomo$sr.fon,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$sr.fon,"norm")) #
+#
+fitnb<-fitdist(entomo$sr.fon,"nbinom")
+plot(fitdist(entomo$sr.fon,"nbinom")) # 
+# 
+fitp<-fitdist(entomo$sr.fon,"pois")
+plot(fitp) # oui
+#
+fitn<-fitdist(entomo$sr.fon,"norm")
+plot(fitn) # oui
+#
+fitlnorm<-fitdist(entomo$sr.fon,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo$sr.fon,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$sr.fon,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo$sr.fon,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$sr.fon,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$sr.fon,"gamma",method="mme")
+plot(fitg) # 
+#
+modelSRFON <- glmmTMB(
+  sr.fon ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "genpois", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelSRFON)
+#
+modelSRFON2 <- glmmTMB(
+  sr.fon ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "genpois", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelSRFON2)
+#
+AICc(modelSRFON) # 470.2642
+AICc(modelSRFON2) # 478.399
+#
+anova(modelSRFON,modelSRFON2) # 0.001687 **
+#
+sim<-simulateResiduals(modelSRFON)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelSRFON, linfct = mcp(strate = "Tukey"))
+summary(RES) # 0.0247 * 
+```
+
+## 5.11. ab_fon_spe
+
+```{r}
+descdist(entomo$ab.fonspe,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$ab.fonspe,"norm")) #
+#
+fitnb<-fitdist(entomo$ab.fonspe,"nbinom")
+plot(fitdist(entomo$ab.fonspe,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo$ab.fonspe,"pois")
+plot(fitp) # 
+#
+fitn<-fitdist(entomo$ab.fonspe,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$ab.fonspe,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo$ab.fonspe,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$ab.fonspe,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo$ab.fonspe,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$ab.fonspe,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$ab.fonspe,"gamma",method="mme")
+plot(fitg) # 
+#
+modelABFONspe <- glmmTMB(
+  ab.fonspe ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "nbinom1", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelABFONspe)
+#
+modelABFON2spe <- glmmTMB(
+  ab.fonspe ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "lognormal", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelABFON2spe)
+#
+AICc(modelABFONspe) # 484.316
+AICc(modelABFON2spe) # 495.8483
+#
+anova(modelABFONspe,modelABFON2spe) # 0.000338 ***
+#
+sim<-simulateResiduals(modelABFONspe)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelABFONspe, linfct = mcp(strate = "Tukey"))
+summary(RES) # 0.00227 ** 
+```
+
+## 5.12. sr_fon_spe
+
+```{r}
+descdist(entomo$sr.fonspe,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$sr.fonspe,"norm")) #
+#
+fitnb<-fitdist(entomo$sr.fonspe,"nbinom")
+plot(fitdist(entomo$sr.fonspe,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo$sr.fonspe,"pois")
+plot(fitp) # ou
+#
+fitn<-fitdist(entomo$sr.fonspe,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$sr.fonspe,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo$sr.fonspe,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$sr.fonspe,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo$sr.fonspe,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$sr.fonspe,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$sr.fonspe,"gamma",method="mme")
+plot(fitg) # 
+#
+modelSRFONspe <- glmmTMB(
+  sr.fonspe ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "genpois", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelSRFONspe)
+#
+modelSRFON2spe <- glmmTMB(
+  sr.fonspe ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "genpois", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelSRFON2spe)
+#
+AICc(modelSRFONspe) # 315.5848
+AICc(modelSRFON2spe) # 319.8235
+#
+anova(modelSRFONspe,modelSRFON2spe) # 0.0104 *
+#
+sim<-simulateResiduals(modelSRFONspe)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelSRFONspe, linfct = mcp(strate = "Tukey"))
+summary(RES) # 0.00293 ** 
+```
+
+## 5.13. ab_suc
+
+```{r}
+descdist(entomo$ab.suc,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$ab.suc,"norm")) #
+#
+fitnb<-fitdist(entomo$ab.suc,"nbinom")
+plot(fitdist(entomo$ab.suc,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo$ab.suc,"pois")
+plot(fitp) # 
+#
+fitn<-fitdist(entomo$ab.suc,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$ab.suc,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo$ab.suc,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$ab.suc,"geom")
+plot(fitgeom) # oui
+#
+fitbeta<-fitdist(entomo$ab.suc,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$ab.suc,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$ab.suc,"gamma",method="mme")
+plot(fitg) # 
+#
+modelABSUC <- glmmTMB(
+  ab.suc ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "nbinom1", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelABSUC)
+#
+modelABSUC2 <- glmmTMB(
+  ab.suc ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "nbinom1", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelABSUC2)
+#
+AICc(modelABSUC) # 371.9953
+AICc(modelABSUC2) # 382.6358
+#
+anova(modelABSUC,modelABSUC2) # 0.0005162 ***
+#
+sim<-simulateResiduals(modelABSUC)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelABSUC, linfct = mcp(strate = "Tukey"))
+summary(RES) # <0.001 *** 
+```
+
+## 5.14. sr_suc
+
+```{r}
+descdist(entomo$sr.suc,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$sr.suc,"norm")) #
+#
+fitnb<-fitdist(entomo$sr.suc,"nbinom")
+plot(fitdist(entomo$sr.suc,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo$sr.suc,"pois")
+plot(fitp) # oui
+#
+fitn<-fitdist(entomo$sr.suc,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$sr.suc,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo$sr.suc,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$sr.suc,"geom")
+plot(fitgeom) # 
+#
+fitbeta<-fitdist(entomo$sr.suc,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$sr.suc,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$sr.suc,"gamma",method="mme")
+plot(fitg) # 
+#
+modelSRSUC <- glmmTMB(
+  sr.suc ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "genpois", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelSRSUC)
+#
+modelSRSUC2 <- glmmTMB(
+  sr.suc ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "genpois", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelSRSUC2)
+#
+AICc(modelSRSUC) # 266.49
+AICc(modelSRSUC2) # 267.4356
+#
+anova(modelSRSUC,modelSRSUC2) # 0.04668 *
+#
+sim<-simulateResiduals(modelSRSUC2)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelSRSUC2, linfct = mcp(strate = "Tukey"))
+summary(RES) # <0.001 *** 
+```
+
+## 5.15. ab_lig
+
+```{r}
+descdist(entomo$ab.lig,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$ab.lig,"norm")) #
+#
+fitnb<-fitdist(entomo$ab.lig,"nbinom")
+plot(fitdist(entomo$ab.lig,"nbinom")) # 
+# 
+fitp<-fitdist(entomo$ab.lig,"pois")
+plot(fitp) # 
+#
+fitn<-fitdist(entomo$ab.lig,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$ab.lig,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(entomo$ab.lig,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$ab.lig,"geom")
+plot(fitgeom) # 
+#
+fitbeta<-fitdist(entomo$ab.lig,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$ab.lig,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$ab.lig,"gamma",method="mme")
+plot(fitg) # 
+#
+modelABLIG <- glmmTMB(
+  ab.lig ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "lognormal", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelABLIG)
+#
+modelABLIG2 <- glmmTMB(
+  ab.lig ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "lognormal", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelABLIG2)
+#
+AICc(modelABLIG) # 949.4589
+AICc(modelABLIG2) # 969.5341
+#
+anova(modelABLIG,modelABLIG2) # 5.617e-06 ***
+#
+sim<-simulateResiduals(modelABLIG)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelABLIG, linfct = mcp(strate = "Tukey"))
+summary(RES) # 0.00322 **
+```
+
+## 5.16. sr_lig
+
+```{r}
+descdist(entomo$sr.lig,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$sr.lig,"norm")) #
+#
+fitnb<-fitdist(entomo$sr.lig,"nbinom")
+plot(fitdist(entomo$sr.lig,"nbinom")) # 
+# 
+fitp<-fitdist(entomo$sr.lig,"pois")
+plot(fitp) # 
+#
+fitn<-fitdist(entomo$sr.lig,"norm")
+plot(fitn) # oui
+#
+fitlnorm<-fitdist(entomo$sr.lig,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(entomo$sr.lig,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$sr.lig,"geom")
+plot(fitgeom) # 
+#
+fitbeta<-fitdist(entomo$sr.lig,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$sr.lig,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$sr.lig,"gamma",method="mme")
+plot(fitg) # oui
+#
+modelSRLIG <- glmmTMB(
+  sr.lig ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "gaussian", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelSRLIG)
+#
+modelSRLIG2 <- glmmTMB(
+  sr.lig ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "gaussian", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelSRLIG2)
+#
+AICc(modelSRLIG) # 620.5829
+AICc(modelSRLIG2) # 634.0627
+#
+anova(modelSRLIG,modelSRLIG2) # 0.0001336 ***
+#
+sim<-simulateResiduals(modelSRLIG)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelSRLIG, linfct = mcp(strate = "Tukey"))
+summary(RES) # <0.001 ***
+```
+
+## 5.17. ab_flo
+
+```{r}
+descdist(entomo$ab.flo,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$ab.flo,"norm")) #
+#
+fitnb<-fitdist(entomo$ab.flo,"nbinom")
+plot(fitdist(entomo$ab.flo,"nbinom")) # 
+# 
+fitp<-fitdist(entomo$ab.flo,"pois")
+plot(fitp) # 
+#
+fitn<-fitdist(entomo$ab.flo,"norm")
+plot(fitn) # oui
+#
+fitlnorm<-fitdist(entomo$ab.flo,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(entomo$ab.flo,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$ab.flo,"geom")
+plot(fitgeom) # 
+#
+fitbeta<-fitdist(entomo$ab.flo,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$ab.flo,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$ab.flo,"gamma",method="mme")
+plot(fitg) # 
+#
+modelABFLO <- glmmTMB(
+  ab.flo ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "lognormal", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelABFLO)
+#
+modelABFLO2 <- glmmTMB(
+  ab.flo ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "lognormal", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelABFLO2)
+#
+AICc(modelABFLO) # 745.4168
+AICc(modelABFLO2) # 790.4968
+#
+anova(modelABFLO,modelABFLO2) # 2.849e-11 ***
+#
+sim<-simulateResiduals(modelABFLO)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelABFLO, linfct = mcp(strate = "Tukey"))
+summary(RES) # 0.00146 **
+```
+
+## 5.18. sr_flo
+
+```{r}
+descdist(entomo$sr.flo,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$sr.flo,"norm")) #
+#
+fitnb<-fitdist(entomo$sr.flo,"nbinom")
+plot(fitdist(entomo$sr.flo,"nbinom")) # oui 
+# 
+fitp<-fitdist(entomo$sr.flo,"pois")
+plot(fitp) # oui
+#
+fitn<-fitdist(entomo$sr.flo,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$sr.flo,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo$sr.flo,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$sr.flo,"geom")
+plot(fitgeom) # 
+#
+fitbeta<-fitdist(entomo$sr.flo,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$sr.flo,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$sr.flo,"gamma",method="mme")
+plot(fitg) # 
+#
+modelSRFLO <- glmmTMB(
+  sr.flo ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "nbinom2", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelSRFLO)
+#
+modelSRFLO2 <- glmmTMB(
+  sr.flo ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "nbinom2", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelSRFLO2)
+#
+AICc(modelSRFLO) # 466.81
+AICc(modelSRFLO2) # 500.5577
+#
+anova(modelSRFLO,modelSRFLO2) # 7.317e-09 ***
+#
+sim<-simulateResiduals(modelSRFLO)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelSRFLO, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***
+```
+
+## 5.19. ab_pho
+
+```{r}
+descdist(entomo$ab.pho,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$ab.pho,"norm")) #
+#
+fitnb<-fitdist(entomo$ab.pho,"nbinom")
+plot(fitdist(entomo$ab.pho,"nbinom")) #  oui
+# 
+fitp<-fitdist(entomo$ab.pho,"pois")
+plot(fitp) # 
+#
+fitn<-fitdist(entomo$ab.pho,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$ab.pho,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo$ab.pho,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$ab.pho,"geom")
+plot(fitgeom) # 
+#
+fitbeta<-fitdist(entomo$ab.pho,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$ab.pho,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$ab.pho,"gamma",method="mme")
+plot(fitg) # 
+#
+modelABPHO <- glmmTMB(
+  ab.pho ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "nbinom1", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelABPHO)
+#
+modelABPHO2 <- glmmTMB(
+  ab.pho ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "nbinom1", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelABPHO2)
+#
+AICc(modelABPHO) # 450.869
+AICc(modelABPHO2) # 459.3375
+#
+anova(modelABPHO,modelABPHO2) # 0.001442 **
+#
+sim<-simulateResiduals(modelABPHO)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelABPHO, linfct = mcp(strate = "Tukey"))
+summary(RES) # 0.00712 ** 
+```
+
+## 5.20. sr_pho
+
+```{r}
+descdist(entomo$sr.pho,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$sr.pho,"norm")) #
+#
+fitnb<-fitdist(entomo$sr.pho,"nbinom")
+plot(fitdist(entomo$sr.pho,"nbinom")) #  oui
+# 
+fitp<-fitdist(entomo$sr.pho,"pois")
+plot(fitp) # oui
+#
+fitn<-fitdist(entomo$sr.pho,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$sr.pho,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo$sr.pho,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$sr.pho,"geom")
+plot(fitgeom) # 
+#
+fitbeta<-fitdist(entomo$sr.pho,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$sr.pho,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$sr.pho,"gamma",method="mme")
+plot(fitg) # 
+#
+modelSRPHO <- glmmTMB(
+  sr.pho ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "genpois", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelSRPHO)
+#
+modelSRPHO2 <- glmmTMB(
+  sr.pho ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "genpois", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelSRPHO2)
+#
+AICc(modelSRPHO) # 262.2215
+AICc(modelSRPHO2) # 272.1756
+#
+anova(modelSRPHO,modelSRPHO2) # 0.0007147 ***
+#
+sim<-simulateResiduals(modelSRPHO)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelSRPHO, linfct = mcp(strate = "Tukey"))
+summary(RES) # 0.00347 **
+```
+
+## 5.21. ab_myc
+
+```{r}
+descdist(entomo$ab.myc,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$ab.myc,"norm")) #
+#
+fitnb<-fitdist(entomo$ab.myc,"nbinom")
+plot(fitdist(entomo$ab.myc,"nbinom")) #  oui
+# 
+fitp<-fitdist(entomo$ab.myc,"pois")
+plot(fitp) # oui
+#
+fitn<-fitdist(entomo$ab.myc,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$ab.myc,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(entomo$ab.myc,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$ab.myc,"geom")
+plot(fitgeom) # 
+#
+fitbeta<-fitdist(entomo$ab.myc,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$ab.myc,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$ab.myc,"gamma",method="mme")
+plot(fitg) # 
+#
+modelABMYC <- glmmTMB(
+  ab.myc ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "lognormal", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelABMYC)
+#
+modelABMYC2 <- glmmTMB(
+  ab.myc ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "lognormal", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelABMYC2)
+#
+AICc(modelABMYC) # 753.5138
+AICc(modelABMYC2) # 761.3229
+#
+anova(modelABMYC,modelABMYC2) # 0.001967 **
+#
+sim<-simulateResiduals(modelABMYC)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelABMYC, linfct = mcp(strate = "Tukey"))
+summary(RES) # 0.0014 **
+```
+
+## 5.22. sr_myc
+
+```{r}
+descdist(entomo$sr.myc,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$sr.myc,"norm")) #
+#
+fitnb<-fitdist(entomo$sr.myc,"nbinom")
+plot(fitdist(entomo$sr.myc,"nbinom")) #  oui
+# 
+fitp<-fitdist(entomo$sr.myc,"pois")
+plot(fitp) # oui
+#
+fitn<-fitdist(entomo$sr.myc,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$sr.myc,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(entomo$sr.myc,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$sr.myc,"geom")
+plot(fitgeom) # 
+#
+fitbeta<-fitdist(entomo$sr.myc,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$sr.myc,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$sr.myc,"gamma",method="mme")
+plot(fitg) # 
+#
+modelSRMYC <- glmmTMB(
+  sr.myc ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "genpois", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelSRMYC)
+#
+modelSRMYC2 <- glmmTMB(
+  sr.myc ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = "genpois", 
+  data = Final, 
+  na.action = na.fail) ; summary(modelSRMYC2)
+#
+AICc(modelSRMYC) # 399.8433
+AICc(modelSRMYC2) # 401.8182
+#
+anova(modelSRMYC,modelSRMYC2) # 0.02933 *
+#
+sim<-simulateResiduals(modelSRMYC)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelSRMYC, linfct = mcp(strate = "Tukey"))
+summary(RES) # 0.0014 **
+```
+
+## 5.23. ab_xyl
+
+```{r}
+
+```
+
+## 5.24. sr_xyl
+
+```{r}
+
 ```
 
