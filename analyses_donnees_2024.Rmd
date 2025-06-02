@@ -311,27 +311,28 @@ id <- as.factor(id)
 is.numeric(num.trap)
 strate <- as.factor(strate)
 pos<-numFactor(scale(longitude),scale(latitude)) ; pos
-ID <- id ; ID
+ID <- placette ; ID
 is.factor(strate)
 is.numeric(ab.colsx)
 is.numeric(num.trap)
+LOCA <- as.factor(LOCA)
 num.trap <- as.factor (num.trap)
 detach(Final)
 # Vérifier si id.trap bien identifiant unique pour chaque ligne #
 model_ABX_BMPS <- glmmTMB(
-  ab.colsx ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)),
+  ab.colsx ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
   family = "lognormal", 
   data = Final, 
   na.action = na.fail) ; summary(model_ABX_BMPS) # effet strate
  #
-library(lme4)
-?glmer
-model_ABX_BMPS <- glmer(
-  ab.colsx ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)) + exp(pos + 0 | ID),
-  family = "gaussian"(link = "log"), 
-  data = Final, 
-  na.action = na.fail) ; summary(model_ABX_BMPS)
-AICc(model_ABX_BMPS)
+# library(lme4)
+# ?glmer
+# model_ABX_BMPS <- glmer(
+#   ab.colsx ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)) + exp(pos + 0 | ID),
+#   family = "gaussian"(link = "log"), 
+#   data = Final, 
+#   na.action = na.fail) ; summary(model_ABX_BMPS)
+# AICc(model_ABX_BMPS)
 #
 model_ABX_BMPS2 <- glmmTMB(
   ab.colsx ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
@@ -339,7 +340,8 @@ model_ABX_BMPS2 <- glmmTMB(
   data = Final, 
   na.action = na.fail) ; summary(model_ABX_BMPS2)
 #
-AICc(model_ABX_BMPS2) # au minimum un delta de 2 pour l'ajustement des modèles
+AICc(model_ABX_BMPS) # 960.8536
+AICc(model_ABX_BMPS2) # au minimum un delta de 2 pour l'ajustement des modèles : 976.7328
 #
 anova(model_ABX_BMPS, model_ABX_BMPS2) # 3.78e-06
 
@@ -2145,37 +2147,64 @@ plot(fitunif)
 fitg<-fitdist(entomo$CWM_canop,"gamma",method="mme")
 plot(fitg) # 
 #
+install.packages(glmmTMB)
+library(glmmTMB)
 ?glmmTMB
+vignette("covstruct", package = "glmmTMB")
 modelCWM_canop <- glmmTMB(
   CWM_canop ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = gaussian(), 
+  family = t_family(), 
   data = Final, 
   na.action = na.fail) ; summary(modelCWM_canop)
 
-library(lme4)
-modelCWM_canop <- glmer(CWM_canop ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)),
-  data = Final,
-  family = Gamma(),
-  na.action = na.fail)
-?lme4
-#
+# library(lme4)
+# modelCWM_canop <- glmer.nb(CWM_canop ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)),
+#   data = Final,
+#   verbose = T,
+#   na.action = na.fail) ; summary(modelCWM_canop)
+# ?lme4
+# ?glmer.nb
+# library(gamlss)
+# ?gamlss
+# Final$LOCA_placette <- interaction(Final$LOCA, Final$placette)
+# model_gamlss_CWM_canop <- gamlss(
+#   CWM_canop ~ strate + random(LOCA_placette),
+#   offset = log(prop.trap.season),
+#   data = Final,
+#   family = NO()  # GA = Gamma
+# ) ; summary(model_gamlss_CWM_canop)
+# # test du modèle
+# rqres.plot(model_gamlss_CWM_canop)
+# 
+# # Ouvrir une fenêtre 2x2 pour afficher les 4 graphiques
+# par(mfrow = c(2, 2))  # matrice 2 lignes x 2 colonnes
+# rqres.plot(model_gamlss_CWM_canop, which = 1)
+# # 2. Histogramme des résidus quantile
+# rqres.plot(model_gamlss_CWM_canop, which = 2)
+# # 3. Résidus vs fitted values
+# rqres.plot(model_gamlss_CWM_canop, which = 3)
+# # 4. Résidus vs index (ordre des observations)
+# rqres.plot(model_gamlss_CWM_canop, which = 4)
+# plot(model_gamlss_CWM_canop)
+# rm(model_gamlss_CWM_canop)
+# #
 modelCWM_canop2 <- glmmTMB(
   CWM_canop ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = gaussian(link = "log"), 
+  family = t_family(), 
   data = Final, 
   na.action = na.fail) ; summary(modelCWM_canop2)
 #
-AICc(modelCWM_canop) # 54.16182
-AICc(modelCWM_canop2) # 52.11842
+AICc(modelCWM_canop) # -57.22125
+AICc(modelCWM_canop2) # -32.60404
 #
-anova(modelCWM_canop, modelCWM_canop2) # 0.1734
+anova(modelCWM_canop, modelCWM_canop2) # 5.671e-07 ***
 #
 sim<-simulateResiduals(modelCWM_canop)
 testUniformity(sim)
 testOutliers(sim)
 #
-RES<-glht(modelCWM_canop2, linfct = mcp(strate = "Tukey"))
-summary(RES) # 0.00184 **
+RES<-glht(modelCWM_canop, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 1e-04 ***
 ```
 
 ## 5.33. CWM_decay
