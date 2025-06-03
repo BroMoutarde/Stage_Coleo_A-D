@@ -182,15 +182,11 @@ ggplot(Coleo2, aes(x = code_sp, y = AB)) +
 ```
 
 
-# 4. Data loader
+# 4. Data loader (+ essais emmeans et Varpar)
 
 ```{r}
   # BMP Strates
 BMP_Strates <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMP_Strates_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
-  # BMP Arbres
-BMP_Arbres <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Arbres_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
-  # BMP Placettes
-BMP_Placettes <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Placette_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
   # Data entomo
 entomo <- read.table(here::here("Data", "Data placettes", "DATA_placette_CANOPIX", "metriques_CB", "metric_entomo2024.txt"), sep = "\t", dec = ".", quote = "\"", stringsAsFactors = F, header = T)
   # Data matrices CB
@@ -246,14 +242,15 @@ GPS <- GPS %>%
          latitude = Y_L93,
          longitude = X_L93) %>%
   select(3, 4, 11)
-GPS$placette <- gsub('"', '', GPS$placette) # guillements en trop
+GPS$placette <- gsub('"', '', GPS$placette) # guillemets en trop
 GPS <- GPS %>%
-  mutate(placette = ifelse(placette == "V_169", "V_170", placette)) 
+  mutate(placette = ifelse(placette == "V_169", "V_170", placette)) # rectification
 
 Final <- BMP_Strates %>% 
-  left_join(entomo, by = c("placette" = "placette", "num.trap" = "num.trap")) %>%
-  left_join(GPS, by = "placette") %>%
-  select(placette, longitude, latitude, everything())
+  left_join(entomo, by = c("placette" = "placette", "num.trap" = "num.trap")) %>% # ajout d'une métrique dendro
+  left_join(GPS, by = "placette") %>% # Ajout coordonées GPS
+  select(placette, longitude, latitude, everything()) 
+  # Réarrangement
 #
 Final <- Final %>%
   mutate(Volume_BMP.m3 = ifelse(Volume_BMP.m3 == 0, Volume_BMP.m3 + 0.000000001, Volume_BMP.m3),
@@ -262,6 +259,215 @@ Final <- Final %>%
                              strates == "Vol_BMP_LC.m3" ~ "LC",
                              strates == "Vol_BMP_BC.m3" ~ "BC")) %>%
   mutate(id = paste0(placette, "_", num.trap))
+  # Tentative de créer une colonne strates unique et avec la même appélation que les métriques dendro, cependant pas utile puisque la colonne strate de entomo fait bien l'affaire
+
+###
+
+# Ajout des métriques dendro à Final (AD +RB)
+
+# BMP Echelle strates
+BMP_Strates <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMP_Strates_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
+# BMP Echelle arbre
+BMP_Arbres <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Arbres_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
+# BMP Echelle placette
+BMP_Placettes <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Placette_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
+# BMS Echelle placette
+BMS_Placettes <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMStot_Placette_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
+# BMD Echelle placette
+BMD_Placettes <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMDtot_Placette_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
+# BMT Echelle placette
+BMT_Placettes <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMtot_Placette_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
+# Couvert Echelle placette
+Couvert_Placettes <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_Couvert_Placette_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
+# Encombrement Echelle placette
+Encombrement_Placettes <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_Encombrement_Placette_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
+# Taux de mortalité Echelle placette
+Taux_mortalite_Placettes <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_TauxMortalité_Placette_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
+# Diversité de BM Echelle placette
+Div_BM_Placettes <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_DiversiteBM_Placette_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
+# Metriques RB Echelle arbre (comprends Echelle strates)
+Metriques_Arbre_RB <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/metriques_RB/metriques_arbre.csv", sep=",", header=TRUE, stringsAsFactors = FALSE)
+# Metriques RB Echelle placette
+Metriques_Placettes_RB <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/metriques_RB/metriques_placettes.csv", sep=",", header=TRUE, stringsAsFactors = FALSE)
+#
+BMP_Strates <- BMP_Strates %>%
+  rename(placette = Placette)
+BMP_Arbres <- BMP_Arbres %>%
+  rename(placette = Placette,
+         Vol_BMP_Tot_Arbre = Vol_BMP_Tot)
+BMP_Placettes <- BMP_Placettes %>%
+  rename(Vol_BMP_Placette_Pondere.m3.ha = Vol_BMP_Tot_Pondere.m3.ha)
+BMS_Placettes <- BMS_Placettes %>%
+  rename(BMS_Placette.m3.ha = BMS_F.m3.ha)
+BMD_Placettes <- BMD_Placettes %>%
+  rename(Vol_BMD_Placette_m3.ha = Vol_BMD_tot_m3.ha)
+Couvert_Placettes <- Couvert_Placettes %>%
+  rename(Couvert_Placette = ouverture_pc)
+Encombrement_Placettes <- Encombrement_Placettes %>%
+  rename(Encombrement_Understory_Placette = Understory..arbustive.,
+         Encombrement_Canopy_Placette = Canopy..arboree.)
+Taux_mortalite_Placettes <- Taux_mortalite_Placettes %>%
+  rename(Taux_M_Placette = Taux_M_tot)
+Div_BM_Placettes <- Div_BM_Placettes %>%
+  rename(NB_espBM_Placette = NB_espBM)
+#
+Metriques_Arbre_RB <- Metriques_Arbre_RB %>% 
+  mutate(id_arbre = ifelse(id_arbre == "V_169", "V_170", id_arbre))
+metriques_arbresRB <- Metriques_Arbre_RB %>%
+  filter(strate == "arbre") %>%
+  select(-"strate") %>%
+  rename(placette = id_arbre,
+         abon_tot_arbre = abon_tot,
+         abon_saprox_arbre = abon_saprox,
+         abon_cavite_arbre = abon_cavite,
+         abon_sporophore_arbre = abon_sporophore,
+         densi_tot_arbre = densi_tot,
+         densi_saprox_arbre = densi_saprox,
+         densi_cavite_arbre = densi_cavite,
+         densi_sporophore_arbre = densi_sporophore,
+         div_tot_arbre = div_tot,
+         div_saprox_arbre = div_saprox,
+         div_cavite_arbre = div_cavite,
+         div_sporophore_arbre = div_sporophore)
+metriques_strateUC <- Metriques_Arbre_RB %>%
+  filter(strate == "UC") %>%
+  select(-"strate") %>%
+  rename(placette = id_arbre,
+         abon_tot_UC = abon_tot,
+         abon_saprox_UC = abon_saprox,
+         abon_cavite_UC = abon_cavite,
+         abon_sporophore_UC = abon_sporophore,
+         densi_tot_UC = densi_tot,
+         densi_saprox_UC = densi_saprox,
+         densi_cavite_UC = densi_cavite,
+         densi_sporophore_UC = densi_sporophore,
+         div_tot_UC = div_tot,
+         div_saprox_UC = div_saprox,
+         div_cavite_UC = div_cavite,
+         div_sporophore_UC = div_sporophore)
+metriques_strateLC <- Metriques_Arbre_RB %>%
+  filter(strate == "LC") %>%
+  select(-"strate") %>%
+  rename(placette = id_arbre,
+         abon_tot_LC = abon_tot,
+         abon_saprox_LC = abon_saprox,
+         abon_cavite_LC = abon_cavite,
+         abon_sporophore_LC = abon_sporophore,
+         densi_tot_LC = densi_tot,
+         densi_saprox_LC = densi_saprox,
+         densi_cavite_LC = densi_cavite,
+         densi_sporophore_LC = densi_sporophore,
+         div_tot_LC = div_tot,
+         div_saprox_LC = div_saprox,
+         div_cavite_LC = div_cavite,
+         div_sporophore_LC = div_sporophore)
+metriques_strateBC <- Metriques_Arbre_RB %>%
+  filter(strate == "BC") %>%
+  select(-"strate") %>%
+  rename(placette = id_arbre,
+         abon_tot_BC = abon_tot,
+         abon_saprox_BC = abon_saprox,
+         abon_cavite_BC = abon_cavite,
+         abon_sporophore_BC = abon_sporophore,
+         densi_tot_BC = densi_tot,
+         densi_saprox_BC = densi_saprox,
+         densi_cavite_BC = densi_cavite,
+         densi_sporophore_BC = densi_sporophore,
+         div_tot_BC = div_tot,
+         div_saprox_BC = div_saprox,
+         div_cavite_BC = div_cavite,
+         div_sporophore_BC = div_sporophore)
+#
+Metriques_Placettes_RB <- Metriques_Placettes_RB %>% 
+  mutate(placette = ifelse(placette == "V_169", "V_170", placette))
+Metriques_Placettes_totalRB <- Metriques_Placettes_RB %>%
+  filter(etage == "total") %>%
+  select(-"etage") %>%
+  rename(placette = placette,
+         abon_tot_PT = abon_tot,
+         abon_saprox_PT = abon_saprox,
+         abon_cavite_PT = abon_cavite,
+         abon_sporophore_PT = abon_sporophore,
+         div_tot_PT = div_tot,
+         div_saprox_PT = div_saprox,
+         div_cavite_PT = div_cavite,
+         div_sporophore_PT = div_sporophore)
+Metriques_Placettes_seRB <- Metriques_Placettes_RB %>%
+  filter(etage == "se") %>%
+  select(-"etage") %>%
+  rename(placette = placette,
+         abon_tot_SE = abon_tot,
+         abon_saprox_SE = abon_saprox,
+         abon_cavite_SE = abon_cavite,
+         abon_sporophore_SE = abon_sporophore,
+         div_tot_SE = div_tot,
+         div_saprox_SE = div_saprox,
+         div_cavite_SE = div_cavite,
+         div_sporophore_SE = div_sporophore)
+Metriques_Placettes_canopeeRB <- Metriques_Placettes_RB %>%
+  filter(etage == "canopee") %>%
+  select(-"etage") %>%
+  rename(placette = placette,
+         abon_tot_CA = abon_tot,
+         abon_saprox_CA = abon_saprox,
+         abon_cavite_CA = abon_cavite,
+         abon_sporophore_CA = abon_sporophore,
+         div_tot_CA = div_tot,
+         div_saprox_CA = div_saprox,
+         div_cavite_CA = div_cavite,
+         div_sporophore_CA = div_sporophore)
+#
+Metriques <- BMP_Strates %>%
+  left_join(BMP_Arbres, by = "placette") %>%
+  left_join(BMP_Placettes, by = "placette") %>%
+  select(-"Vol_BMP_Tot.m3.ha", -"Contribution_G_ArbreDMH") %>%
+  left_join(BMS_Placettes, by = "placette") %>%
+  left_join(BMD_Placettes, by = "placette") %>%
+  select(-"Vol_BMD_Mtot.m3.ha", -"VolTotC.m3.ha") %>%
+  left_join(BMT_Placettes, by = "placette") %>%
+  left_join(Couvert_Placettes, by = "placette") %>%
+  left_join(Encombrement_Placettes, by = "placette") %>%
+  left_join(Taux_mortalite_Placettes, by = "placette") %>%
+  select(-"NB_arbres", -"nb_Mort") %>%
+  left_join(Div_BM_Placettes, by = "placette") %>%
+  select(-"NB_espBMD_placette", -"NB_espBMS_placette", -"NB_espBMP_placette") %>%
+  left_join(metriques_arbresRB, by = "placette") %>%
+  relocate(names(metriques_arbresRB), .before = "Vol_BMP_Tot_Arbre") %>%
+  left_join(metriques_strateUC, by = "placette") %>%
+  relocate(names(metriques_strateUC), .before = "Vol_BMP_UC.m3") %>%
+  left_join(metriques_strateLC, by = "placette") %>%
+  relocate(names(metriques_strateLC), .before = "Vol_BMP_LC.m3") %>%
+  left_join(metriques_strateBC, by = "placette") %>%
+  relocate(names(metriques_strateBC), .before = "Vol_BMP_BC.m3") %>%
+  left_join(Metriques_Placettes_totalRB, by = "placette") %>%
+  relocate(names(Metriques_Placettes_totalRB), .after = "Vol_BMP_Under.m3") %>%
+  left_join(Metriques_Placettes_seRB, by = "placette") %>%
+  relocate(names(Metriques_Placettes_seRB), .before = "Vol_BMP_Under.m3") %>%
+  left_join(Metriques_Placettes_canopeeRB, by = "placette") %>%
+  relocate(names(Metriques_Placettes_canopeeRB), .before = "Vol_BMP_Canop.m3")
+
+###
+
+# Chargement du jeu de données entomo par relevé
+
+  # Data entomo par relevé
+entomo_releves <- read.table(here::here("Data", "Data placettes", "DATA_placette_CANOPIX", "metriques_CB", "metric_entomo2024_par_releve.txt"), sep = "\t", dec = ".", quote = "\"", stringsAsFactors = F, header = T)
+#
+  # Modification de entomo pour left_join avec les métriques X
+entomo_releves <- entomo_releves %>%
+  mutate(placette = paste0(substr(massif, 1, 1), "_", Parcelle), .before = id.trap) %>%
+  arrange(placette)
+
+entomo_R1 <- entomo_releves %>%
+  filter(num.releve == "R1")
+entomo_R2 <- entomo_releves %>%
+  filter(num.releve == "R2")
+entomo_R3 <- entomo_releves %>%
+  filter(num.releve == "R3")
+entomo_R4 <- entomo_releves %>%
+  filter(num.releve == "R4")
+entomo_R5 <- entomo_releves %>%
+  filter(num.releve == "R5")
 ```
 
 # 5. Analyses : effet strates
@@ -2553,5 +2759,22 @@ testOutliers(sim)
 #
 RES<-glht(modelFD_size, linfct = mcp(strate = "Tukey"))
 summary(RES) # < 0.001 ***
+```
+
+# 6. Analyses : variance des métriques & contributions 
+## 6.1. 
+
+```{r}
+library(vegan)
+part_coleo <- varpart(Final$ab.colsx, ~ + + + +, ~ ,data = Final) ; part_coleo
+#
+rda.result <- rda(, data = Final)
+anova(rda.result, step = 200, perm.max = 200)
+
+partrs<-varpart(tabtrap2$rs,~dcav+dfun+dsap+dperdw,~LSDW+LLDW,~open,~mixture+forest.type,data=tabtrap2)
+partrs
+#test de l'effet propre+conjoint de chaque groupe de variable
+rda.result<-rda(tabtrap2D$rs~dcav+dfun+dsap+dperdw,data=tabtrap2D)
+anova(rda.result, step=200, perm.max=200)
 ```
 
