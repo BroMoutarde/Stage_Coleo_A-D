@@ -201,12 +201,26 @@ GPS <- separate(GPS, raw, into = c("massif", "plot", "X_L93", "Y_L93", "X_WGS84"
 options(digits = 15)
 
 library(vegan)
+# composition de communauté de coleo sapro
+distsupra<-vegdist(matrices[,7 : 381], method="bray",na.rm = TRUE)
+# Ordination 
+nmds<-metaMDS(traitTREM[,4:42], distance = "bray")
+ordiplot (nmds, display = 'sites', type = 'n')
+orditorp (nmds, display = 'sites',label=traitTREM$id.TreM.type,cex=0.4)
+ordiellipse(nmds, traitTREM$cluster17, display = "sites", kind = "sd", label = T,cex=0.8)
+ordispider(nmds, traitTREM$cluster17,label=F)
+# Test de permutation adonis strates 2 à 2
+adonis2(matrices[,7 : 381] ~ strate, matrices, permutations = 999, method = "bray",strata = LOCA)
+# manuellmeent 6 tableau : ex 1-2, 1-3, etc
 
+
+# matrice simplifié avec singletons et doubletons enlevés en utilisant que les espèces communes
+# somme des colonnes et virées 1 ou 2
 distsupra<-vegdist(matrices[,7 : 381], method="bray",na.rm = TRUE)
 adonis2(matrices[,7 : 381] ~ strate, matrices, permutations = 999, method = "bray",strata = LOCA)
 
-library(emmeans)
-emmeans()
+library(emmeans) # remplacer la méthode bourrine manuelle 
+emmeans(distsupra, ~ strate)
 ?emmeans # glmmm peut expliqué attendre CB
 
 # refaire TOUT les modèles en séparant Final par relevé 
@@ -448,6 +462,17 @@ Metriques <- BMP_Strates %>%
 
 ###
 
+# Modification pour les calculs de mean et sd des variables entomo
+
+entomo_AC <- entomo %>%
+  filter(num.trap == "1")
+entomo_UC <- entomo %>%
+  filter(num.trap == "2")
+entomo_LC <- entomo %>%
+  filter(num.trap == "3")
+entomo_BC <- entomo %>%
+  filter(num.trap == "4")
+
 # Chargement du jeu de données entomo par relevé
 
   # Data entomo par relevé
@@ -504,6 +529,25 @@ plot(fitunif)
 #
 fitg<-fitdist(entomo$ab.colsx,"gamma",method="mme")
 plot(fitg) # oui
+#
+gofstat(fitnb)$chisqpvalue
+gofstat(fitp)$chisqpvalue
+gofstat(fitn)$chisqpvalue
+gofstat(fitlnorm)$chisqpvalue # p-value plus élevée
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue
+#
+mean_AC <- mean(entomo_AC$ab.colsx) ; mean_AC # 276.45
+sd_AC <- sd(entomo_AC$ab.colsx) ; sd_AC # 126.8681
+mean_UC <- mean(entomo_UC$ab.colsx) ; mean_UC # 331.65
+sd_UC <- sd(entomo_UC$ab.colsx) ; sd_UC # 160.7447
+mean_LC <- mean(entomo_LC$ab.colsx) ; mean_LC # 206.5
+sd_LC <- sd(entomo_LC$ab.colsx) ; sd_LC # 109.3524
+mean_BC <- mean(entomo_BC$ab.colsx) ; mean_BC # 180.55
+sd_BC <- sd(entomo_BC$ab.colsx) ; sd_BC # 84.40097
 
 ####
 
@@ -524,32 +568,24 @@ is.numeric(num.trap)
 LOCA <- as.factor(LOCA)
 num.trap <- as.factor (num.trap)
 detach(Final)
+
 # Vérifier si id.trap bien identifiant unique pour chaque ligne #
 model_ABX_BMPS <- glmmTMB(
   ab.colsx ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
   family = "lognormal", 
   data = Final, 
   na.action = na.fail) ; summary(model_ABX_BMPS) # effet strate
- #
-# library(lme4)
-# ?glmer
-# model_ABX_BMPS <- glmer(
-#   ab.colsx ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)) + exp(pos + 0 | ID),
-#   family = "gaussian"(link = "log"), 
-#   data = Final, 
-#   na.action = na.fail) ; summary(model_ABX_BMPS)
-# AICc(model_ABX_BMPS)
 #
 model_ABX_BMPS2 <- glmmTMB(
-  ab.colsx ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  ab.colsx ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
   family = "lognormal", 
   data = Final, 
   na.action = na.fail) ; summary(model_ABX_BMPS2)
 #
 AICc(model_ABX_BMPS) # 960.8536
-AICc(model_ABX_BMPS2) # au minimum un delta de 2 pour l'ajustement des modèles : 976.7328
+AICc(model_ABX_BMPS2) # au minimum un delta de 2 pour l'ajustement des modèles : 981.3502
 #
-anova(model_ABX_BMPS, model_ABX_BMPS2) # 3.78e-06
+anova(model_ABX_BMPS, model_ABX_BMPS2) # 3.78e-06 ***
 
 ####
 
@@ -566,8 +602,9 @@ testOutliers(sim)
   # Test post-hoc de Tukey pour faire comparaison 2 à 2
 RES<-glht(model_ABX_BMPS, linfct = mcp(strate = "Tukey"))
 summary(RES)
-0.0031270 **
+0.00286 **
 # Est ce que supra diffère du reste : strate2 avec supra et autre canopée ou autre appellation (2 eme temps pas urgent)
+  
 ```
 
 ## 5.2. Sr_col_all
@@ -602,25 +639,43 @@ plot(fitunif)
 #
 fitg<-fitdist(entomo$sr.colsx,"gamma",method="mme")
 plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1ère
+gofstat(fitp)$chisqpvalue
+gofstat(fitn)$chisqpvalue # 3ème
+gofstat(fitlnorm)$chisqpvalue # 4ème
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 2ème
+#
+mean_AC <- mean(entomo_AC$sr.colsx) ; mean_AC # 58.85
+sd_AC <- sd(entomo_AC$sr.colsx) ; sd_AC # 10.63893
+mean_UC <- mean(entomo_UC$sr.colsx) ; mean_UC # 68.65
+sd_UC <- sd(entomo_UC$sr.colsx) ; sd_UC # 13.25568
+mean_LC <- mean(entomo_LC$sr.colsx) ; mean_LC # 56.85
+sd_LC <- sd(entomo_LC$sr.colsx) ; sd_LC # 14.05356
+mean_BC <- mean(entomo_BC$sr.colsx) ; mean_BC # 54.05
+sd_BC <- sd(entomo_BC$sr.colsx) ; sd_BC # 10.57542
 
 ####
-
 model_SRX_BMPS <- glmmTMB(
-  sr.colsx ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  sr.colsx ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
   family = "gaussian", 
   data = Final, 
   na.action = na.fail) ; summary(model_SRX_BMPS)
-#
+# 
 model_SRX2_BMPS <- glmmTMB(
-  sr.colsx ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  sr.colsx ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
   family = "gaussian", 
   data = Final, 
   na.action = na.fail) ; summary(model_SRX2_BMPS)
 # comparaison des modèles
-AICc(model_SRX_BMPS) # 636.4873
-AICc(model_SRX2_BMPS) # 646.2442
+AICc(model_SRX_BMPS) # 641.5032
+AICc(model_SRX2_BMPS) # 650.8616
 #
-anova(model_SRX_BMPS, model_SRX2_BMPS) # 0.0049384 **
+anova(model_SRX_BMPS, model_SRX2_BMPS) # 0.0007847 ***
 ####
 #diagnostic glmm : ajustement, surdispersion, outliers
 sim<-simulateResiduals(model_SRX_BMPS)
@@ -631,7 +686,7 @@ testOutliers(sim)
   # Test post-hoc de Tukey pour faire comparaison 2 à 2
 RES<-glht(model_SRX_BMPS, linfct = mcp(strate = "Tukey"))
 summary(RES)
-# 0.0048236 **
+# 0.00531 ** 
 ```
 
 ## 5.3. Ab_col_rar
@@ -667,22 +722,41 @@ plot(fitunif)
 fitg<-fitdist(entomo$ab.colsxrar,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 1ère
+gofstat(fitp)$chisqpvalue
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 2ème
+#
+mean_AC <- mean(entomo_AC$ab.colsxrar) ; mean_AC # 19.2
+sd_AC <- sd(entomo_AC$ab.colsxrar) ; sd_AC # 9.128325
+mean_UC <- mean(entomo_UC$ab.colsxrar) ; mean_UC # 34.3
+sd_UC <- sd(entomo_UC$ab.colsxrar) ; sd_UC # 16.94915
+mean_LC <- mean(entomo_LC$ab.colsxrar) ; mean_LC # 18.15
+sd_LC <- sd(entomo_LC$ab.colsxrar) ; sd_LC # 9.062793
+mean_BC <- mean(entomo_BC$ab.colsxrar) ; mean_BC # 7.9
+sd_BC <- sd(entomo_BC$ab.colsxrar) ; sd_BC # 5.848077
+#
 modelABRAR <- glmmTMB(
-  ab.colsxrar ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "gaussian", 
+  ab.colsxrar ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = "nbinom2", 
   data = Final, 
   na.action = na.fail) ; summary(modelABRAR)
 #
 modelABRAR2 <- glmmTMB(
-  ab.colsxrar ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "gaussian", 
+  ab.colsxrar ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) +  offset(log(prop.trap.season)), 
+  family = "nbinom2", 
   data = Final, 
   na.action = na.fail) ; summary(modelABRAR2)
 # comparaison des modèles
-AICc(modelABRAR) # 620.6581
-AICc(modelABRAR2) # 660.7834
+AICc(modelABRAR) # 589.1167
+AICc(modelABRAR2) # 635.8702
 #
-anova(modelABRAR, modelABRAR2) # 3.2334e-10 ***
+anova(modelABRAR, modelABRAR2) # 1.03e-11 ***
 #
 sim<-simulateResiduals(modelABRAR)
 testUniformity(sim)
@@ -727,21 +801,39 @@ plot(fitunif)
 fitg<-fitdist(entomo$sr.colsxrar,"gamma",method="mme")
 plot(fitg) # 
 #
-?glmmTMB
+gofstat(fitnb)$chisqpvalue # 2ème
+gofstat(fitp)$chisqpvalue # 1ère
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC$sr.colsxrar) ; mean_AC # 5.8
+sd_AC <- sd(entomo_AC$sr.colsxrar) ; sd_AC # 1.609184
+mean_UC <- mean(entomo_UC$sr.colsxrar) ; mean_UC # 8.35
+sd_UC <- sd(entomo_UC$sr.colsxrar) ; sd_UC # 2.641272
+mean_LC <- mean(entomo_LC$sr.colsxrar) ; mean_LC # 5.95
+sd_LC <- sd(entomo_LC$sr.colsxrar) ; sd_LC # 2.282081
+mean_BC <- mean(entomo_BC$sr.colsxrar) ; mean_BC # 3.95
+sd_BC <- sd(entomo_BC$sr.colsxrar) ; sd_BC # 1.700619
+#
 modelSRRAR <- glmmTMB(
-  sr.colsxrar ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  sr.colsxrar ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
   family = "genpois", 
   data = Final, 
   na.action = na.fail) ; summary(modelSRRAR)
 #
 modelSRRAR2 <- glmmTMB(
-  sr.colsxrar ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  sr.colsxrar ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
   family = "genpois", 
   data = Final, 
   na.action = na.fail) ; summary(modelSRRAR2)
 #
-AICc(modelSRRAR) # 330.9763
-AICc(modelSRRAR2) # 374.6217
+AICc(modelSRRAR) # 335.9922
+AICc(modelSRRAR2) # 379.239
 #
 anova(modelSRRAR, modelSRRAR2) # 5.759e-11 ***
 #
@@ -750,7 +842,7 @@ testUniformity(sim)
 testOutliers(sim)
 #
 RES<-glht(modelSRRAR, linfct = mcp(strate = "Tukey"))
-summary(RES) # 0.00511 ** 
+summary(RES) # 0.00462 **   
 ```
 
 ## 5.5. Ab_col_com
@@ -785,6 +877,25 @@ plot(fitunif)
 #
 fitg<-fitdist(entomo$ab.colsxcom,"gamma",method="mme")
 plot(fitg) # oui
+#
+gofstat(fitnb)$chisqpvalue # 
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC$sr.colsxrar) ; mean_AC # 5.8
+sd_AC <- sd(entomo_AC$sr.colsxrar) ; sd_AC # 1.609184
+mean_UC <- mean(entomo_UC$sr.colsxrar) ; mean_UC # 8.35
+sd_UC <- sd(entomo_UC$sr.colsxrar) ; sd_UC # 2.641272
+mean_LC <- mean(entomo_LC$sr.colsxrar) ; mean_LC # 5.95
+sd_LC <- sd(entomo_LC$sr.colsxrar) ; sd_LC # 2.282081
+mean_BC <- mean(entomo_BC$sr.colsxrar) ; mean_BC # 3.95
+sd_BC <- sd(entomo_BC$sr.colsxrar) ; sd_BC # 1.700619
 #
 modelABCOM <- glmmTMB(
   ab.colsxcom ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
@@ -2760,13 +2871,20 @@ testOutliers(sim)
 RES<-glht(modelFD_size, linfct = mcp(strate = "Tukey"))
 summary(RES) # < 0.001 ***
 ```
-
-# 6. Analyses : variance des métriques & contributions 
+# 6. Analyses : nmds 
 ## 6.1. 
 
 ```{r}
+
+```
+
+
+# 7. Analyses : variance des métriques & contributions 
+## 7.1. 
+
+```{r}
 library(vegan)
-part_coleo <- varpart(Final$ab.colsx, ~ + + + +, ~ ,data = Final) ; part_coleo
+part_coleo <- varpart(Final$ab.colsx, ~strate, ~BMP_Strates + BMP_Arbres + BMP_Placettes, ~Encombrement_Placettes + Couvert_Placettes, data = Final) ; part_coleo
 #
 rda.result <- rda(, data = Final)
 anova(rda.result, step = 200, perm.max = 200)
@@ -2774,6 +2892,7 @@ anova(rda.result, step = 200, perm.max = 200)
 partrs<-varpart(tabtrap2$rs,~dcav+dfun+dsap+dperdw,~LSDW+LLDW,~open,~mixture+forest.type,data=tabtrap2)
 partrs
 #test de l'effet propre+conjoint de chaque groupe de variable
+# 
 rda.result<-rda(tabtrap2D$rs~dcav+dfun+dsap+dperdw,data=tabtrap2D)
 anova(rda.result, step=200, perm.max=200)
 ```
