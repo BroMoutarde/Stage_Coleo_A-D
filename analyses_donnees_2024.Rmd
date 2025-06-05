@@ -881,45 +881,45 @@ plot(fitg) # oui
 gofstat(fitnb)$chisqpvalue # 
 gofstat(fitp)$chisqpvalue # 
 gofstat(fitn)$chisqpvalue # 
-gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 1ère
 gofstat(fitexp)$chisqpvalue
 gofstat(fitgeom)$chisqpvalue
 gofstat(fitunif)$chisqpvalue
 gofstat(fibeta)$chisqpvalue
 gofstat(fitg)$chisqpvalue # 
 #
-mean_AC <- mean(entomo_AC$sr.colsxrar) ; mean_AC # 5.8
-sd_AC <- sd(entomo_AC$sr.colsxrar) ; sd_AC # 1.609184
-mean_UC <- mean(entomo_UC$sr.colsxrar) ; mean_UC # 8.35
-sd_UC <- sd(entomo_UC$sr.colsxrar) ; sd_UC # 2.641272
-mean_LC <- mean(entomo_LC$sr.colsxrar) ; mean_LC # 5.95
-sd_LC <- sd(entomo_LC$sr.colsxrar) ; sd_LC # 2.282081
-mean_BC <- mean(entomo_BC$sr.colsxrar) ; mean_BC # 3.95
-sd_BC <- sd(entomo_BC$sr.colsxrar) ; sd_BC # 1.700619
+mean_AC <- mean(entomo_AC$ab.colsxcom) ; mean_AC # 224.05
+sd_AC <- sd(entomo_AC$ab.colsxcom) ; sd_AC # 117.8793
+mean_UC <- mean(entomo_UC$ab.colsxcom) ; mean_UC # 248.2
+sd_UC <- sd(entomo_UC$ab.colsxcom) ; sd_UC # 142.8888
+mean_LC <- mean(entomo_LC$ab.colsxcom) ; mean_LC # 132.7
+sd_LC <- sd(entomo_LC$ab.colsxcom) ; sd_LC # 89.18172
+mean_BC <- mean(entomo_BC$ab.colsxcom) ; mean_BC # 132.7
+sd_BC <- sd(entomo_BC$ab.colsxcom) ; sd_BC # 78.80696
 #
 modelABCOM <- glmmTMB(
-  ab.colsxcom ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "lognormal", 
+  ab.colsxcom ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) +  offset(log(prop.trap.season)), 
+  family = nbinom1(), 
   data = Final, 
   na.action = na.fail) ; summary(modelABCOM)
 #
 modelABCOM2 <- glmmTMB(
-  ab.colsxcom ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "lognormal", 
+  ab.colsxcom ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom1(), 
   data = Final, 
   na.action = na.fail) ; summary(modelABCOM2)
 #
-AICc(modelABCOM) # 930.4896
-AICc(modelABCOM2) # 949.2164
+AICc(modelABCOM) # 925.8241
+AICc(modelABCOM2) # 953.6385
 #
-anova(modelABCOM, modelABCOM2) # 1.076e-05 ***
+anova(modelABCOM, modelABCOM2) # 1.087e-07 ***
 #
 sim<-simulateResiduals(modelABCOM)
 testUniformity(sim)
 testOutliers(sim)
 #
 RES<-glht(modelABCOM, linfct = mcp(strate = "Tukey"))
-summary(RES) # 0.01575 * 
+summary(RES) # 0.00176 ** 
 ```
 
 ## 5.6. Sr_col_com
@@ -955,22 +955,41 @@ plot(fitunif)
 fitg<-fitdist(entomo$sr.colsxcom,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 1ère
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC$sr.colsxcom) ; mean_AC # 48.15
+sd_AC <- sd(entomo_AC$sr.colsxcom) ; sd_AC # 9.178206
+mean_UC <- mean(entomo_UC$sr.colsxcom) ; mean_UC # 55.4
+sd_UC <- sd(entomo_UC$sr.colsxcom) ; sd_UC # 11.66371
+mean_LC <- mean(entomo_LC$sr.colsxcom) ; mean_LC # 46.45
+sd_LC <- sd(entomo_LC$sr.colsxcom) ; sd_LC # 11.96695
+mean_BC <- mean(entomo_BC$sr.colsxcom) ; mean_BC # 45.65
+sd_BC <- sd(entomo_BC$sr.colsxcom) ; sd_BC # 9.488359
+#
 modelSRCOM <- glmmTMB(
-  sr.colsxcom ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "gaussian", 
+  sr.colsxcom ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom2(link = "identity"), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRCOM)
 #
 modelSRCOM2 <- glmmTMB(
-  sr.colsxcom ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "gaussian", 
+  sr.colsxcom ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom2(link = "identity"), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRCOM2)
 #
-AICc(modelSRCOM) # 614.1401
-AICc(modelSRCOM2) # 618.5605
+AICc(modelSRCOM) # 621.2011
+AICc(modelSRCOM2) # 624.5369
 #
-anova(modelSRCOM, modelSRCOM2) # 0.009558 **
+anova(modelSRCOM, modelSRCOM2) # 0.01312 *
 #
 sim<-simulateResiduals(modelSRCOM)
 testUniformity(sim)
@@ -1013,22 +1032,41 @@ plot(fitunif)
 fitg<-fitdist(entomo$ab.cav,"gamma",method="mme")
 plot(fitg) # oui
 #
+gofstat(fitnb)$chisqpvalue # 3ème
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 1ère
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 2ème
+#
+mean_AC <- mean(entomo_AC$ab.cav) ; mean_AC # 46.1
+sd_AC <- sd(entomo_AC$ab.cav) ; sd_AC # 19.32247
+mean_UC <- mean(entomo_UC$ab.cav) ; mean_UC # 53.15
+sd_UC <- sd(entomo_UC$ab.cav) ; sd_UC # 24.97425
+mean_LC <- mean(entomo_LC$ab.cav) ; mean_LC # 38.35
+sd_LC <- sd(entomo_LC$ab.cav) ; sd_LC # 20.94674
+mean_BC <- mean(entomo_BC$ab.cav) ; mean_BC # 31.1
+sd_BC <- sd(entomo_BC$ab.cav) ; sd_BC # 16.91434
+#
 modelABCAV <- glmmTMB(
-  ab.cav ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "lognormal", 
+  ab.cav ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom1(link = "log"), 
   data = Final, 
   na.action = na.fail) ; summary(modelABCAV)
 #
 modelABCAV2 <- glmmTMB(
-  ab.cav ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "lognormal", 
+  ab.cav ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom1(link = "log"), 
   data = Final, 
   na.action = na.fail) ; summary(modelABCAV2)
 #
-AICc(modelABCAV) # 685.2339
-AICc(modelABCAV2) # 702.1384
+AICc(modelABCAV) # 688.5031
+AICc(modelABCAV2) # 702.727
 #
-anova(modelABCAV,modelABCAV2) # 2.588e-05 ***
+anova(modelABCAV,modelABCAV2) # 7.733e-05 ***
 #
 sim<-simulateResiduals(modelABCAV)
 testUniformity(sim)
@@ -1071,22 +1109,41 @@ plot(fitunif)
 fitg<-fitdist(entomo$sr.cav,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 2ème
+gofstat(fitp)$chisqpvalue # 3ème
+gofstat(fitn)$chisqpvalue # 1ère
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC$sr.cav) ; mean_AC # 11.7
+sd_AC <- sd(entomo_AC$sr.cav) ; sd_AC # 3.404332
+mean_UC <- mean(entomo_UC$sr.cav) ; mean_UC # 16.35
+sd_UC <- sd(entomo_UC$sr.cav) ; sd_UC # 3.815136
+mean_LC <- mean(entomo_LC$sr.cav) ; mean_LC # 15
+sd_LC <- sd(entomo_LC$sr.cav) ; sd_LC # 5.088687
+mean_BC <- mean(entomo_BC$sr.cav) ; mean_BC # 13.75
+sd_BC <- sd(entomo_BC$sr.cav) ; sd_BC # 4.810898
+#
 modelSRCAV <- glmmTMB(
-  sr.cav ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "genpois", 
+  sr.cav ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = truncated_nbinom2(), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRCAV)
 #
 modelSRCAV2 <- glmmTMB(
-  sr.cav ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "genpois", 
+  sr.cav ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = truncated_nbinom2(), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRCAV2)
 #
-AICc(modelSRCAV) # 453.7887
-AICc(modelSRCAV2) # 467.9944
+AICc(modelSRCAV) # 458.995
+AICc(modelSRCAV2) # 472.8897
 #
-anova(modelSRCAV,modelSRCAV2) # 9.44e-05 ***
+anova(modelSRCAV,modelSRCAV2) # 9.053e-05 ***
 #
 sim<-simulateResiduals(modelSRCAV)
 testUniformity(sim)
@@ -1129,22 +1186,41 @@ plot(fitunif)
 fitg<-fitdist(entomo$ab.fon,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 2ème
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 1ère
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC$ab.fon) ; mean_AC # 131.75
+sd_AC <- sd(entomo_AC$ab.fon) ; sd_AC # 92.65549
+mean_UC <- mean(entomo_UC$ab.fon) ; mean_UC # 132.75
+sd_UC <- sd(entomo_UC$ab.fon) ; sd_UC # 78.77007
+mean_LC <- mean(entomo_LC$ab.fon) ; mean_LC # 124.6
+sd_LC <- sd(entomo_LC$ab.fon) ; sd_LC # 92.84078
+mean_BC <- mean(entomo_BC$ab.fon) ; mean_BC # 114.8
+sd_BC <- sd(entomo_BC$ab.fon) ; sd_BC # 74.63286
+#
 modelABFON <- glmmTMB(
-  ab.fon ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "lognormal", 
+  ab.fon ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom1(link = "sqrt"), 
   data = Final, 
   na.action = na.fail) ; summary(modelABFON)
 #
 modelABFON2 <- glmmTMB(
-  ab.fon ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "lognormal", 
+  ab.fon ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom1(link = "sqrt"), 
   data = Final, 
   na.action = na.fail) ; summary(modelABFON2)
 #
-AICc(modelABFON) # 861.6836
-AICc(modelABFON2) # 863.6748
+AICc(modelABFON) # 865.6772
+AICc(modelABFON2) # 861.5898
 #
-anova(modelABFON,modelABFON2) # 0.02911 *
+anova(modelABFON,modelABFON2) # 0.343
 #
 sim<-simulateResiduals(modelABFON)
 testUniformity(sim)
@@ -1187,22 +1263,41 @@ plot(fitunif)
 fitg<-fitdist(entomo$sr.fon,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 
+gofstat(fitp)$chisqpvalue # 1ère
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 2ème
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC$sr.fon) ; mean_AC # 19.3
+sd_AC <- sd(entomo_AC$sr.fon) ; sd_AC # 3.419757
+mean_UC <- mean(entomo_UC$sr.fon) ; mean_UC # 22.05
+sd_UC <- sd(entomo_UC$sr.fon) ; sd_UC # 4.639362
+mean_LC <- mean(entomo_LC$sr.fon) ; mean_LC # 22.45
+sd_LC <- sd(entomo_LC$sr.fon) ; sd_LC # 4.639362
+mean_BC <- mean(entomo_BC$sr.fon) ; mean_BC # 21.85
+sd_BC <- sd(entomo_BC$sr.fon) ; sd_BC # 5.203996
+#
 modelSRFON <- glmmTMB(
-  sr.fon ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "genpois", 
+  sr.fon ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = genpois(link = "identity"), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRFON)
 #
 modelSRFON2 <- glmmTMB(
-  sr.fon ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "genpois", 
+  sr.fon ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = genpois(link = "identity"), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRFON2)
 #
-AICc(modelSRFON) # 470.2642
-AICc(modelSRFON2) # 478.399
+AICc(modelSRFON) # 478.6249
+AICc(modelSRFON2) # 479.1152
 #
-anova(modelSRFON,modelSRFON2) # 0.001687 **
+anova(modelSRFON,modelSRFON2) # 0.04789 *
 #
 sim<-simulateResiduals(modelSRFON)
 testUniformity(sim)
@@ -1245,22 +1340,41 @@ plot(fitunif)
 fitg<-fitdist(entomo$ab.fonspe,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 1ère
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC$ab.fonspe) ; mean_AC # 12.7
+sd_AC <- sd(entomo_AC$ab.fonspe) ; sd_AC # 5.804717
+mean_UC <- mean(entomo_UC$ab.fonspe) ; mean_UC # 10.7
+sd_UC <- sd(entomo_UC$ab.fonspe) ; sd_UC # 4.61234
+mean_LC <- mean(entomo_LC$ab.fonspe) ; mean_LC # 7.6
+sd_LC <- sd(entomo_LC$ab.fonspe) ; sd_LC # 5.235506
+mean_BC <- mean(entomo_BC$ab.fonspe) ; mean_BC # 7.25
+sd_BC <- sd(entomo_BC$ab.fonspe) ; sd_BC # 4.540751
+#
 modelABFONspe <- glmmTMB(
-  ab.fonspe ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  ab.fonspe ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
   family = "nbinom1", 
   data = Final, 
   na.action = na.fail) ; summary(modelABFONspe)
 #
 modelABFON2spe <- glmmTMB(
-  ab.fonspe ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "lognormal", 
+  ab.fonspe ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = "nbinom1", 
   data = Final, 
   na.action = na.fail) ; summary(modelABFON2spe)
 #
-AICc(modelABFONspe) # 484.316
-AICc(modelABFON2spe) # 495.8483
+AICc(modelABFONspe) # 489.3319
+AICc(modelABFON2spe) # 497.3095
 #
-anova(modelABFONspe,modelABFON2spe) # 0.000338 ***
+anova(modelABFONspe,modelABFON2spe) # 0.001506 **
 #
 sim<-simulateResiduals(modelABFONspe)
 testUniformity(sim)
@@ -1303,22 +1417,41 @@ plot(fitunif)
 fitg<-fitdist(entomo$sr.fonspe,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 2ème
+gofstat(fitp)$chisqpvalue # 1ère
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC$sr.fonspe) ; mean_AC # 3.3
+sd_AC <- sd(entomo_AC$sr.fonspe) ; sd_AC # 0.9233805
+mean_UC <- mean(entomo_UC$sr.fonspe) ; mean_UC # 4.3
+sd_UC <- sd(entomo_UC$sr.fonspe) ; sd_UC # 1.625455
+mean_LC <- mean(entomo_LC$sr.fonspe) ; mean_LC # 4.55
+sd_LC <- sd(entomo_LC$sr.fonspe) ; sd_LC # 2.012461
+mean_BC <- mean(entomo_BC$sr.fonspe) ; mean_BC # 4.3
+sd_BC <- sd(entomo_BC$sr.fonspe) ; sd_BC # 2.226633
+#
 modelSRFONspe <- glmmTMB(
-  sr.fonspe ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "genpois", 
+  sr.fonspe ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = genpois(link = "identity"), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRFONspe)
 #
 modelSRFON2spe <- glmmTMB(
-  sr.fonspe ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "genpois", 
+  sr.fonspe ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = genpois(link = "identity"), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRFON2spe)
 #
-AICc(modelSRFONspe) # 315.5848
-AICc(modelSRFON2spe) # 319.8235
+AICc(modelSRFONspe) # 323.0398
+AICc(modelSRFON2spe) # 323.8293
 #
-anova(modelSRFONspe,modelSRFON2spe) # 0.0104 *
+anova(modelSRFONspe,modelSRFON2spe) # 0.04186 *
 #
 sim<-simulateResiduals(modelSRFONspe)
 testUniformity(sim)
@@ -1361,29 +1494,48 @@ plot(fitunif)
 fitg<-fitdist(entomo$ab.suc,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 1ère
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 2ème
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC$ab.suc) ; mean_AC # 2.05
+sd_AC <- sd(entomo_AC$ab.suc) ; sd_AC # 1.848897
+mean_UC <- mean(entomo_UC$ab.suc) ; mean_UC # 4.55
+sd_UC <- sd(entomo_UC$ab.suc) ; sd_UC # 5.124503
+mean_LC <- mean(entomo_LC$ab.suc) ; mean_LC # 5.05
+sd_LC <- sd(entomo_LC$ab.suc) ; sd_LC # 4.173538
+mean_BC <- mean(entomo_BC$ab.suc) ; mean_BC # 3.1
+sd_BC <- sd(entomo_BC$ab.suc) ; sd_BC # 2.633789
+#
 modelABSUC <- glmmTMB(
-  ab.suc ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "nbinom1", 
+  ab.suc ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom2(), 
   data = Final, 
   na.action = na.fail) ; summary(modelABSUC)
 #
 modelABSUC2 <- glmmTMB(
-  ab.suc ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "nbinom1", 
+  ab.suc ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom2(), 
   data = Final, 
   na.action = na.fail) ; summary(modelABSUC2)
 #
-AICc(modelABSUC) # 371.9953
-AICc(modelABSUC2) # 382.6358
+AICc(modelABSUC) # 375.6027
+AICc(modelABSUC2) # 386.3274
 #
-anova(modelABSUC,modelABSUC2) # 0.0005162 ***
+anova(modelABSUC,modelABSUC2) # 0.0004105 ***
 #
 sim<-simulateResiduals(modelABSUC)
 testUniformity(sim)
 testOutliers(sim)
 #
 RES<-glht(modelABSUC, linfct = mcp(strate = "Tukey"))
-summary(RES) # <0.001 *** 
+summary(RES) # 0.00772 ** 
 ```
 
 ## 5.14. sr_suc
@@ -1419,22 +1571,43 @@ plot(fitunif)
 fitg<-fitdist(entomo$sr.suc,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 2ème
+gofstat(fitp)$chisqpvalue # 1ère
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC$sr.suc) ; mean_AC # 1.5
+sd_AC <- sd(entomo_AC$sr.suc) ; sd_AC # 1.395481
+mean_UC <- mean(entomo_UC$sr.suc) ; mean_UC # 2.05
+sd_UC <- sd(entomo_UC$sr.suc) ; sd_UC # 1.276302
+mean_LC <- mean(entomo_LC$sr.suc) ; mean_LC # 2.4
+sd_LC <- sd(entomo_LC$sr.suc) ; sd_LC # 1.46539
+mean_BC <- mean(entomo_BC$sr.suc) ; mean_BC # 2
+sd_BC <- sd(entomo_BC$sr.suc) ; sd_BC # 1.555973
+#
 modelSRSUC <- glmmTMB(
-  sr.suc ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "genpois", 
+  sr.suc ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = truncated_poisson(),
+  ziformula = ~ strate,
   data = Final, 
   na.action = na.fail) ; summary(modelSRSUC)
 #
 modelSRSUC2 <- glmmTMB(
-  sr.suc ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "genpois", 
+  sr.suc ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = truncated_poisson(),
+  ziformula = ~ 1, 
   data = Final, 
   na.action = na.fail) ; summary(modelSRSUC2)
 #
-AICc(modelSRSUC) # 266.49
-AICc(modelSRSUC2) # 267.4356
+AICc(modelSRSUC) # 287.9448
+AICc(modelSRSUC2) # 278.8264
 #
-anova(modelSRSUC,modelSRSUC2) # 0.04668 *
+anova(modelSRSUC,modelSRSUC2) # 0.3812
 #
 sim<-simulateResiduals(modelSRSUC2)
 testUniformity(sim)
@@ -1475,31 +1648,50 @@ fitunif<-fitdist(entomo$ab.lig,"unif")
 plot(fitunif)
 #
 fitg<-fitdist(entomo$ab.lig,"gamma",method="mme")
-plot(fitg) # 
+plot(fitg) #
+#
+gofstat(fitnb)$chisqpvalue # 2ème
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 1ère
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC$ab.lig) ; mean_AC # 256.85
+sd_AC <- sd(entomo_AC$ab.lig) ; sd_AC # 126.2984
+mean_UC <- mean(entomo_UC$ab.lig) ; mean_UC # 312.25
+sd_UC <- sd(entomo_UC$ab.lig) ; sd_UC # 158.9601
+mean_LC <- mean(entomo_LC$ab.lig) ; mean_LC # 190.5
+sd_LC <- sd(entomo_LC$ab.lig) ; sd_LC # 106.1198
+mean_BC <- mean(entomo_BC$ab.lig) ; mean_BC # 167.4
+sd_BC <- sd(entomo_BC$ab.lig) ; sd_BC # 83.29428
 #
 modelABLIG <- glmmTMB(
-  ab.lig ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "lognormal", 
+  ab.lig ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = Gamma(link = "log"), 
   data = Final, 
   na.action = na.fail) ; summary(modelABLIG)
 #
 modelABLIG2 <- glmmTMB(
-  ab.lig ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "lognormal", 
+  ab.lig ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = Gamma(link = "log"), 
   data = Final, 
   na.action = na.fail) ; summary(modelABLIG2)
 #
-AICc(modelABLIG) # 949.4589
-AICc(modelABLIG2) # 969.5341
+AICc(modelABLIG) # 934.2806
+AICc(modelABLIG2) # 965.8861
 #
-anova(modelABLIG,modelABLIG2) # 5.617e-06 ***
+anova(modelABLIG,modelABLIG2) # 1.714e-08 ***
 #
 sim<-simulateResiduals(modelABLIG)
 testUniformity(sim)
 testOutliers(sim)
 #
 RES<-glht(modelABLIG, linfct = mcp(strate = "Tukey"))
-summary(RES) # 0.00322 **
+summary(RES) # < 0.001 ***
 ```
 
 ## 5.16. sr_lig
@@ -1535,15 +1727,35 @@ plot(fitunif)
 fitg<-fitdist(entomo$sr.lig,"gamma",method="mme")
 plot(fitg) # oui
 #
+gofstat(fitnb)$chisqpvalue # 2ème
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 1ère
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 3ème
+#
+mean_AC <- mean(entomo_AC$sr.lig) ; mean_AC # 53.4
+sd_AC <- sd(entomo_AC$sr.lig) ; sd_AC # 10.22072
+mean_UC <- mean(entomo_UC$sr.lig) ; mean_UC # 61.65
+sd_UC <- sd(entomo_UC$sr.lig) ; sd_UC # 12.41932
+mean_LC <- mean(entomo_LC$sr.lig) ; mean_LC # 49.05
+sd_LC <- sd(entomo_LC$sr.lig) ; sd_LC # 12.19351
+mean_BC <- mean(entomo_BC$sr.lig) ; mean_BC # 47.25
+sd_BC <- sd(entomo_BC$sr.lig) ; sd_BC # 9.295585
+#
+library(gsl)
 modelSRLIG <- glmmTMB(
-  sr.lig ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "gaussian", 
+  sr.lig ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom1(link = "log"), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRLIG)
 #
 modelSRLIG2 <- glmmTMB(
-  sr.lig ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "gaussian", 
+  sr.lig ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = lognormal(link = "log"), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRLIG2)
 #
@@ -1593,29 +1805,48 @@ plot(fitunif)
 fitg<-fitdist(entomo$ab.flo,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 2ème
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 1ère
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 3ème
+#
+mean_AC <- mean(entomo_AC$ab.flo) ; mean_AC # 75.45
+sd_AC <- sd(entomo_AC$ab.flo) ; sd_AC # 32.76146
+mean_UC <- mean(entomo_UC$ab.flo) ; mean_UC # 88.4
+sd_UC <- sd(entomo_UC$ab.flo) ; sd_UC # 60.32665
+mean_LC <- mean(entomo_LC$ab.flo) ; mean_LC # 38.9
+sd_LC <- sd(entomo_LC$ab.flo) ; sd_LC # 19.55532
+mean_BC <- mean(entomo_BC$ab.flo) ; mean_BC # 22.6
+sd_BC <- sd(entomo_BC$ab.flo) ; sd_BC # 11.31092
+#
 modelABFLO <- glmmTMB(
-  ab.flo ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "lognormal", 
+  ab.flo ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom2(), 
   data = Final, 
   na.action = na.fail) ; summary(modelABFLO)
 #
 modelABFLO2 <- glmmTMB(
-  ab.flo ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "lognormal", 
+  ab.flo ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom2(), 
   data = Final, 
   na.action = na.fail) ; summary(modelABFLO2)
 #
-AICc(modelABFLO) # 745.4168
-AICc(modelABFLO2) # 790.4968
+AICc(modelABFLO) # 727.1404
+AICc(modelABFLO2) # 792.196
 #
-anova(modelABFLO,modelABFLO2) # 2.849e-11 ***
+anova(modelABFLO,modelABFLO2) # 1.259e-15 ***
 #
 sim<-simulateResiduals(modelABFLO)
 testUniformity(sim)
 testOutliers(sim)
 #
 RES<-glht(modelABFLO, linfct = mcp(strate = "Tukey"))
-summary(RES) # 0.00146 **
+summary(RES) # < 1e-04 ***
 ```
 
 ## 5.18. sr_flo
@@ -1651,22 +1882,41 @@ plot(fitunif)
 fitg<-fitdist(entomo$sr.flo,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 1ère
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 2
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 4
+#
+mean_AC <- mean(entomo_AC$sr.flo) ; mean_AC # 17
+sd_AC <- sd(entomo_AC$sr.flo) ; sd_AC # 4.078183
+mean_UC <- mean(entomo_UC$sr.flo) ; mean_UC # 20.5
+sd_UC <- sd(entomo_UC$sr.flo) ; sd_UC # 4.501462
+mean_LC <- mean(entomo_LC$sr.flo) ; mean_LC # 15.1
+sd_LC <- sd(entomo_LC$sr.flo) ; sd_LC # 4.811171
+mean_BC <- mean(entomo_BC$sr.flo) ; mean_BC # 11.85
+sd_BC <- sd(entomo_BC$sr.flo) ; sd_BC # 4.463595
+#
 modelSRFLO <- glmmTMB(
-  sr.flo ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "nbinom2", 
+  sr.flo ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = truncated_nbinom2(link = "identity"), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRFLO)
 #
 modelSRFLO2 <- glmmTMB(
-  sr.flo ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "nbinom2", 
+  sr.flo ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = truncated_nbinom2(link = "identity"), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRFLO2)
 #
-AICc(modelSRFLO) # 466.81
-AICc(modelSRFLO2) # 500.5577
+AICc(modelSRFLO) # 481.9658
+AICc(modelSRFLO2) # 509.0544
 #
-anova(modelSRFLO,modelSRFLO2) # 7.317e-09 ***
+anova(modelSRFLO,modelSRFLO2) # 1.547e-07 ***
 #
 sim<-simulateResiduals(modelSRFLO)
 testUniformity(sim)
@@ -1709,22 +1959,41 @@ plot(fitunif)
 fitg<-fitdist(entomo$ab.pho,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 1ère
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 2
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC$ab.pho) ; mean_AC # 8.35
+sd_AC <- sd(entomo_AC$ab.pho) ; sd_AC # 5.527682
+mean_UC <- mean(entomo_UC$ab.pho) ; mean_UC # 9.6
+sd_UC <- sd(entomo_UC$ab.pho) ; sd_UC # 4.309109
+mean_LC <- mean(entomo_LC$ab.pho) ; mean_LC # 9.95
+sd_LC <- sd(entomo_LC$ab.pho) ; sd_LC # 5.246302
+mean_BC <- mean(entomo_BC$ab.pho) ; mean_BC # 6.4
+sd_BC <- sd(entomo_BC$ab.pho) ; sd_BC # 2.779625
+#
 modelABPHO <- glmmTMB(
-  ab.pho ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "nbinom1", 
+  ab.pho ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = "nbinom2", 
   data = Final, 
   na.action = na.fail) ; summary(modelABPHO)
 #
 modelABPHO2 <- glmmTMB(
-  ab.pho ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "nbinom1", 
+  ab.pho ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = "nbinom2", 
   data = Final, 
   na.action = na.fail) ; summary(modelABPHO2)
 #
-AICc(modelABPHO) # 450.869
-AICc(modelABPHO2) # 459.3375
+AICc(modelABPHO) # 455.4498
+AICc(modelABPHO2) # 462.7303
 #
-anova(modelABPHO,modelABPHO2) # 0.001442 **
+anova(modelABPHO,modelABPHO2) # 0.002091 **
 #
 sim<-simulateResiduals(modelABPHO)
 testUniformity(sim)
@@ -1767,22 +2036,41 @@ plot(fitunif)
 fitg<-fitdist(entomo$sr.pho,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 1
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC$sr.pho) ; mean_AC # 2.95
+sd_AC <- sd(entomo_AC$sr.pho) ; sd_AC # 1.145931
+mean_UC <- mean(entomo_UC$sr.pho) ; mean_UC # 3.35
+sd_UC <- sd(entomo_UC$sr.pho) ; sd_UC # 1.460894
+mean_LC <- mean(entomo_LC$sr.pho) ; mean_LC # 3.8
+sd_LC <- sd(entomo_LC$sr.pho) ; sd_LC # 1.43637
+mean_BC <- mean(entomo_BC$sr.pho) ; mean_BC # 2.7
+sd_BC <- sd(entomo_BC$sr.pho) ; sd_BC # 1.341641
+#
 modelSRPHO <- glmmTMB(
-  sr.pho ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "genpois", 
+  sr.pho ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = genpois(link = "identity"), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRPHO)
 #
 modelSRPHO2 <- glmmTMB(
-  sr.pho ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "genpois", 
+  sr.pho ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = genpois(link = "identity"), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRPHO2)
 #
-AICc(modelSRPHO) # 262.2215
-AICc(modelSRPHO2) # 272.1756
+AICc(modelSRPHO) # 260.7978
+AICc(modelSRPHO2) # 266.4568
 #
-anova(modelSRPHO,modelSRPHO2) # 0.0007147 ***
+anova(modelSRPHO,modelSRPHO2) # 0.004467 **
 #
 sim<-simulateResiduals(modelSRPHO)
 testUniformity(sim)
@@ -1825,22 +2113,41 @@ plot(fitunif)
 fitg<-fitdist(entomo$ab.myc,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 2
+#
+mean_AC <- mean(entomo_AC$ab.myc) ; mean_AC # 88.65
+sd_AC <- sd(entomo_AC$ab.myc) ; sd_AC # 32.82534
+mean_UC <- mean(entomo_UC$ab.myc) ; mean_UC # 77.55
+sd_UC <- sd(entomo_UC$ab.myc) ; sd_UC # 31.19459
+mean_LC <- mean(entomo_LC$ab.myc) ; mean_LC # 71.1
+sd_LC <- sd(entomo_LC$ab.myc) ; sd_LC # 43.91847
+mean_BC <- mean(entomo_BC$ab.myc) ; mean_BC # 60
+sd_BC <- sd(entomo_BC$ab.myc) ; sd_BC # 20.97116
+#
 modelABMYC <- glmmTMB(
-  ab.myc ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "lognormal", 
+  ab.myc ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom1(), 
   data = Final, 
   na.action = na.fail) ; summary(modelABMYC)
 #
 modelABMYC2 <- glmmTMB(
-  ab.myc ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "lognormal", 
+  ab.myc ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom1(), 
   data = Final, 
   na.action = na.fail) ; summary(modelABMYC2)
 #
-AICc(modelABMYC) # 753.5138
-AICc(modelABMYC2) # 761.3229
+AICc(modelABMYC) # 758.9159
+AICc(modelABMYC2) # 765.9517
 #
-anova(modelABMYC,modelABMYC2) # 0.001967 **
+anova(modelABMYC,modelABMYC2) # 0.002345 **
 #
 sim<-simulateResiduals(modelABMYC)
 testUniformity(sim)
@@ -1883,28 +2190,47 @@ plot(fitunif)
 fitg<-fitdist(entomo$sr.myc,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 4
+gofstat(fitp)$chisqpvalue # 3
+gofstat(fitn)$chisqpvalue #  
+gofstat(fitlnorm)$chisqpvalue # 1
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 2
+#
+mean_AC <- mean(entomo_AC$sr.myc) ; mean_AC # 11.1
+sd_AC <- sd(entomo_AC$sr.myc) ; sd_AC # 2.023546
+mean_UC <- mean(entomo_UC$sr.myc) ; mean_UC # 11.7
+sd_UC <- sd(entomo_UC$sr.myc) ; sd_UC # 2.7549
+mean_LC <- mean(entomo_LC$sr.myc) ; mean_LC # 12.35
+sd_LC <- sd(entomo_LC$sr.myc) ; sd_LC # 3.407036
+mean_BC <- mean(entomo_BC$sr.myc) ; mean_BC # 13.05
+sd_BC <- sd(entomo_BC$sr.myc) ; sd_BC # 3.817894
+#
 modelSRMYC <- glmmTMB(
-  sr.myc ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "genpois", 
+  sr.myc ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = lognormal(link = "identity"), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRMYC)
 #
 modelSRMYC2 <- glmmTMB(
-  sr.myc ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "genpois", 
+  sr.myc ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = lognormal(link = "identity"), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRMYC2)
 #
-AICc(modelSRMYC) # 399.8433
-AICc(modelSRMYC2) # 401.8182
+AICc(modelSRMYC) # 412.3288
+AICc(modelSRMYC2) # 406.6385
 #
-anova(modelSRMYC,modelSRMYC2) # 0.02933 *
+anova(modelSRMYC,modelSRMYC2) # 0.6302
 #
 sim<-simulateResiduals(modelSRMYC)
 testUniformity(sim)
 testOutliers(sim)
 #
-RES<-glht(modelSRMYC, linfct = mcp(strate = "Tukey"))
+RES<-glht(modelSRMYC2, linfct = mcp(strate = "Tukey"))
 summary(RES) # 0.0014 **
 ```
 
@@ -1941,22 +2267,41 @@ plot(fitunif)
 fitg<-fitdist(entomo$ab.xyl,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue #  
+gofstat(fitlnorm)$chisqpvalue # 1
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC$ab.xyl) ; mean_AC # 88.7
+sd_AC <- sd(entomo_AC$ab.xyl) ; sd_AC # 96.13538
+mean_UC <- mean(entomo_UC$ab.xyl) ; mean_UC # 102.65
+sd_UC <- sd(entomo_UC$ab.xyl) ; sd_UC # 84.11726
+mean_LC <- mean(entomo_LC$ab.xyl) ; mean_LC # 61.7
+sd_LC <- sd(entomo_LC$ab.xyl) ; sd_LC # 76.15849
+mean_BC <- mean(entomo_BC$ab.xyl) ; mean_BC # 64.7
+sd_BC <- sd(entomo_BC$ab.xyl) ; sd_BC # 72.76863
+#
 modelABXYL <- glmmTMB(
-  ab.xyl ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "nbinom2",
+  ab.xyl ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = truncated_nbinom1(),
   data = Final, 
   na.action = na.fail) ; summary(modelABXYL)
 #
 modelABXYL2 <- glmmTMB(
-  ab.xyl ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "nbinom2",
+  ab.xyl ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = truncated_nbinom1(),
   data = Final, 
   na.action = na.fail) ; summary(modelABXYL2)
 #
-AICc(modelABXYL) # 797.8552
-AICc(modelABXYL2) # 814.7558
+AICc(modelABXYL) # 821.8118
+AICc(modelABXYL2) # 831.1991
 #
-anova(modelABXYL,modelABXYL2) # 2.592e-05 ***
+anova(modelABXYL,modelABXYL2) # 0.000774 ***
 #
 sim<-simulateResiduals(modelABXYL)
 plot(sim)
@@ -1964,7 +2309,7 @@ testUniformity(sim)
 testOutliers(sim)
 #
 RES<-glht(modelABXYL, linfct = mcp(strate = "Tukey"))
-summary(RES) # 0.00771 **
+summary(RES) # < 0.001 ***
 ```
 
 ## 5.24. sr_xyl
@@ -2000,29 +2345,48 @@ plot(fitunif)
 fitg<-fitdist(entomo$sr.xyl,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue #  
+gofstat(fitlnorm)$chisqpvalue # 2
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC$sr.xyl) ; mean_AC # 18.7
+sd_AC <- sd(entomo_AC$sr.xyl) ; sd_AC # 3.570346
+mean_UC <- mean(entomo_UC$sr.xyl) ; mean_UC # 17
+sd_UC <- sd(entomo_UC$sr.xyl) ; sd_UC # 4.779342
+mean_LC <- mean(entomo_LC$sr.xyl) ; mean_LC # 11.8
+sd_LC <- sd(entomo_LC$sr.xyl) ; sd_LC # 3.458019
+mean_BC <- mean(entomo_BC$sr.xyl) ; mean_BC # 11.75
+sd_BC <- sd(entomo_BC$sr.xyl) ; sd_BC # 2.425197
+#
 modelSRXYL <- glmmTMB(
-  sr.xyl ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "truncated_genpois", 
+  sr.xyl ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = lognormal(link = "identity"), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRXYL)
 #
 modelSRXYL2 <- glmmTMB(
-  sr.xyl ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "truncated_genpois", 
+  sr.xyl ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = lognormal(link = "identity"), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRXYL2)
 #
-AICc(modelSRXYL) # 422.2892
-AICc(modelSRXYL2) # 466.4268
+AICc(modelSRXYL) # 449.5758
+AICc(modelSRXYL2) # 483.8576
 #
-anova(modelSRXYL,modelSRXYL2) # 4.523e-11 ***
+anova(modelSRXYL,modelSRXYL2) # 4.64e-09 ***
 #
 sim<-simulateResiduals(modelSRXYL)
 testUniformity(sim)
 testOutliers(sim)
 #
 RES<-glht(modelSRXYL, linfct = mcp(strate = "Tukey"))
-summary(RES) # < 1e-04 ***
+summary(RES) # < 0.001 ***
 ```
 
 ## 5.25. ab_sxy
@@ -2058,29 +2422,49 @@ plot(fitunif)
 fitg<-fitdist(entomo$ab.sxy,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue #  
+gofstat(fitlnorm)$chisqpvalue # 1
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 3
+#
+mean_AC <- mean(entomo_AC$ab.sxy) ; mean_AC # 45.05
+sd_AC <- sd(entomo_AC$ab.sxy) ; sd_AC # 26.09189
+mean_UC <- mean(entomo_UC$ab.sxy) ; mean_UC # 75.65
+sd_UC <- sd(entomo_UC$ab.sxy) ; sd_UC # 53.99929
+mean_LC <- mean(entomo_LC$ab.sxy) ; mean_LC # 33.35
+sd_LC <- sd(entomo_LC$ab.sxy) ; sd_LC # 15.87542
+mean_BC <- mean(entomo_BC$ab.sxy) ; mean_BC # 28.7
+sd_BC <- sd(entomo_BC$ab.sxy) ; sd_BC # 14.3494
+#
 modelABSXY <- glmmTMB(
-  ab.sxy ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = lognormal(link = "identity"), 
+  ab.sxy ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom1(link = "sqrt"),
+  dispformula = ~ strate,
   data = Final, 
   na.action = na.fail) ; summary(modelABSXY)
 #
 modelABSXY2 <- glmmTMB(
-  ab.sxy ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = lognormal(link = "identity"), 
+  ab.sxy ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom1(link = "sqrt"), 
   data = Final, 
   na.action = na.fail) ; summary(modelABSXY2)
 #
-AICc(modelABSXY) # 725.9916
-AICc(modelABSXY2) # 736.1654
+AICc(modelABSXY) # 719.7693
+AICc(modelABSXY2) # 749.6694
 #
-anova(modelABSXY,modelABSXY2) # 0.0006441 ***
+anova(modelABSXY,modelABSXY2) # 3.886e-08 ***
 #
 sim<-simulateResiduals(modelABSXY)
 testUniformity(sim)
 testOutliers(sim)
 #
 RES<-glht(modelABSXY, linfct = mcp(strate = "Tukey"))
-summary(RES) # 0.00659 **
+summary(RES) # 0.00392 ** 
 ```
 
 ## 5.26. sr_sxy
@@ -2116,22 +2500,41 @@ plot(fitunif)
 fitg<-fitdist(entomo$sr.sxy,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue #  1
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC$sr.sxy) ; mean_AC # 12.9
+sd_AC <- sd(entomo_AC$sr.sxy) ; sd_AC # 4.363726
+mean_UC <- mean(entomo_UC$sr.sxy) ; mean_UC # 19.7
+sd_UC <- sd(entomo_UC$sr.sxy) ; sd_UC # 4.461531
+mean_LC <- mean(entomo_LC$sr.sxy) ; mean_LC # 16.7
+sd_LC <- sd(entomo_LC$sr.sxy) ; sd_LC # 4.942831
+mean_BC <- mean(entomo_BC$sr.sxy) ; mean_BC # 15.25
+sd_BC <- sd(entomo_BC$sr.sxy) ; sd_BC # 4.843607
+#
 modelSRSXY <- glmmTMB(
-  sr.sxy ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "nbinom1", 
+  sr.sxy ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = gaussian(link = "log"), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRSXY)
 #
 modelSRSXY2 <- glmmTMB(
-  sr.sxy ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "nbinom1", 
+  sr.sxy ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = gaussian(link = "log"), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRSXY2)
 #
-AICc(modelSRSXY) # 467.2723
-AICc(modelSRSXY2) # 491.2692
+AICc(modelSRSXY) # 469.5844
+AICc(modelSRSXY2) # 493.4861
 #
-anova(modelSRSXY,modelSRSXY2) # 8.422e-07 ***
+anova(modelSRSXY,modelSRSXY2) # 7.27e-07 ***
 #
 sim<-simulateResiduals(modelSRSXY)
 testUniformity(sim)
@@ -2174,20 +2577,39 @@ plot(fitunif)
 fitg<-fitdist(entomo$ab.zoo,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue #  1
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 3
+#
+mean_AC <- mean(entomo_AC$ab.zoo) ; mean_AC # 44.75
+sd_AC <- sd(entomo_AC$ab.zoo) ; sd_AC # 21.48408
+mean_UC <- mean(entomo_UC$ab.zoo) ; mean_UC # 64.2
+sd_UC <- sd(entomo_UC$ab.zoo) ; sd_UC # 37.09391
+mean_LC <- mean(entomo_LC$ab.zoo) ; mean_LC # 31.05
+sd_LC <- sd(entomo_LC$ab.zoo) ; sd_LC # 16.7284
+mean_BC <- mean(entomo_BC$ab.zoo) ; mean_BC # 21.1
+sd_BC <- sd(entomo_BC$ab.zoo) ; sd_BC # 8.10393
+#
 modelABZOO <- glmmTMB(
-  ab.zoo ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  ab.zoo ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
   family = gaussian(link = "log"), 
   data = Final, 
   na.action = na.fail) ; summary(modelABZOO)
 #
 modelABZOO2 <- glmmTMB(
-  ab.zoo ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  ab.zoo ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
   family = gaussian(link = "log"), 
   data = Final, 
   na.action = na.fail) ; summary(modelABZOO2)
 #
-AICc(modelABZOO) # 725.9477
-AICc(modelABZOO2) # 763.8545
+AICc(modelABZOO) # 730.9635
+AICc(modelABZOO2) # 768.4718
 #
 anova(modelABZOO,modelABZOO2) # 9.58e-10 ***
 #
@@ -2196,7 +2618,7 @@ testUniformity(sim)
 testOutliers(sim)
 #
 RES<-glht(modelABZOO, linfct = mcp(strate = "Tukey"))
-summary(RES) # 0.00482 **
+summary(RES) # < 0.001 ***  0.00471 ** 
 ```
 
 ## 5.28. sr_zoo
@@ -2232,29 +2654,48 @@ plot(fitunif)
 fitg<-fitdist(entomo$sr.zoo,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue #  2
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC$sr.zoo) ; mean_AC # 12.5
+sd_AC <- sd(entomo_AC$sr.zoo) ; sd_AC # 3.79057
+mean_UC <- mean(entomo_UC$sr.zoo) ; mean_UC # 16.5
+sd_UC <- sd(entomo_UC$sr.zoo) ; sd_UC # 4.223992
+mean_LC <- mean(entomo_LC$sr.zoo) ; mean_LC # 12
+sd_LC <- sd(entomo_LC$sr.zoo) ; sd_LC # 3.783621
+mean_BC <- mean(entomo_BC$sr.zoo) ; mean_BC # 11.1
+sd_BC <- sd(entomo_BC$sr.zoo) ; sd_BC # 3.242806
+#
 modelSRZOO <- glmmTMB(
-  sr.zoo ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "nbinom1", 
+  sr.zoo ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = truncated_nbinom2(link = "sqrt"), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRZOO)
 #
 modelSRZOO2 <- glmmTMB(
-  sr.zoo ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "nbinom1", 
+  sr.zoo ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = truncated_nbinom2(link = "sqrt"), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRZOO2)
 #
-AICc(modelSRZOO) # 431.6754
-AICc(modelSRZOO2) # 451.1683
+AICc(modelSRZOO) # 435.5786
+AICc(modelSRZOO2) # 453.8758
 #
-anova(modelSRZOO,modelSRZOO2) # 7.44e-06 ***
+anova(modelSRZOO,modelSRZOO2) # 1.093e-05 ***
 #
 sim<-simulateResiduals(modelSRZOO)
 testUniformity(sim)
 testOutliers(sim)
 #
 RES<-glht(modelSRZOO, linfct = mcp(strate = "Tukey"))
-summary(RES) # 0.00184 ** 
+summary(RES) # < 0.001 ***  0.00361 **  0.00256 **
 ```
 
 ## 5.29. ab_cavspe
@@ -2290,22 +2731,41 @@ plot(fitunif)
 fitg<-fitdist(entomo$ab.cavspe,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue #  
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 2
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC$ab.cavspe) ; mean_AC # 1.6
+sd_AC <- sd(entomo_AC$ab.cavspe) ; sd_AC # 1.353358
+mean_UC <- mean(entomo_UC$ab.cavspe) ; mean_UC # 2.15
+sd_UC <- sd(entomo_UC$ab.cavspe) ; sd_UC # 2.033276
+mean_LC <- mean(entomo_LC$ab.cavspe) ; mean_LC # 3.65
+sd_LC <- sd(entomo_LC$ab.cavspe) ; sd_LC # 3.166851
+mean_BC <- mean(entomo_BC$ab.cavspe) ; mean_BC # 1.8
+sd_BC <- sd(entomo_BC$ab.cavspe) ; sd_BC # 1.823819
+#
 modelABCAVspe <- glmmTMB(
-  ab.cavspe ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "nbinom1", 
+  ab.cavspe ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom2(), 
   data = Final, 
   na.action = na.fail) ; summary(modelABCAVspe)
 #
 modelABCAVspe2 <- glmmTMB(
-  ab.cavspe ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "nbinom1", 
+  ab.cavspe ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom2(), 
   data = Final, 
   na.action = na.fail) ; summary(modelABCAVspe2)
 #
-AICc(modelABCAVspe) # 308.9908
-AICc(modelABCAVspe2) # 316.8113
+AICc(modelABCAVspe) # 315.3511
+AICc(modelABCAVspe2) # 321.7738
 #
-anova(modelABCAVspe,modelABCAVspe2) # 0.001956 **
+anova(modelABCAVspe,modelABCAVspe2) # 0.003126 **
 #
 sim<-simulateResiduals(modelABCAVspe)
 testUniformity(sim)
@@ -2348,22 +2808,41 @@ plot(fitunif)
 fitg<-fitdist(entomo$sr.cavspe,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 1
+gofstat(fitn)$chisqpvalue #  
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC$sr.cavspe) ; mean_AC # 1.15
+sd_AC <- sd(entomo_AC$sr.cavspe) ; sd_AC # 0.8127277
+mean_UC <- mean(entomo_UC$sr.cavspe) ; mean_UC # 1.6
+sd_UC <- sd(entomo_UC$sr.cavspe) ; sd_UC # 1.313893
+mean_LC <- mean(entomo_LC$sr.cavspe) ; mean_LC # 2.05
+sd_LC <- sd(entomo_LC$sr.cavspe) ; sd_LC # 1.276302
+mean_BC <- mean(entomo_BC$sr.cavspe) ; mean_BC # 1.25
+sd_BC <- sd(entomo_BC$sr.cavspe) ; sd_BC # 1.019546
+#
 modelSRCAVspe <- glmmTMB(
-  sr.cavspe ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "genpois", 
+  sr.cavspe ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = compois(), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRCAVspe)
 #
 modelSRCAVspe2 <- glmmTMB(
-  sr.cavspe ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "genpois", 
+  sr.cavspe ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = compois(), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRCAVspe2)
 #
-AICc(modelSRCAVspe) # 245.6462
-AICc(modelSRCAVspe2) # 249.4546
+AICc(modelSRCAVspe) # 251.5605
+AICc(modelSRCAVspe2) # 254.1886
 #
-anova(modelSRCAVspe,modelSRCAVspe2) # 0.01268 *
+anova(modelSRCAVspe,modelSRCAVspe2) # 0.01816 *
 #
 sim<-simulateResiduals(modelSRCAVspe)
 testUniformity(sim)
