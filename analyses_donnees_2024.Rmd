@@ -30,6 +30,7 @@ library(emmeans)
 library(multcomp)
 library(vegan)
 library(tidyr)
+library(vegan)
 ```
 
 # 2. working directory
@@ -185,13 +186,17 @@ ggplot(Coleo2, aes(x = code_sp, y = AB)) +
 # 4. Data loader (+ essais emmeans et Varpar)
 
 ```{r}
+### Chargement des fichiers ###
+
   # BMP Strates
 BMP_Strates <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMP_Strates_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
   # Data entomo
 entomo <- read.table(here::here("Data", "Data placettes", "DATA_placette_CANOPIX", "metriques_CB", "metric_entomo2024.txt"), sep = "\t", dec = ".", quote = "\"", stringsAsFactors = F, header = T)
-  # Data matrices CB
-matrices <- read.table(here::here("Data", "Data placettes", "DATA_placette_CANOPIX", "metriques_CB", "matrix_spcolsx_pieges.txt"), sep = "\t", dec = ".", quote = "\"", stringsAsFactors = F, header = T)
-dimnames(matrices) # attention 1 à 6 (7: 381)
+  # Data matrices avec singletons et doubletons CB
+matrices_AVEC <- read.table(here::here("Data", "Data placettes", "DATA_placette_CANOPIX", "metriques_CB", "matrix_spcolsx_pieges_inclsingdoub.txt"), sep = "\t", dec = ".", quote = "\"", stringsAsFactors = F, header = T)
+  # Data matrices sans singletons et doubletons CB
+matrices_SANS <- read.table(here::here("Data", "Data placettes", "DATA_placette_CANOPIX", "metriques_CB", "matrix_spcolsx_pieges_exclsingdoub.txt"), sep = "\t", dec = ".", quote = "\"", stringsAsFactors = F, header = T)
+dimnames(matrices_AVEC)
   # Data longitude et latitude
 GPS <- read.csv(here::here("Data", "Data placettes", "DATA_placette_CANOPIX", "metriques_CB", "info_arbre.csv"),
 sep=",", header=TRUE, stringsAsFactors = FALSE)
@@ -200,39 +205,9 @@ options(digits = 15)
 GPS <- separate(GPS, raw, into = c("massif", "plot", "X_L93", "Y_L93", "X_WGS84", "Y_WGS84", "sp", "note_DEPERIS", "DBH.cm", "H_arbre.m", "id_arbre"), sep = ",", convert = TRUE)
 options(digits = 15)
 
-library(vegan)
-# composition de communauté de coleo sapro
-distsupra<-vegdist(matrices[,7 : 381], method="bray",na.rm = TRUE)
-# Ordination 
-nmds<-metaMDS(traitTREM[,4:42], distance = "bray")
-ordiplot (nmds, display = 'sites', type = 'n')
-orditorp (nmds, display = 'sites',label=traitTREM$id.TreM.type,cex=0.4)
-ordiellipse(nmds, traitTREM$cluster17, display = "sites", kind = "sd", label = T,cex=0.8)
-ordispider(nmds, traitTREM$cluster17,label=F)
-# Test de permutation adonis strates 2 à 2
-adonis2(matrices[,7 : 381] ~ strate, matrices, permutations = 999, method = "bray",strata = LOCA)
-# manuellmeent 6 tableau : ex 1-2, 1-3, etc
+### Modifications du fichier Entomo ###
 
-
-# matrice simplifié avec singletons et doubletons enlevés en utilisant que les espèces communes
-# somme des colonnes et virées 1 ou 2
-distsupra<-vegdist(matrices[,7 : 381], method="bray",na.rm = TRUE)
-adonis2(matrices[,7 : 381] ~ strate, matrices, permutations = 999, method = "bray",strata = LOCA)
-
-library(emmeans) # remplacer la méthode bourrine manuelle 
-emmeans(distsupra, ~ strate)
-?emmeans # glmmm peut expliqué attendre CB
-
-# refaire TOUT les modèles en séparant Final par relevé 
-# Réfléchir à intégrer relevé et strates dans modèles (strate * relevé)
-# Partition de variance : approche multi-variable ( proposition des métriques dendro, qui influence signif le plus et qui sur l'abondance de coleo) avec VARPAR pour mesurer la proportion de variance mais également inertie 
-
-
-
-###
-
-# Modifier Jeu de données entomo pour créer une colonne placette #
-
+# Créer une colonne placette #
   # Modification de entomo pour left_join avec les métriques X
 entomo <- entomo %>%
   mutate(placette = paste0(substr(LOCA, 1, 1), "_", parcelle), .before = LOCA) %>%
@@ -250,16 +225,20 @@ BMP_Strates <- BMP_Strates %>%
   arrange(placette)
   # Ligne de code pour ajouter les métriques X à entomo
   # Ajout de la localisation des placettes
+#
 GPS <- GPS %>%
   arrange(id_arbre) %>%
   rename(placette = id_arbre,
          latitude = Y_L93,
          longitude = X_L93) %>%
   select(3, 4, 11)
+#
 GPS$placette <- gsub('"', '', GPS$placette) # guillemets en trop
 GPS <- GPS %>%
   mutate(placette = ifelse(placette == "V_169", "V_170", placette)) # rectification
-
+#
+Final <- entomo
+#
 Final <- BMP_Strates %>% 
   left_join(entomo, by = c("placette" = "placette", "num.trap" = "num.trap")) %>% # ajout d'une métrique dendro
   left_join(GPS, by = "placette") %>% # Ajout coordonées GPS
@@ -275,9 +254,7 @@ Final <- Final %>%
   mutate(id = paste0(placette, "_", num.trap))
   # Tentative de créer une colonne strates unique et avec la même appélation que les métriques dendro, cependant pas utile puisque la colonne strate de entomo fait bien l'affaire
 
-###
-
-# Ajout des métriques dendro à Final (AD +RB)
+### Ajout des métriques dendro à Final (AD +RB) ###
 
 # BMP Echelle strates
 BMP_Strates <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMP_Strates_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
@@ -460,9 +437,7 @@ Metriques <- BMP_Strates %>%
   left_join(Metriques_Placettes_canopeeRB, by = "placette") %>%
   relocate(names(Metriques_Placettes_canopeeRB), .before = "Vol_BMP_Canop.m3")
 
-###
-
-# Modification pour les calculs de mean et sd des variables entomo
+### Création des data.frame pour les mean et sd des métriques ###
 
 entomo_AC <- entomo %>%
   filter(num.trap == "1")
@@ -473,7 +448,7 @@ entomo_LC <- entomo %>%
 entomo_BC <- entomo %>%
   filter(num.trap == "4")
 
-# Chargement du jeu de données entomo par relevé
+### Chargement du jeu de données entomo par relevé ###
 
   # Data entomo par relevé
 entomo_releves <- read.table(here::here("Data", "Data placettes", "DATA_placette_CANOPIX", "metriques_CB", "metric_entomo2024_par_releve.txt"), sep = "\t", dec = ".", quote = "\"", stringsAsFactors = F, header = T)
@@ -482,7 +457,7 @@ entomo_releves <- read.table(here::here("Data", "Data placettes", "DATA_placette
 entomo_releves <- entomo_releves %>%
   mutate(placette = paste0(substr(massif, 1, 1), "_", Parcelle), .before = id.trap) %>%
   arrange(placette)
-
+#
 entomo_R1 <- entomo_releves %>%
   filter(num.releve == "R1")
 entomo_R2 <- entomo_releves %>%
@@ -2885,27 +2860,48 @@ plot(fitunif)
 fitg<-fitdist(entomo$CWM_diam,"gamma",method="mme")
 plot(fitg) # oui
 #
+gofstat(fitnb)$chisqpvalue # 
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 1
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 2
+#
+mean_AC <- mean(entomo_AC$CWM_diam) ; mean_AC # 2.211068
+sd_AC <- sd(entomo_AC$CWM_diam) ; sd_AC # 0.06958873
+mean_UC <- mean(entomo_UC$CWM_diam) ; mean_UC # 2.220867
+sd_UC <- sd(entomo_UC$CWM_diam) ; sd_UC # 0.1136857
+mean_LC <- mean(entomo_LC$CWM_diam) ; mean_LC # 2.264987
+sd_LC <- sd(entomo_LC$CWM_diam) ; sd_LC # 0.08423126
+mean_BC <- mean(entomo_BC$CWM_diam) ; mean_BC # 2.253956
+sd_BC <- sd(entomo_BC$CWM_diam) ; sd_BC # 0.08252141
+#
 modelCWM_diam <- glmmTMB(
-  CWM_diam ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "lognormal",
+  CWM_diam ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = gaussian(),
   data = Final, 
   na.action = na.fail) ; summary(modelCWM_diam)
 #
 modelCWM_diam2 <- glmmTMB(
-  CWM_diam ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "lognormal",
+  CWM_diam ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = gaussian(),
   data = Final, 
   na.action = na.fail) ; summary(modelCWM_diam2)
 #
-AICc(modelCWM_diam) # 54.16182
-AICc(modelCWM_diam2) # 52.11842
+AICc(modelCWM_diam) # -29.90329
+AICc(modelCWM_diam2) # -28.34262
 #
-anova(modelCWM_diam, modelCWM_diam2) # 0.1734
+anova(modelCWM_diam, modelCWM_diam2) # 0.02954 *
 #
 sim<-simulateResiduals(modelCWM_diam)
 testUniformity(sim)
 testOutliers(sim)
 #
+Final$strate <- as.factor(Final$strate)
+is.factor(Final$strate)
 RES<-glht(modelCWM_diam, linfct = mcp(strate = "Tukey"))
 summary(RES) # 0.00184 **
 ```
@@ -2943,13 +2939,29 @@ plot(fitunif)
 fitg<-fitdist(entomo$CWM_canop,"gamma",method="mme")
 plot(fitg) # 
 #
-install.packages(glmmTMB)
-library(glmmTMB)
-?glmmTMB
-vignette("covstruct", package = "glmmTMB")
+gofstat(fitnb)$chisqpvalue # 
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 1 
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 2
+#
+mean_AC <- mean(entomo_AC$CWM_canop) ; mean_AC # 1.541629
+sd_AC <- sd(entomo_AC$CWM_canop) ; sd_AC # 0.05785208
+mean_UC <- mean(entomo_UC$CWM_canop) ; mean_UC # 1.518315
+sd_UC <- sd(entomo_UC$CWM_canop) ; sd_UC # 0.05512761
+mean_LC <- mean(entomo_LC$CWM_canop) ; mean_LC # 1.634024
+sd_LC <- sd(entomo_LC$CWM_canop) ; sd_LC # 0.05912739
+mean_BC <- mean(entomo_BC$CWM_canop) ; mean_BC # 1.654663
+sd_BC <- sd(entomo_BC$CWM_canop) ; sd_BC # 0.07204698
+#
+# vignette("covstruct", package = "glmmTMB")
 modelCWM_canop <- glmmTMB(
-  CWM_canop ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = t_family(), 
+  CWM_canop ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = lognormal(link = "identity"), 
   data = Final, 
   na.action = na.fail) ; summary(modelCWM_canop)
 
@@ -2985,22 +2997,22 @@ modelCWM_canop <- glmmTMB(
 # rm(model_gamlss_CWM_canop)
 # #
 modelCWM_canop2 <- glmmTMB(
-  CWM_canop ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = t_family(), 
+  CWM_canop ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = lognormal(link = "identity"), 
   data = Final, 
   na.action = na.fail) ; summary(modelCWM_canop2)
 #
-AICc(modelCWM_canop) # -57.22125
-AICc(modelCWM_canop2) # -32.60404
+AICc(modelCWM_canop) # -44.2054
+AICc(modelCWM_canop2) # -31.7902
 #
-anova(modelCWM_canop, modelCWM_canop2) # 5.671e-07 ***
+anova(modelCWM_canop, modelCWM_canop2) # 0.0001836 ***
 #
 sim<-simulateResiduals(modelCWM_canop)
 testUniformity(sim)
 testOutliers(sim)
 #
 RES<-glht(modelCWM_canop, linfct = mcp(strate = "Tukey"))
-summary(RES) # < 1e-04 ***
+summary(RES) # < 0.001 ***
 ```
 
 ## 5.33. CWM_decay
@@ -3036,15 +3048,35 @@ plot(fitunif)
 fitg<-fitdist(entomo$CWM_decay,"gamma",method="mme")
 plot(fitg) # oui
 #
+gofstat(fitnb)$chisqpvalue # 
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 1 
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 2
+#
+mean_AC <- mean(entomo_AC$CWM_decay) ; mean_AC # 2.673216
+sd_AC <- sd(entomo_AC$CWM_decay) ; sd_AC # 0.1540046
+mean_UC <- mean(entomo_UC$CWM_decay) ; mean_UC # 2.684415
+sd_UC <- sd(entomo_UC$CWM_decay) ; sd_UC # 0.1790224
+mean_LC <- mean(entomo_LC$CWM_decay) ; mean_LC # 2.734442
+sd_LC <- sd(entomo_LC$CWM_decay) ; sd_LC # 0.2266795
+mean_BC <- mean(entomo_BC$CWM_decay) ; mean_BC # 2.617411
+sd_BC <- sd(entomo_BC$CWM_decay) ; sd_BC # 0.217277
+#
 modelCWM_decay <- glmmTMB(
-  CWM_decay ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "gaussian",
+  CWM_decay ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = tweedie(),
   data = Final, 
   na.action = na.fail) ; summary(modelCWM_decay)
 #
+?glmmTMB
 modelCWM_decay2 <- glmmTMB(
-  CWM_decay ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = "gaussian",
+  CWM_decay ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = skewnormal(link),
   data = Final, 
   na.action = na.fail) ; summary(modelCWM_decay2)
 #
@@ -3094,20 +3126,39 @@ plot(fitunif)
 fitg<-fitdist(entomo$CWM_size,"gamma",method="mme")
 plot(fitg) # oui
 #
+gofstat(fitnb)$chisqpvalue # 
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue #  
+gofstat(fitlnorm)$chisqpvalue # 1
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fibeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 2
+#
+mean_AC <- mean(entomo_AC$CWM_size) ; mean_AC # 4.9565
+sd_AC <- sd(entomo_AC$CWM_size) ; sd_AC # 1.224145
+mean_UC <- mean(entomo_UC$CWM_size) ; mean_UC # 6.015946
+sd_UC <- sd(entomo_UC$CWM_size) ; sd_UC # 1.425549
+mean_LC <- mean(entomo_LC$CWM_size) ; mean_LC # 4.369585
+sd_LC <- sd(entomo_LC$CWM_size) ; sd_LC # 0.9281329
+mean_BC <- mean(entomo_BC$CWM_size) ; mean_BC # 4.021581
+sd_BC <- sd(entomo_BC$CWM_size) ; sd_BC # 0.5997976
+#
 modelCWM_size <- glmmTMB(
-  CWM_size ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  CWM_size ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
   family = "lognormal",
   data = Final, 
   na.action = na.fail) ; summary(modelCWM_size)
 #
 modelCWM_size2 <- glmmTMB(
-  CWM_size ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  CWM_size ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
   family = "lognormal",
   data = Final, 
   na.action = na.fail) ; summary(modelCWM_size2)
 #
-AICc(modelCWM_size) # 252.6993
-AICc(modelCWM_size2) # 284.6468
+AICc(modelCWM_size) # 257.7152
+AICc(modelCWM_size2) # 289.2642
 #
 anova(modelCWM_size, modelCWM_size2) # 1.761e-08 ***
 #
@@ -3116,7 +3167,7 @@ testUniformity(sim)
 testOutliers(sim)
 #
 RES<-glht(modelCWM_size, linfct = mcp(strate = "Tukey"))
-summary(RES) # < 0.001 ***
+summary(RES) # < 0.001 *** 0.00927 **
 ```
 
 ## 5.35. FD_diam
@@ -3152,22 +3203,41 @@ plot(fitunif)
 fitg<-fitdist(entomo$FD_diam,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue #  1
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue # 2
+gofstat(fitg)$chisqpvalue # 3
+#
+mean_AC <- mean(entomo_AC$FD_diam) ; mean_AC # 0.4879211
+sd_AC <- sd(entomo_AC$FD_diam) ; sd_AC # 0.114361
+mean_UC <- mean(entomo_UC$FD_diam) ; mean_UC # 0.5506412
+sd_UC <- sd(entomo_UC$FD_diam) ; sd_UC # 0.1253963
+mean_LC <- mean(entomo_LC$FD_diam) ; mean_LC # 0.5425483
+sd_LC <- sd(entomo_LC$FD_diam) ; sd_LC # 0.1391837
+mean_BC <- mean(entomo_BC$FD_diam) ; mean_BC # 0.5158073
+sd_BC <- sd(entomo_BC$FD_diam) ; sd_BC # 0.1184035
+#
 modelFD_diam <- glmmTMB(
-  FD_diam ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = gaussian(),
+  FD_diam ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = gaussian(link = "inverse"),
   data = Final, 
   na.action = na.fail) ; summary(modelFD_diam)
 #
 modelFD_diam2 <- glmmTMB(
-  FD_diam ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = gaussian(),
+  FD_diam ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = gaussian(link = "inverse"),
   data = Final, 
   na.action = na.fail) ; summary(modelFD_diam2)
 #
-AICc(modelFD_diam) # -30.42083
-AICc(modelFD_diam2) # -25.66816
+AICc(modelFD_diam) # -95.73439
+AICc(modelFD_diam2) # -100.977
 #
-anova(modelFD_diam, modelFD_diam2) # 0.008195 **
+anova(modelFD_diam, modelFD_diam2) # 0.5363
 #
 sim<-simulateResiduals(modelFD_diam)
 testUniformity(sim)
@@ -3210,22 +3280,41 @@ plot(fitunif)
 fitg<-fitdist(entomo$FD_canop,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue #  2
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue # 1
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC$FD_canop) ; mean_AC # 0.5254339
+sd_AC <- sd(entomo_AC$FD_canop) ; sd_AC # 0.1473477
+mean_UC <- mean(entomo_UC$FD_canop) ; mean_UC # 0.5169114
+sd_UC <- sd(entomo_UC$FD_canop) ; sd_UC # 0.1337425
+mean_LC <- mean(entomo_LC$FD_canop) ; mean_LC # 0.6064995
+sd_LC <- sd(entomo_LC$FD_canop) ; sd_LC # 0.1088727
+mean_BC <- mean(entomo_BC$FD_canop) ; mean_BC # 0.617698
+sd_BC <- sd(entomo_BC$FD_canop) ; sd_BC # 0.1211975
+#
 modelFD_canop <- glmmTMB(
-  FD_canop ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = beta_family(),
+  FD_canop ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = gaussian(),
   data = Final, 
   na.action = na.fail) ; summary(modelFD_canop)
 #
 modelFD_canop2 <- glmmTMB(
-  FD_canop ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = beta_family(),
+  FD_canop ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = gaussian(),
   data = Final, 
   na.action = na.fail) ; summary(modelFD_canop2)
 #
-AICc(modelFD_canop) # -22.90872
-AICc(modelFD_canop2) # -18.33089
+AICc(modelFD_canop) # -17.89285
+AICc(modelFD_canop2) # -13.71354
 #
-anova(modelFD_canop, modelFD_canop2) # 0.008195 **
+anova(modelFD_canop, modelFD_canop2) # 0.008887 **
 #
 sim<-simulateResiduals(modelFD_canop)
 testUniformity(sim)
@@ -3268,22 +3357,41 @@ plot(fitunif)
 fitg<-fitdist(entomo$FD_decay,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue #  3
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue # 1
+gofstat(fitg)$chisqpvalue # 2
+#
+mean_AC <- mean(entomo_AC$FD_decay) ; mean_AC # 0.7781444
+sd_AC <- sd(entomo_AC$FD_decay) ; sd_AC # 0.06395623
+mean_UC <- mean(entomo_UC$FD_decay) ; mean_UC # 0.7696847
+sd_UC <- sd(entomo_UC$FD_decay) ; sd_UC # 0.08815164
+mean_LC <- mean(entomo_LC$FD_decay) ; mean_LC # 0.7131283
+sd_LC <- sd(entomo_LC$FD_decay) ; sd_LC # 0.08978659
+mean_BC <- mean(entomo_BC$FD_decay) ; mean_BC # 0.6775281
+sd_BC <- sd(entomo_BC$FD_decay) ; sd_BC # 0.1290861
+#
 modelFD_decay <- glmmTMB(
-  FD_decay ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = beta_family(),
+  FD_decay ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = lognormal(),
   data = Final, 
   na.action = na.fail) ; summary(modelFD_decay)
 #
 modelFD_decay2 <- glmmTMB(
-  FD_decay ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = beta_family(),
+  FD_decay ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = lognormal(),
   data = Final, 
   na.action = na.fail) ; summary(modelFD_decay2)
 #
-AICc(modelFD_decay) # -142.3195
-AICc(modelFD_decay2) # -132.0498
+AICc(modelFD_decay) # -71.33705
+AICc(modelFD_decay2) # -66.82008
 #
-anova(modelFD_decay, modelFD_decay2) # 0.0006155 ***
+anova(modelFD_decay, modelFD_decay2) # 0.0076 **
 #
 sim<-simulateResiduals(modelFD_decay)
 testUniformity(sim)
@@ -3326,22 +3434,41 @@ plot(fitunif)
 fitg<-fitdist(entomo$FD_size,"gamma",method="mme")
 plot(fitg) # 
 #
+gofstat(fitnb)$chisqpvalue # 
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue #  3
+gofstat(fitlnorm)$chisqpvalue # 1
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue # 4
+gofstat(fitg)$chisqpvalue # 2
+#
+mean_AC <- mean(entomo_AC$FD_size) ; mean_AC # 0.5375435
+sd_AC <- sd(entomo_AC$FD_size) ; sd_AC # 0.1718437
+mean_UC <- mean(entomo_UC$FD_size) ; mean_UC # 0.6717147
+sd_UC <- sd(entomo_UC$FD_size) ; sd_UC # 0.1627755
+mean_LC <- mean(entomo_LC$FD_size) ; mean_LC # 0.4714982
+sd_LC <- sd(entomo_LC$FD_size) ; sd_LC # 0.144287
+mean_BC <- mean(entomo_BC$FD_size) ; mean_BC # 0.4162959
+sd_BC <- sd(entomo_BC$FD_size) ; sd_BC # 0.1074206
+#
 modelFD_size <- glmmTMB(
-  FD_size ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = lognormal(),
+  FD_size ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = Gamma(),
   data = Final, 
   na.action = na.fail) ; summary(modelFD_size)
 #
 modelFD_size2 <- glmmTMB(
-  FD_size ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
-  family = lognormal(),
+  FD_size ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = Gamma(),
   data = Final, 
   na.action = na.fail) ; summary(modelFD_size2)
 #
-AICc(modelFD_size) # -74.84554
-AICc(modelFD_size2) # -41.68336
+AICc(modelFD_size) # -67.25128
+AICc(modelFD_size2) # -40.46026
 #
-anova(modelFD_size, modelFD_size2) # 9.738e-09 ***
+anova(modelFD_size, modelFD_size2) # 1.787e-07 ***
 #
 sim<-simulateResiduals(modelFD_size)
 testUniformity(sim)
@@ -3350,8 +3477,204 @@ testOutliers(sim)
 RES<-glht(modelFD_size, linfct = mcp(strate = "Tukey"))
 summary(RES) # < 0.001 ***
 ```
+
+## 5.39. ab_colsxrsx
+
+```{r}
+descdist(entomo$ab.colsxrsx,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$ab.colsxrsx,"norm")) #
+#
+fitnb<-fitdist(entomo$ab.colsxrsx,"nbinom")
+plot(fitdist(entomo$ab.colsxrsx,"nbinom")) # 
+# 
+fitp<-fitdist(entomo$ab.colsxrsx,"pois")
+plot(fitp) # 
+#
+fitn<-fitdist(entomo$ab.colsxrsx,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$ab.colsxrsx,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo$ab.colsxrsx,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$ab.colsxrsx,"geom")
+plot(fitgeom) # 
+#
+fitbeta<-fitdist(entomo$ab.colsxrsx,"beta") # 
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$ab.colsxrsx,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$ab.colsxrsx,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue #  
+gofstat(fitlnorm)$chisqpvalue # 2
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue # 
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC$ab.colsxrsx) ; mean_AC # 4.35
+sd_AC <- sd(entomo_AC$ab.colsxrsx) ; sd_AC # 3.407036
+mean_UC <- mean(entomo_UC$ab.colsxrsx) ; mean_UC # 1.1
+sd_UC <- sd(entomo_UC$ab.colsxrsx) ; sd_UC # 1.618967
+mean_LC <- mean(entomo_LC$ab.colsxrsx) ; mean_LC # 0.65
+sd_LC <- sd(entomo_LC$ab.colsxrsx) ; sd_LC # 0.9880869
+mean_BC <- mean(entomo_BC$ab.colsxrsx) ; mean_BC # 0.45
+sd_BC <- sd(entomo_BC$ab.colsxrsx) ; sd_BC # 0.9445132
+#
+modelabcolsxrsx <- glmmTMB(
+  ab.colsxrsx ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom2(),
+  data = Final, 
+  na.action = na.fail) ; summary(modelabcolsxrsx)
+#
+modelabcolsxrsx2 <- glmmTMB(
+  ab.colsxrsx ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom2(),
+  data = Final, 
+  na.action = na.fail) ; summary(modelabcolsxrsx2)
+#
+AICc(modelabcolsxrsx) # 241.5289
+AICc(modelabcolsxrsx2) # 281.0822
+#
+anova(modelabcolsxrsx, modelabcolsxrsx2) # 3.52e-10 ***
+#
+sim<-simulateResiduals(modelabcolsxrsx)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelabcolsxrsx, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***
+```
+
+## 5.40. sr_colsxrsx
+
+```{r}
+descdist(entomo$sr.colsxrsx,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$sr.colsxrsx,"norm")) #
+#
+fitnb<-fitdist(entomo$sr.colsxrsx,"nbinom")
+plot(fitdist(entomo$sr.colsxrsx,"nbinom")) # 
+# 
+fitp<-fitdist(entomo$sr.colsxrsx,"pois")
+plot(fitp) # 
+#
+fitn<-fitdist(entomo$sr.colsxrsx,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$sr.colsxrsx,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo$sr.colsxrsx,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$sr.colsxrsx,"geom")
+plot(fitgeom) # 
+#
+fitbeta<-fitdist(entomo$sr.colsxrsx,"beta") # 
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$sr.colsxrsx,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$sr.colsxrsx,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue #  
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 1
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue # 
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC$sr.colsxrsx) ; mean_AC # 3
+sd_AC <- sd(entomo_AC$sr.colsxrsx) ; sd_AC # 1.891811
+mean_UC <- mean(entomo_UC$sr.colsxrsx) ; mean_UC # 1.05
+sd_UC <- sd(entomo_UC$sr.colsxrsx) ; sd_UC # 1.468081
+mean_LC <- mean(entomo_LC$sr.colsxrsx) ; mean_LC # 0.6
+sd_LC <- sd(entomo_LC$sr.colsxrsx) ; sd_LC # 0.88258
+mean_BC <- mean(entomo_BC$sr.colsxrsx) ; mean_BC # 0.45
+sd_BC <- sd(entomo_BC$sr.colsxrsx) ; sd_BC # 0.9445132
+#
+modelsrcolsxrsx <- glmmTMB(
+  sr.colsxrsx ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom12(),
+  data = Final, 
+  na.action = na.fail) ; summary(modelsrcolsxrsx)
+#
+modelsrcolsxrsx2 <- glmmTMB(
+  sr.colsxrsx ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom12(),
+  data = Final, 
+  na.action = na.fail) ; summary(modelsrcolsxrsx2)
+#
+AICc(modelsrcolsxrsx) # 226.0652
+AICc(modelsrcolsxrsx2) # 257.3321
+#
+anova(modelsrcolsxrsx, modelsrcolsxrsx2) # 1.823e-08 ***
+#
+sim<-simulateResiduals(modelsrcolsxrsx)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelsrcolsxrsx, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***
+```
+
 # 6. Analyses : nmds 
-## 6.1. 
+## 6.1. Matrice avec singletons et doubletons
+
+```{r}
+### Tests des analyses sur les compositions de com Col ###
+# Dans ces matrices, seul les espèces associées aux feuillus ou sans préférence pour le groupe d’essences hôtes sont conservées, et donc sont exclus les espèces associées aux résineux.
+
+# composition de communauté de coleo sapro
+distsupra <- vegdist(matrices_AVEC[,7 : 355], method = "bray", na.rm = TRUE) ; distsupra
+# Ordination
+
+community_matrix=matrix(
+   sample(1:100,300,replace=T),nrow=10,
+   dimnames=list(paste("community",1:10,sep=""),paste("sp",1:30,sep="")))
+example_NMDS=metaMDS(community_matrix, # Our community-by-species matrix
+                     k=2)
+stressplot(example_NMDS)
+
+nmds<-metaMDS(matrices_AVEC[,7 : 355], distance = "bray")
+stressplot(matrices_AVEC)
+ordiplot (nmds, display = 'species', type = 'n')
+orditorp (nmds, display = 'species', cex = 0.6)
+ordiellipse(nmds, matrices_AVEC$strate, display = "species", kind = "sd", label = T,cex=0.8)
+ordispider(nmds, traitTREM$cluster17,label=F)
+# Test de permutation adonis strates 2 à 2
+adonis2(distsupra ~ strate, distsupra, permutations = 999, method = "bray",strata = LOCA)
+# manuellmeent 6 tableau : ex 1-2, 1-3, etc
+
+# matrice simplifié avec singletons et doubletons enlevés en utilisant que les espèces communes
+# somme des colonnes et virées 1 ou 2
+distsupra<-vegdist(matrices[,7 : 381], method="bray",na.rm = TRUE)
+adonis2(matrices[,7 : 381] ~ strate, matrices, permutations = 999, method = "bray",strata = LOCA)
+
+library(emmeans) # remplacer la méthode bourrine manuelle 
+emmeans(distsupra, ~ strate)
+?emmeans # glmmm peut expliqué attendre CB
+
+# refaire TOUT les modèles en séparant Final par relevé 
+# Réfléchir à intégrer relevé et strates dans modèles (strate * relevé)
+# Partition de variance : approche multi-variable ( proposition des métriques dendro, qui influence signif le plus et qui sur l'abondance de coleo) avec VARPAR pour mesurer la proportion de variance mais également inertie 
+```
+
+## 6.2. Matrice sans singletons et doubletons
 
 ```{r}
 
