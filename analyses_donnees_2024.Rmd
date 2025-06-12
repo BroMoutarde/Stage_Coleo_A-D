@@ -3639,26 +3639,47 @@ summary(RES) # < 0.001 ***
 ### Tests des analyses sur les compositions de com Col ###
 # Dans ces matrices, seul les espèces associées aux feuillus ou sans préférence pour le groupe d’essences hôtes sont conservées, et donc sont exclus les espèces associées aux résineux.
 
-# composition de communauté de coleo sapro
-distsupra <- vegdist(matrices_AVEC[,7 : 355], method = "bray", na.rm = TRUE) ; distsupra
+# composition de communauté de coleo sapro, matrice de dist
+distsupraavec <- vegdist(matrices_AVEC[,7 : 355], method = "bray", na.rm = TRUE)
+
 # Ordination
-
-community_matrix=matrix(
-   sample(1:100,300,replace=T),nrow=10,
-   dimnames=list(paste("community",1:10,sep=""),paste("sp",1:30,sep="")))
-example_NMDS=metaMDS(community_matrix, # Our community-by-species matrix
-                     k=2)
-stressplot(example_NMDS)
-
-nmds<-metaMDS(matrices_AVEC[,7 : 355], distance = "bray")
-stressplot(matrices_AVEC)
-ordiplot (nmds, display = 'species', type = 'n')
-orditorp (nmds, display = 'species', cex = 0.6)
-ordiellipse(nmds, matrices_AVEC$strate, display = "species", kind = "sd", label = T,cex=0.8)
-ordispider(nmds, traitTREM$cluster17,label=F)
+nmds<-metaMDS(matrices_AVEC[,7 : 355], distance = "bray", k = 3, autotransform = T, trymax = 200) # dimensions 2 ou 3 sont celles généralement utilisés en écologie, plus et l'interprétation devient compliquée, choix sur 3 pour réduire le stress et permettre un meilleur fit de notre NMDS
+#
+nmds$stress # 0.164507, > 0.20 les données sont dangereuses à interpréter, mauvais fit dans la NMDS
+#
+stressplot(nmds) # Shepard plot
+#
+plot(nmds) # Plot pour visualiser les sites (ronds) et espèces (croix rouges)
+#
+pdf("nmds_species_plot_ellipse.pdf", width = 15, height = 12)
+ordiplot(nmds, type = "n")
+ordiplot (nmds, display = "species", cex = 0.5)
+orditorp (nmds, display = "sites", cex = 0.6)
+ordiellipse(nmds, 
+            matrices_AVEC$strate,
+            kind = "sd", 
+            label = T, 
+            cex = 1,
+            col = c("darkorchid1", "darkslategray1", "bisque1", "brown1"),
+            draw = "polygon", 
+            alpha = 120)
+dev.off()
+#
+pdf("nmds_species_plot_spider.pdf", width = 15, height = 12)
+ordiplot(nmds, type = "t", cex = 0.5)
+ordispider(nmds, groups = matrices_AVEC$strate,label = T, cex = 1)
+dev.off()
+#
 # Test de permutation adonis strates 2 à 2
-adonis2(distsupra ~ strate, distsupra, permutations = 999, method = "bray",strata = LOCA)
-# manuellmeent 6 tableau : ex 1-2, 1-3, etc
+adonis2(distsupra ~ strate, distsupra, permutations = 999, method = "bray", strata = LOCA)
+#
+coleo_dispersion <- betadisper(distsupraavec, group = matrices_AVEC$strate) # test de l'homogénéité des variances de notre modèle 
+permutest(coleo_dispersion) # p-value = 0.018 *, les variances ne sont pas homogènes, résultats du modèles ne sont pas fiables
+plot(coleo_dispersion, hull = FALSE, ellipse=TRUE)
+#
+coleo_avec_simper <- with(matrices_AVEC[,7 : 355], simper(matrices_AVEC[,7 : 355]), strate, permutations = 100) ; coleo_avec_simper # espèces les plus influentes dans la contribution à la différence des strates
+
+# manuellement 6 tableau : ex 1-2, 1-3, etc #
 
 # matrice simplifié avec singletons et doubletons enlevés en utilisant que les espèces communes
 # somme des colonnes et virées 1 ou 2
