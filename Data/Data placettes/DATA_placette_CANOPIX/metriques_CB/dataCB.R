@@ -130,7 +130,7 @@ write.table(piege.ano$class.vec,file="",sep=";")
 # permanova
 #npmanova contraint par cldia
 adonis(speres[,5:30]~speres$ess,speres, permutations = 999, method = "bray",strata = speres$cldia)
-?adonis
+?adonis2
 
 #ANOSIM
 dist.saproclim<-vegdist(spefeu[,5:36],distance = "bray")
