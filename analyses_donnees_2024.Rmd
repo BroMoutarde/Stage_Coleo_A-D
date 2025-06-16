@@ -26,11 +26,11 @@ library(glmmTMB) # modèles mixtes
 library(AICcmodavg) # Comparaison de modèles
 library(fitdistrplus) # Distribution la mieux adaptée
 library(DHARMa) # Vérification des présuposés des modèles
-library(emmeans)
+library(emmeans) # Comparaison 2 à 2 des ordinations
 library(multcomp)
-library(vegan)
+library(vegan) # Matrices d'ordination
 library(tidyr)
-library(vegan)
+library(pairwiseAdonis)
 ```
 
 # 2. working directory
@@ -3633,28 +3633,29 @@ summary(RES) # < 0.001 ***
 ```
 
 # 6. Analyses : nmds 
-## 6.1. Matrice avec singletons et doubletons
+## 6.1. Matrice avec singletons et doubletons : Bray-curtis
 
 ```{r}
 ### Tests des analyses sur les compositions de com Col ###
-# Dans ces matrices, seul les espèces associées aux feuillus ou sans préférence pour le groupe d’essences hôtes sont conservées, et donc sont exclus les espèces associées aux résineux.
 
-# composition de communauté de coleo sapro, matrice de dist
-distsupraavec <- vegdist(matrices_AVEC[,7 : 355], method = "bray", na.rm = TRUE)
+# Dans ces matrices, seul les espèces associées aux feuillus ou sans préférence pour le groupe d’essences hôtes sont conservées, et donc sont exclus les espèces associées aux résineux. #
 
-# Ordination
-# Jaccard (qualitatif) ou sorensen (quantitatif : bray-curtis)
-nmds<-metaMDS(matrices_AVEC[,7 : 355], distance = "bray", k = 3, autotransform = T, trymax = 200) # dimensions 2 ou 3 sont celles généralement utilisés en écologie, plus et l'interprétation devient compliquée, choix sur 3 pour réduire le stress et permettre un meilleur fit de notre NMDS
+### 1ère méthode avec Bray-Curtis (quantitatif) 
+
+  # General settings
+matrices_AVEC$strate <- as.factor(matrices_AVEC$strate)
+  # Ordination
+# Jaccard ou sorensen (qualitatif)(quantitatif :  bray-curtis)
+nmds<-metaMDS(matrices_AVEC[,7 : 355], distance = "bray", k = 3, autotransform = T, trymax = 200) 
+# dimensions 2 ou 3 sont celles généralement utilisés en écologie, plus et l'interprétation devient compliquée, choix sur 3 pour réduire le stress et permettre un meilleur fit de notre NMDS #
 #
-nmds$stress # 0.164507, > 0.20 les données sont dangereuses à interpréter, mauvais fit dans la NMDS
-#
+nmds$stress # 0.164507, > 0.25 les données sont dangereuses à interpréter, mauvais fit dans la NMDS
 stressplot(nmds) # Shepard plot
-#
 plot(nmds) # Plot pour visualiser les sites (ronds) et espèces (croix rouges)
 #
 pdf("nmds_species_plot_ellipse.pdf", width = 15, height = 12)
-ordiplot(nmds, type = "n")
-orditorp (nmds, display = "sites", cex = 0.6)
+ordiplot(nmds, type = "n") # Traçage des axes
+orditorp (nmds, display = "sites", cex = 0.6) # Visu des sites
 ordiellipse(nmds, 
             matrices_AVEC$strate,
             kind = "sd", 
@@ -3662,61 +3663,159 @@ ordiellipse(nmds,
             cex = 1,
             col = c("darkorchid1", "darkslategray1", "bisque1", "brown1"),
             draw = "polygon", 
-            alpha = 120)
-dev.off()
-#
+            alpha = 120) # Ellipses des 4 strates
+stress_value <- round(nmds$stress, 6)
+mtext(paste("Stress :", stress_value), 
+      side = 1, 
+      line = 3, 
+      adj = 1, 
+      cex = 1)
+dev.off() # PDF et dev.off pour mieux visualiser
+  # 2e représentation graphique type Spider
 pdf("nmds_species_plot_spider.pdf", width = 15, height = 12)
 ordiplot(nmds, cex = 0.5)
 ordispider(nmds, groups = matrices_AVEC$strate,label = T, cex = 1)
 dev.off()
-#
-# Test de permutation adonis strates 2 à 2
-matrices_AVEC$strate <- as.factor(matrices_AVEC$strate)
+
+# Test de permutation adonis strates 2 à 2 #
+  # Help
 ?adonis2
-adonis2(distsupraavec ~ strate, distsupra, permutations = 999, method = "bray", strata = LOCA)
-emmeans()
-#
-ano <- anosim(distsupraavec, matrices_AVEC$strate) ; summary(ano)
+  # composition de communauté de coleo sapro, matrice de dist
+distsupraavec <- vegdist(matrices_AVEC[,7 : 355], method = "bray", na.rm = TRUE)
+# Test d'appliquer une correction pour régler le problème de variance des variables avec decostand(data, "hellinger") ou "chi.square" ou log1p mais résultat empiré #
+  # Test Adonis2
+?adonis2
+adonis2(distsupraavec ~ strate, distsupra, permutations = 999, method = "bray", strata = LOCA) # p-value = 0.001 ***
+# #   # Même test avec anosim cette fois
+# ano <- anosim(distsupraavec, grouping = matrices_AVEC$strate) ; summary(ano)
+  # Test 2 à 2 entre les strates
+# ?emmeans
+# matrice_avec_lm <- lm(matrices_AVEC(c(7 : 355)) ~ strate, data = matrices_AVEC)
+# emmeans()
 
-
-
+# Essai de la comparaison 2 à 2 avec pairwiseadonis : réussi
+# install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
 library(devtools)
-install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
 library(pairwiseAdonis)
-matrices_AVEC_2 <- as.matrix(matrices_AVEC[, c(1, 6, 7 : 355)])
-a <- pairwise.adonis2(x = matrices_AVEC_2, factors = strate, sim.method = "bray", 
-                      strata = LOCA, perm = 999, p.adjust.m = "bonferroni")
-
-#
-coleo_dispersion <- betadisper(distsupraavec, group = matrices_AVEC$strate) # test de l'homogénéité des variances de notre modèle 
-permutest(coleo_dispersion) # p-value = 0.018 *, les variances ne sont pas homogènes, résultats du modèles ne sont pas fiables
-plot(coleo_dispersion, hull = FALSE, ellipse=TRUE)
+res <- pairwise.adonis2(distsupraavec ~ strate,
+                        data = matrices_AVEC,
+                        sim.method = "bray",
+                        perm = 999,
+                        strata = LOCA,
+                        p.adjust.m = "bonferroni") ; print(res)
+# manuellement 6 tableau : ex 1-2, 1-3, etc #
+  #
+coleo_dispersion <- betadisper(distsupraavec, group = matrices_AVEC$strate) # test de l'homogénéité des variances de notre modèle
+plot(coleo_dispersion, hull = FALSE, ellipse = TRUE)
+permutest(coleo_dispersion) # p-value = 0.019 *, les variances ne sont pas homogènes, résultats du modèles ne sont pas fiables
 #
 coleo_avec_simper <- with(matrices_AVEC[,7 : 355], simper(matrices_AVEC[,7 : 355]), strate, permutations = 100) ; coleo_avec_simper # espèces les plus influentes dans la contribution à la différence des strates
-library(vegan)
-agnes()
+TEST <- matrices_AVEC %>%
+  select(7 : 355) %>%
+  summarise(across(everything(), sum, na.rm = T)) 
+
+Test2 <- TEST %>%
+  pivot_longer(cols = everything(), names_to = "species", values_to = "total") %>%
+  arrange(desc(total))
+#
+TEST$Potosia.fieberi # 132
+TEST$Pseudosphegesthes.cinerea # 123
+TEST$Cetonischema.speciosissima # 117
+TEST$Anisandrus.dispar # 107
+TEST$Abdera.biflexuosa # 141
+TEST$Clytus.tropicus # 143
+TEST$Poecilium.alni # 145
+TEST$Anaspis.regimbarti # 169
+TEST$Mesosa.nebulosa  # 176
+TEST$Anaspis.maculata # 198
+TEST$Taphrorychus.villifrons # 159
+TEST$Xylotrechus.antilope # 188
+TEST$Dasytes.aeratus # 204
+
+TEST$Xyleborinus.saxesenii # 2302
+  # Dendrogramme
+?agnes
+
+distsupraavec <- vegdist(matrices_AVEC[,7 : 355], method = "bray", na.rm = TRUE)
+
+classif_strate_bray <- agnes(distsupraavec, diss = T, method = "average")
+
+plot(classif_strate_bray, labels = matrices_AVEC$strate)
+
+library(dendextend) # color_branches
+dend <- as.dendrogram(classif_strate_bray, labels = matrices_AVEC$strate)
+d2 = color_branches(dend , k = 4)
+plot(d2)
+
+head.matrix(distsupraavec)
+
+  # Analyses Indval
 indval ()
 
-# manuellement 6 tableau : ex 1-2, 1-3, etc #
 
+
+
+# refaire TOUT les modèles en séparant Final par relevé 
+# Réfléchir à intégrer relevé et strates dans modèles (strate * relevé)
+# Partition de variance : approche multi-variables ( proposition des métriques dendro, qui influence signif le plus et qui sur l'abondance de coleo) avec VARPAR pour mesurer la proportion de variance mais également inertie 
+```
+
+## 6.2. Matrice avec singletons et doubletons : Jaccard
+
+```{r}
+  # Ordination Jaccard
+?metaMDS # ?vegdist -> method
+nmds_jaccard <- metaMDS(matrices_AVEC[,7 : 355], distance = "jaccard", k = 3, autotransform = T, trymax = 200)
+  # stress
+nmds_jaccard$stress # 0.1645184
+  # Graphique
+plot(nmds_jaccard)
+  # Ellipses
+pdf("nmds_strates_plot_ellipses_jaccard.pdf", width = 15, height = 12)
+ordiplot(nmds_jaccard, type = "n") 
+orditorp (nmds_jaccard, display = "sites", cex = 0.6) 
+ordiellipse(nmds_jaccard, 
+            matrices_AVEC$strate,
+            kind = "sd", 
+            label = T, 
+            cex = 1,
+            col = c("darkorchid1", "darkslategray1", "bisque1", "brown1"),
+            draw = "polygon", 
+            alpha = 120)
+stress_value <- nmds_jaccard$stress
+mtext(paste("Stress :", stress_value), 
+      side = 1, 
+      line = 3, 
+      adj = 1, 
+      cex = 1)
+dev.off()
+  # Matrice de distance
+distsupraavec <- vegdist(matrices_AVEC[,7 : 355], method = "jaccard", na.rm = TRUE)
+  # Adonis
+adonis2(distsupraavec ~ strate, distsupra, permutations = 999, method = "jaccard", strata = LOCA)
+  # Comparaison 2 à 2
+res <- pairwise.adonis2(distsupraavec ~ strate,
+                        data = matrices_AVEC,
+                        sim.method = "bray",
+                        perm = 999,
+                        strata = LOCA,
+                        p.adjust.m = "bonferroni") ; print(res)
+  # Test de la dispersion
+coleo_dispersion <- betadisper(distsupraavec, group = matrices_AVEC$strate)
+plot(coleo_dispersion, hull = FALSE, ellipse = TRUE)
+permutest(coleo_dispersion) # p-value = 0.022 *
+  # Dendrogramme
+
+
+```
+
+## 6.3. Matrice sans singletons et doubletons
+
+```{r}
 # matrice simplifié avec singletons et doubletons enlevés en utilisant que les espèces communes
 # somme des colonnes et virées 1 ou 2
 distsupra<-vegdist(matrices[,7 : 381], method="bray",na.rm = TRUE)
 adonis2(matrices[,7 : 381] ~ strate, matrices, permutations = 999, method = "bray",strata = LOCA)
-
-library(emmeans) # remplacer la méthode bourrine manuelle 
-emmeans(distsupra, ~ strate)
-?emmeans # glmmm peut expliqué attendre CB
-
-# refaire TOUT les modèles en séparant Final par relevé 
-# Réfléchir à intégrer relevé et strates dans modèles (strate * relevé)
-# Partition de variance : approche multi-variable ( proposition des métriques dendro, qui influence signif le plus et qui sur l'abondance de coleo) avec VARPAR pour mesurer la proportion de variance mais également inertie 
-```
-
-## 6.2. Matrice sans singletons et doubletons
-
-```{r}
-
 ```
 
 
