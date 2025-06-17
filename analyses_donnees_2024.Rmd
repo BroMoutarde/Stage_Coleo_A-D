@@ -30,7 +30,9 @@ library(emmeans) # Comparaison 2 à 2 des ordinations
 library(multcomp)
 library(vegan) # Matrices d'ordination
 library(tidyr)
-library(pairwiseAdonis)
+library(pairwiseAdonis) # Comparaison 2 à 2 NMDS
+library(RVAideMemoire) # Outil complémentaire pairwise
+library(dendextend) # color_branches dendrogramme
 ```
 
 # 2. working directory
@@ -3685,7 +3687,7 @@ distsupraavec <- vegdist(matrices_AVEC[,7 : 355], method = "bray", na.rm = TRUE)
 # Test d'appliquer une correction pour régler le problème de variance des variables avec decostand(data, "hellinger") ou "chi.square" ou log1p mais résultat empiré #
   # Test Adonis2
 ?adonis2
-adonis2(distsupraavec ~ strate, distsupra, permutations = 999, method = "bray", strata = LOCA) # p-value = 0.001 ***
+adonis2(distsupraavec ~ strate, matrices_AVEC, permutations = 999, method = "bray", strata = LOCA) # p-value = 0.001 ***
 # #   # Même test avec anosim cette fois
 # ano <- anosim(distsupraavec, grouping = matrices_AVEC$strate) ; summary(ano)
   # Test 2 à 2 entre les strates
@@ -3696,15 +3698,18 @@ adonis2(distsupraavec ~ strate, distsupra, permutations = 999, method = "bray", 
 # Essai de la comparaison 2 à 2 avec pairwiseadonis : réussi
 # install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
 library(devtools)
-library(pairwiseAdonis)
 res <- pairwise.adonis2(distsupraavec ~ strate,
                         data = matrices_AVEC,
                         sim.method = "bray",
                         perm = 999,
                         strata = LOCA,
                         p.adjust.m = "bonferroni") ; print(res)
+  # Vérification de la comparaison 2 à 2
+pairwise.perm.manova(distsupraavec, matrices_AVEC$strate, nperm = 999)
+
 # manuellement 6 tableau : ex 1-2, 1-3, etc #
-  #
+
+  # Dispersion
 coleo_dispersion <- betadisper(distsupraavec, group = matrices_AVEC$strate) # test de l'homogénéité des variances de notre modèle
 plot(coleo_dispersion, hull = FALSE, ellipse = TRUE)
 permutest(coleo_dispersion) # p-value = 0.019 *, les variances ne sont pas homogènes, résultats du modèles ne sont pas fiables
@@ -3713,7 +3718,7 @@ coleo_avec_simper <- with(matrices_AVEC[,7 : 355], simper(matrices_AVEC[,7 : 355
 TEST <- matrices_AVEC %>%
   select(7 : 355) %>%
   summarise(across(everything(), sum, na.rm = T)) 
-
+#
 Test2 <- TEST %>%
   pivot_longer(cols = everything(), names_to = "species", values_to = "total") %>%
   arrange(desc(total))
@@ -3733,16 +3738,28 @@ TEST$Xylotrechus.antilope # 188
 TEST$Dasytes.aeratus # 204
 
 TEST$Xyleborinus.saxesenii # 2302
-  # Dendrogramme
+
+  # Dendrogramme de classification UPGMA
 ?agnes
 
 distsupraavec <- vegdist(matrices_AVEC[,7 : 355], method = "bray", na.rm = TRUE)
-
+#
 classif_strate_bray <- agnes(distsupraavec, diss = T, method = "average")
-
 plot(classif_strate_bray, labels = matrices_AVEC$strate)
+#
 
-library(dendextend) # color_branches
+classif_2 <- as.hclust(classif_strate_bray)
+plot(rev(classif_2$height), type = "h", ylab = "hauteurs")
+classe <- cutree(classif_strate_bray, k = 4)
+carac_classes <- cbind.data.frame(matrices_AVEC[,7 : 355], classe = as.factor(classe))
+library(FactoMineR)
+catdes(carac_classes, num.var = 350)
+?hclust
+classif <- hclust(distsupraavec, method = "average")
+res.pca<-PCA(matrices_AVEC[,7 : 355],graph=F)
+res.hcpc<-HCPC(res.pca,consol=FALSE,nb.clust=4)
+
+#
 dend <- as.dendrogram(classif_strate_bray, labels = matrices_AVEC$strate)
 d2 = color_branches(dend , k = 4)
 plot(d2)
@@ -3750,7 +3767,10 @@ plot(d2)
 head.matrix(distsupraavec)
 
   # Analyses Indval
+# Restreindre aux espèces avec une abondance > 10
 indval ()
+indvalfeu <- multipatt(spefeu[,5:36], spefeu$ess, func="IndVal.g", duleg=T, control=how(nperm=9999))
+summary(indvalfeu, indvalcomp=TRUE)
 
 
 
@@ -3792,7 +3812,7 @@ dev.off()
   # Matrice de distance
 distsupraavec <- vegdist(matrices_AVEC[,7 : 355], method = "jaccard", na.rm = TRUE)
   # Adonis
-adonis2(distsupraavec ~ strate, distsupra, permutations = 999, method = "jaccard", strata = LOCA)
+adonis2(distsupraavec ~ strate, matrices_AVEC, permutations = 999, method = "jaccard", strata = LOCA)
   # Comparaison 2 à 2
 res <- pairwise.adonis2(distsupraavec ~ strate,
                         data = matrices_AVEC,
@@ -3800,11 +3820,20 @@ res <- pairwise.adonis2(distsupraavec ~ strate,
                         perm = 999,
                         strata = LOCA,
                         p.adjust.m = "bonferroni") ; print(res)
+  # Vérif
+pairwise.perm.manova(distsupraavec, matrices_AVEC$strate, nperm = 999)
   # Test de la dispersion
 coleo_dispersion <- betadisper(distsupraavec, group = matrices_AVEC$strate)
 plot(coleo_dispersion, hull = FALSE, ellipse = TRUE)
 permutest(coleo_dispersion) # p-value = 0.022 *
   # Dendrogramme
+classif_strate_bray <- agnes(distsupraavec, diss = T, method = "average")
+plot(classif_strate_bray, labels = matrices_AVEC$strate)
+#
+dend <- as.dendrogram(classif_strate_bray, labels = matrices_AVEC$strate)
+d2 = color_branches(dend , k = 4)
+plot(d2)
+  # Indval
 
 
 ```
@@ -3814,8 +3843,49 @@ permutest(coleo_dispersion) # p-value = 0.022 *
 ```{r}
 # matrice simplifié avec singletons et doubletons enlevés en utilisant que les espèces communes
 # somme des colonnes et virées 1 ou 2
-distsupra<-vegdist(matrices[,7 : 381], method="bray",na.rm = TRUE)
-adonis2(matrices[,7 : 381] ~ strate, matrices, permutations = 999, method = "bray",strata = LOCA)
+  # Matrice de distances
+nmds_sans_bray <- metaMDS(matrices_SANS[,7 : 249], distance = "bray", k = 3, autotransform = T, trymax = 200)
+nmds_sans_bray$stress # 0.1650887
+plot(nmds_sans_bray)
+  # Ellipses
+pdf("nmds_sans_strates_plot_ellipses_bray.pdf", width = 15, height = 12)
+ordiplot(nmds_sans_bray, type = "n") 
+orditorp (nmds_sans_bray, display = "sites", cex = 0.6) 
+ordiellipse(nmds_sans_bray, 
+            matrices_SANS$strate,
+            kind = "sd", 
+            label = T, 
+            cex = 1,
+            col = c("darkorchid1", "darkslategray1", "bisque1", "brown1"),
+            draw = "polygon", 
+            alpha = 120)
+stress_value <- nmds_sans_bray$stress
+mtext(paste("Stress :", stress_value), 
+      side = 1, 
+      line = 3, 
+      adj = 1, 
+      cex = 1)
+dev.off()
+  #
+distsupra_sans<-vegdist(matrices_SANS[,7 : 249], method="bray",na.rm = TRUE)
+  #
+adonis2(matrices_SANS[,7 : 249] ~ strate, matrices_SANS, permutations = 999, method = "bray",strata = LOCA)
+  # Comparaison 2 à 2
+res <- pairwise.adonis2(distsupra_sans ~ strate,
+                        data = matrices_SANS,
+                        sim.method = "bray",
+                        perm = 999,
+                        strata = LOCA,
+                        p.adjust.m = "bonferroni") ; print(res)
+  # Vérif
+pairwise.perm.manova(distsupra_sans, matrices_SANS$strate, nperm = 999)
+  # Test de la dispersion
+coleo_dispersion <- betadisper(distsupra_sans, group = matrices_SANS$strate)
+plot(coleo_dispersion, hull = FALSE, ellipse = TRUE)
+permutest(coleo_dispersion) # p-value = 0.025 *
+  #
+coleo_avec_simper <- with(matrices_SANS[,7 : 249], simper(matrices_SANS[,7 : 249]), matrices_SANS$strate, permutations = 100) ; coleo_avec_simper
+  #
 ```
 
 
