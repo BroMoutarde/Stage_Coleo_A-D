@@ -3686,10 +3686,16 @@ dev.off()
 distsupraavec <- vegdist(matrices_AVEC[,7 : 355], method = "bray", na.rm = TRUE)
 # Test d'appliquer une correction pour régler le problème de variance des variables avec decostand(data, "hellinger") ou "chi.square" ou log1p mais résultat empiré #
   # Test Adonis2
-?adonis2
 adonis2(distsupraavec ~ strate, matrices_AVEC, permutations = 999, method = "bray", strata = LOCA) # p-value = 0.001 ***
 # #   # Même test avec anosim cette fois
-# ano <- anosim(distsupraavec, grouping = matrices_AVEC$strate) ; summary(ano)
+ano <- anosim(distsupraavec, grouping = matrices_AVEC$strate) ; summary(ano)
+ano$class.vec
+ano$dis.rank
+disrank <- write.table(ano$dis.rank,file="C:/Users/adebout/Desktop/Adrien Debout Stage/STATS/Stats_coleo_AD/Data/Data entomo/toto.txt",sep=";")
+write.table(ano$class.vec,file="C:/Users/adebout/Desktop/Adrien Debout Stage/STATS/Stats_coleo_AD/Data/Data entomo/toto2.txt",sep=";")
+# Regarder la dissimilarité 2 à 2 (between puis les classé par type de between : 6 = ONVEUT SAVOIR MEAN ET SD, et différencié les between) #
+
+
   # Test 2 à 2 entre les strates
 # ?emmeans
 # matrice_avec_lm <- lm(matrices_AVEC(c(7 : 355)) ~ strate, data = matrices_AVEC)
@@ -3703,7 +3709,7 @@ res <- pairwise.adonis2(distsupraavec ~ strate,
                         sim.method = "bray",
                         perm = 999,
                         strata = LOCA,
-                        p.adjust.m = "bonferroni") ; print(res)
+                        p.adjust.m = "bonferroni") ; print(res) 
   # Vérification de la comparaison 2 à 2
 pairwise.perm.manova(distsupraavec, matrices_AVEC$strate, nperm = 999)
 
@@ -3714,7 +3720,11 @@ coleo_dispersion <- betadisper(distsupraavec, group = matrices_AVEC$strate) # te
 plot(coleo_dispersion, hull = FALSE, ellipse = TRUE)
 permutest(coleo_dispersion) # p-value = 0.019 *, les variances ne sont pas homogènes, résultats du modèles ne sont pas fiables
 #
-coleo_avec_simper <- with(matrices_AVEC[,7 : 355], simper(matrices_AVEC[,7 : 355]), strate, permutations = 100) ; coleo_avec_simper # espèces les plus influentes dans la contribution à la différence des strates
+coleo_avec_simper <- with(matrices_AVEC[,7 : 355], simper(matrices_AVEC[,7 : 355]), strate, permutations = 100) ; coleo_avec_simper 
+
+# 1-2, 1-3, 1-4, 2-3, 2-4, 4-3 de matrices_avec
+
+# espèces les plus influentes dans la contribution à la différence des strates
 TEST <- matrices_AVEC %>%
   select(7 : 355) %>%
   summarise(across(everything(), sum, na.rm = T)) 
@@ -3737,8 +3747,10 @@ TEST$Taphrorychus.villifrons # 159
 TEST$Xylotrechus.antilope # 188
 TEST$Dasytes.aeratus # 204
 
-TEST$Xyleborinus.saxesenii # 2302
+TEST$Allandrus.therondi # 9
 
+TEST$Xyleborinus.saxesenii # 2302
+?multipatt
   # Dendrogramme de classification UPGMA
 ?agnes
 
@@ -3747,6 +3759,7 @@ distsupraavec <- vegdist(matrices_AVEC[,7 : 355], method = "bray", na.rm = TRUE)
 classif_strate_bray <- agnes(distsupraavec, diss = T, method = "average")
 plot(classif_strate_bray, labels = matrices_AVEC$strate)
 #
+# Estimer la dissim moyenne entre 2 strates a chque fois
 
 classif_2 <- as.hclust(classif_strate_bray)
 plot(rev(classif_2$height), type = "h", ylab = "hauteurs")
@@ -3768,12 +3781,21 @@ head.matrix(distsupraavec)
 
   # Analyses Indval
 # Restreindre aux espèces avec une abondance > 10
-indval ()
-indvalfeu <- multipatt(spefeu[,5:36], spefeu$ess, func="IndVal.g", duleg=T, control=how(nperm=9999))
-summary(indvalfeu, indvalcomp=TRUE)
+indval()
 
+library(indicspecies)
+?multipatt
+indval_avec <- multipatt(matrices_AVEC[,7 : 355], interaction( matrices_AVEC$strate, matrices_AVEC$LOCA), func = "r.g", duleg = T, control = how(nperm = 9999))
+summary(indval_avec, indvalcomp = TRUE)
 
-
+library(permute)
+library(indicspecies)
+perm_control <- how(
+  nperm = 9999,
+  blocks = matrices_AVEC$LOCA  # permutations seulement à l'intérieur de chaque LOCA
+)
+indval_avec <- multipatt(matrices_AVEC[,7 : 355], matrices_AVEC$strate, func = "IndVal.g", duleg = T, control = perm_control)
+summary(indval_avec, indvalcomp = TRUE)
 
 # refaire TOUT les modèles en séparant Final par relevé 
 # Réfléchir à intégrer relevé et strates dans modèles (strate * relevé)
@@ -3835,7 +3857,7 @@ d2 = color_branches(dend , k = 4)
 plot(d2)
   # Indval
 
-
+# Présence qui importe mais pas l'abondance, espèces dominantes qui caréctrérise mon patron
 ```
 
 ## 6.3. Matrice sans singletons et doubletons
@@ -3844,7 +3866,7 @@ plot(d2)
 # matrice simplifié avec singletons et doubletons enlevés en utilisant que les espèces communes
 # somme des colonnes et virées 1 ou 2
   # Matrice de distances
-nmds_sans_bray <- metaMDS(matrices_SANS[,7 : 249], distance = "bray", k = 3, autotransform = T, trymax = 200)
+nmds_sans_bray <- metaMDS(matrices_SANS[,7 : 249], distance = "jaccard", k = 3, autotransform = T, trymax = 200)
 nmds_sans_bray$stress # 0.1650887
 plot(nmds_sans_bray)
   # Ellipses
@@ -3865,6 +3887,11 @@ mtext(paste("Stress :", stress_value),
       line = 3, 
       adj = 1, 
       cex = 1)
+dev.off()
+#
+pdf("nmds_species_sans_plot_spider.pdf", width = 15, height = 12)
+ordiplot(nmds_sans_bray, cex = 0.5)
+ordispider(nmds_sans_bray, groups = matrices_SANS$strate,label = T, cex = 1)
 dev.off()
   #
 distsupra_sans<-vegdist(matrices_SANS[,7 : 249], method="bray",na.rm = TRUE)

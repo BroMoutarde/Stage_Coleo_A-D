@@ -158,7 +158,11 @@ library(indicspecies)
 #sp.abund <- sp.n.ind > 10
 #coleo_abund <- coleo_common[, sp.abund]
 
-indvalfeu <- multipatt(spefeu[,5:36], spefeu$ess, func="IndVal.g", duleg=T, control=how(nperm=9999))
+indvalfeu <- multipatt(spefeu[,5:36],
+                       spefeu$ess, 
+                       func="IndVal.g", 
+                       duleg=T, 
+                       control=how(nperm=9999))
 summary(indvalfeu, indvalcomp=TRUE)
 
 ############################################### diagramme de Venn inter-strates
