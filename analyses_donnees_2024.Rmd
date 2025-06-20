@@ -3695,12 +3695,6 @@ disrank <- write.table(ano$dis.rank,file="C:/Users/adebout/Desktop/Adrien Debout
 write.table(ano$class.vec,file="C:/Users/adebout/Desktop/Adrien Debout Stage/STATS/Stats_coleo_AD/Data/Data entomo/toto2.txt",sep=";")
 # Regarder la dissimilarité 2 à 2 (between puis les classé par type de between : 6 = ONVEUT SAVOIR MEAN ET SD, et différencié les between) #
 
-
-  # Test 2 à 2 entre les strates
-# ?emmeans
-# matrice_avec_lm <- lm(matrices_AVEC(c(7 : 355)) ~ strate, data = matrices_AVEC)
-# emmeans()
-
 # Essai de la comparaison 2 à 2 avec pairwiseadonis : réussi
 # install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
 library(devtools)
@@ -3713,18 +3707,36 @@ res <- pairwise.adonis2(distsupraavec ~ strate,
   # Vérification de la comparaison 2 à 2
 pairwise.perm.manova(distsupraavec, matrices_AVEC$strate, nperm = 999)
 
-# manuellement 6 tableau : ex 1-2, 1-3, etc #
-
   # Dispersion
 coleo_dispersion <- betadisper(distsupraavec, group = matrices_AVEC$strate) # test de l'homogénéité des variances de notre modèle
 plot(coleo_dispersion, hull = FALSE, ellipse = TRUE)
 permutest(coleo_dispersion) # p-value = 0.019 *, les variances ne sont pas homogènes, résultats du modèles ne sont pas fiables
-#
+  # Simper général
 coleo_avec_simper <- with(matrices_AVEC[,7 : 355], simper(matrices_AVEC[,7 : 355]), strate, permutations = 100) ; coleo_avec_simper 
 
-# 1-2, 1-3, 1-4, 2-3, 2-4, 4-3 de matrices_avec
+  # Simper sur 2 strates 2 à 2
 
-# espèces les plus influentes dans la contribution à la différence des strates
+matrice_avec_AC_UC <- matrices_AVEC %>%
+  filter(strate %in% c("supra", "intra.sup"))
+matrice_avec_AC_LC <- matrices_AVEC %>%
+  filter(strate %in% c("supra", "intra.inf"))
+matrice_avec_AC_BC <- matrices_AVEC %>%
+  filter(strate %in% c("supra", "infra"))
+matrice_avec_UC_LC <- matrices_AVEC %>%
+  filter(strate %in% c("intra.sup", "intra.inf"))
+matrice_avec_UC_BC <- matrices_AVEC %>%
+  filter(strate %in% c("intra.sup", "infra"))
+matrice_avec_LC_BC <- matrices_AVEC %>%
+  filter(strate %in% c("intra.inf", "infra"))
+#
+coleo_avec_simper_AC_UC <- with(matrice_avec_AC_UC[, 7 : 355], simper(matrice_avec_AC_UC[, 7 : 355]), strate, permutations = 100) ; coleo_avec_simper_AC_UC
+coleo_avec_simper_AC_LC <- with(matrice_avec_AC_LC[, 7 : 355], simper(matrice_avec_AC_LC[, 7 : 355]), strate, permutations = 100) ; coleo_avec_simper_AC_LC 
+coleo_avec_simper_AC_BC <- with(matrice_avec_AC_BC[, 7 : 355], simper(matrice_avec_AC_BC[, 7 : 355]), strate, permutations = 100) ; coleo_avec_simper_AC_BC 
+coleo_avec_simper_UC_LC <- with(matrice_avec_UC_LC[, 7 : 355], simper(matrice_avec_UC_LC[, 7 : 355]), strate, permutations = 100) ; coleo_avec_simper_UC_LC 
+coleo_avec_simper_UC_BC <- with(matrice_avec_UC_BC[, 7 : 355], simper(matrice_avec_UC_BC[, 7 : 355]), strate, permutations = 100) ; coleo_avec_simper_UC_BC 
+coleo_avec_simper_LC_BC <- with(matrice_avec_LC_BC[, 7 : 355], simper(matrice_avec_LC_BC[, 7 : 355]), strate, permutations = 100) ; coleo_avec_simper_LC_BC 
+
+  # espèces les plus influentes dans la contribution à la différence des strates
 TEST <- matrices_AVEC %>%
   select(7 : 355) %>%
   summarise(across(everything(), sum, na.rm = T)) 
@@ -3759,35 +3771,20 @@ distsupraavec <- vegdist(matrices_AVEC[,7 : 355], method = "bray", na.rm = TRUE)
 classif_strate_bray <- agnes(distsupraavec, diss = T, method = "average")
 plot(classif_strate_bray, labels = matrices_AVEC$strate)
 #
-# Estimer la dissim moyenne entre 2 strates a chque fois
-
-classif_2 <- as.hclust(classif_strate_bray)
-plot(rev(classif_2$height), type = "h", ylab = "hauteurs")
-classe <- cutree(classif_strate_bray, k = 4)
-carac_classes <- cbind.data.frame(matrices_AVEC[,7 : 355], classe = as.factor(classe))
-library(FactoMineR)
-catdes(carac_classes, num.var = 350)
-?hclust
-classif <- hclust(distsupraavec, method = "average")
-res.pca<-PCA(matrices_AVEC[,7 : 355],graph=F)
-res.hcpc<-HCPC(res.pca,consol=FALSE,nb.clust=4)
-
-#
 dend <- as.dendrogram(classif_strate_bray, labels = matrices_AVEC$strate)
 d2 = color_branches(dend , k = 4)
 plot(d2)
 
-head.matrix(distsupraavec)
-
   # Analyses Indval
-# Restreindre aux espèces avec une abondance > 10
-indval()
+# Restreindre aux espèces avec une abondance > 10 !!!
+
+filter
 
 library(indicspecies)
 ?multipatt
 indval_avec <- multipatt(matrices_AVEC[,7 : 355], interaction( matrices_AVEC$strate, matrices_AVEC$LOCA), func = "r.g", duleg = T, control = how(nperm = 9999))
 summary(indval_avec, indvalcomp = TRUE)
-
+#
 library(permute)
 library(indicspecies)
 perm_control <- how(
@@ -3912,6 +3909,28 @@ plot(coleo_dispersion, hull = FALSE, ellipse = TRUE)
 permutest(coleo_dispersion) # p-value = 0.025 *
   #
 coleo_avec_simper <- with(matrices_SANS[,7 : 249], simper(matrices_SANS[,7 : 249]), matrices_SANS$strate, permutations = 100) ; coleo_avec_simper
+
+  # Simper sur 2 strates 2 à 2
+
+matrice_sans_AC_UC <- matrices_SANS %>%
+  filter(strate %in% c("supra", "intra.sup"))
+matrice_sans_AC_LC <- matrices_SANS %>%
+  filter(strate %in% c("supra", "intra.inf"))
+matrice_sans_AC_BC <- matrices_SANS %>%
+  filter(strate %in% c("supra", "infra"))
+matrice_sans_UC_LC <- matrices_SANS %>%
+  filter(strate %in% c("intra.sup", "intra.inf"))
+matrice_sans_UC_BC <- matrices_SANS %>%
+  filter(strate %in% c("intra.sup", "infra"))
+matrice_sans_LC_BC <- matrices_SANS %>%
+  filter(strate %in% c("intra.inf", "infra"))
+#
+coleo_sans_simper_AC_UC <- with(matrice_sans_AC_UC[, 7 : 249], simper(matrice_sans_AC_UC[, 7 : 249]), strate, permutations = 100) ; coleo_sans_simper_AC_UC
+coleo_sans_simper_AC_LC <- with(matrice_sans_AC_LC[, 7 : 249], simper(matrice_sans_AC_LC[, 7 : 249]), strate, permutations = 100) ; coleo_sans_simper_AC_LC 
+coleo_sans_simper_AC_BC <- with(matrice_sans_AC_BC[, 7 : 249], simper(matrice_sans_AC_BC[, 7 : 249]), strate, permutations = 100) ; coleo_sans_simper_AC_BC 
+coleo_sans_simper_UC_LC <- with(matrice_sans_UC_LC[, 7 : 249], simper(matrice_sans_UC_LC[, 7 : 249]), strate, permutations = 100) ; coleo_sans_simper_UC_LC 
+coleo_sans_simper_UC_BC <- with(matrice_sans_UC_BC[, 7 : 249], simper(matrice_sans_UC_BC[, 7 : 249]), strate, permutations = 100) ; coleo_sans_simper_UC_BC 
+coleo_sans_simper_LC_BC <- with(matrice_sans_LC_BC[, 7 : 249], simper(matrice_sans_LC_BC[, 7 : 249]), strate, permutations = 100) ; coleo_sans_simper_LC_BC 
   #
 ```
 
