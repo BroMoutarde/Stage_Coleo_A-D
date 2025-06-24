@@ -33,6 +33,8 @@ library(tidyr)
 library(pairwiseAdonis) # Comparaison 2 à 2 NMDS
 library(RVAideMemoire) # Outil complémentaire pairwise
 library(dendextend) # color_branches dendrogramme
+library(permute) # Test homogénéité variabilité des variances
+library(indicspecies) # Analyse IndVal
 ```
 
 # 2. working directory
@@ -3693,6 +3695,42 @@ ano$class.vec
 ano$dis.rank
 disrank <- write.table(ano$dis.rank,file="C:/Users/adebout/Desktop/Adrien Debout Stage/STATS/Stats_coleo_AD/Data/Data entomo/toto.txt",sep=";")
 write.table(ano$class.vec,file="C:/Users/adebout/Desktop/Adrien Debout Stage/STATS/Stats_coleo_AD/Data/Data entomo/toto2.txt",sep=";")
+
+# Pour le calcul de la valeur moyenne de dissimilarité inter-strates, adapter la fonction de C.B ci-dessous pour des dissmilarités inter-groupes (code original : dissimilaritées microhabitats) #
+
+inter_group_dissim <- function(distsupraavec, strate) {
+  distsupraavec <- as.matrix(distsupraavec)
+  groups <- unique(strate)
+  n_groups <- length(groups)
+  result <- matrix(0, n_groups, n_groups)
+  rownames(result) <- colnames(result) <- groups
+  
+  for (i in 1:(n_groups-1)) {
+    for (j in (i+1):n_groups) {
+      group1 <- which(strate == groups[i])
+      group2 <- which(strate == groups[j])
+      result[i,j] <- result[j,i] <- mean(distsupraavec[group1, group2], na.rm= T)
+    }
+  }
+  return(result)
+}
+#Apply the function to get the inter-group dissimilarities:
+inter_group_dissimilarities <- inter_group_dissim(distsupraavec, matrices_AVEC$strate)
+#View the results:
+print(inter_group_dissimilarities)
+
+  # heatmap des moyennes des dissimilaritées inter-strates
+library(pheatmap)
+pheatmap(inter_group_dissimilarities,
+         cluster_rows = FALSE, # Pas de clustering automatique
+         cluster_cols = FALSE,
+         color = colorRampPalette(c("darkgreen", "white", "darkblue"))(500),
+         main = "Dissimilaritées moyennes inter-strates",
+         display_numbers = TRUE,
+         number_format = "%.4f",
+         number_color = "white"
+         )
+
 # Regarder la dissimilarité 2 à 2 (between puis les classé par type de between : 6 = ONVEUT SAVOIR MEAN ET SD, et différencié les between) #
 
 # Essai de la comparaison 2 à 2 avec pairwiseadonis : réussi
@@ -3744,55 +3782,649 @@ TEST <- matrices_AVEC %>%
 Test2 <- TEST %>%
   pivot_longer(cols = everything(), names_to = "species", values_to = "total") %>%
   arrange(desc(total))
-#
-TEST$Potosia.fieberi # 132
-TEST$Pseudosphegesthes.cinerea # 123
-TEST$Cetonischema.speciosissima # 117
-TEST$Anisandrus.dispar # 107
-TEST$Abdera.biflexuosa # 141
-TEST$Clytus.tropicus # 143
-TEST$Poecilium.alni # 145
-TEST$Anaspis.regimbarti # 169
-TEST$Mesosa.nebulosa  # 176
-TEST$Anaspis.maculata # 198
-TEST$Taphrorychus.villifrons # 159
-TEST$Xylotrechus.antilope # 188
-TEST$Dasytes.aeratus # 204
 
-TEST$Allandrus.therondi # 9
-
-TEST$Xyleborinus.saxesenii # 2302
-?multipatt
-  # Dendrogramme de classification UPGMA
+# Dendrogramme de classification UPGMA #
+  # Help
 ?agnes
-
+  # Matrice de distance
 distsupraavec <- vegdist(matrices_AVEC[,7 : 355], method = "bray", na.rm = TRUE)
-#
+  # Classification Bray-Curtis
 classif_strate_bray <- agnes(distsupraavec, diss = T, method = "average")
+  # Dendrogramme
 plot(classif_strate_bray, labels = matrices_AVEC$strate)
 #
-dend <- as.dendrogram(classif_strate_bray, labels = matrices_AVEC$strate)
-d2 = color_branches(dend , k = 4)
-plot(d2)
+# dend <- as.dendrogram(classif_strate_bray)
+# k_strate <- length(levels(strate))
+# d_colored <- color_branches(dend, k = k_strate)
+# labels(d_colored) <- as.character(strate)
+# plot(d_colored, main = "Dendrogramme coloré selon 4 clusters (Bray–Curtis)")
+# clusters <- cutree(classif_strate_bray, k = k_strate)
+# table(Clusters = clusters, Strate = strate)
+
 
   # Analyses Indval
 # Restreindre aux espèces avec une abondance > 10 !!!
 
-filter
-
-library(indicspecies)
-?multipatt
-indval_avec <- multipatt(matrices_AVEC[,7 : 355], interaction( matrices_AVEC$strate, matrices_AVEC$LOCA), func = "r.g", duleg = T, control = how(nperm = 9999))
-summary(indval_avec, indvalcomp = TRUE)
-#
-library(permute)
-library(indicspecies)
+  # Ajout de l'info que nos données sont structurées + contrôles
 perm_control <- how(
   nperm = 9999,
-  blocks = matrices_AVEC$LOCA  # permutations seulement à l'intérieur de chaque LOCA
+  blocks = matrices_AVEC$LOCA)  # permutations seulement à l'intérieur de chaque LOCA
+  # IndVal
+indval_avec <- multipatt(matrices_AVEC[,7 : 355], matrices_AVEC$strate, func = "IndVal.g", duleg = T, control = perm_control) ; summary(indval_avec, indvalcomp = TRUE) # IndVal.g pour avoir les interactions entre plusieurs strates
+
+
+  # Filtrage des espèces à moins de 10 (< 10) et occurence > 10 % (80 sites = 8 occurences)
+
+# SUPRA #
+
+TEST$Globicornis.fasciata # 3
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Globicornis.fasciata"]] > 0, c("strate", "Globicornis.fasciata")]
+print(donnees_filtrees) # 3 supra
+#
+TEST$Allandrus.therondi # 9
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Allandrus.therondi"]] > 0, c("strate", "Allandrus.therondi")]
+print(donnees_filtrees) # 5 supra / 2 intra.sup
+# Allandrus therondi espèce d'intêret peu connue (INPN) et indicatrice de supra #
+#
+TEST$Leiopus.femoratus # 7
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Leiopus.femoratus"]] > 0, c("strate", "Leiopus.femoratus")]
+print(donnees_filtrees) # 5 supra / 2 intra.sup
+#
+TEST$Alphitobius.diaperinus # 19
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Alphitobius.diaperinus"]] > 0, c("strate", "Alphitobius.diaperinus")]
+print(donnees_filtrees) # 5 supra / 2 intra.sup
+#
+TEST$Monotoma.picipes # 9
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Monotoma.picipes"]] > 0, c("strate", "Monotoma.picipes")]
+print(donnees_filtrees) # 5 supra / 1 intra.sup
+#
+TEST$Carcinops.pumilio # 17
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Carcinops.pumilio"]] > 0, c("strate", "Carcinops.pumilio")]
+print(donnees_filtrees) # 8 supra / 5 intra.sup / 1 intra.inf
+#
+TEST$Agrilus.laticornis # 20
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Agrilus.laticornis"]] > 0, c("strate", "Agrilus.laticornis")]
+print(donnees_filtrees) # 9 supra / 2 intra.sup / 3 intra.inf 
+#
+TEST$Trypophloeus.granulatus # 5
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Trypophloeus.granulatus"]] > 0, c("strate", "Trypophloeus.granulatus")]
+print(donnees_filtrees) # 5 supra
+#
+TEST$Orthocis.coluber # 25
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Orthocis.coluber"]] > 0, c("strate", "Orthocis.coluber")]
+print(donnees_filtrees) # 9 supra / 5 intra.sup / 3 intra.inf / 3 infra
+#
+TEST$Hylastinus.obscurus # 53
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Hylastinus.obscurus"]] > 0, c("strate", "Hylastinus.obscurus")]
+print(donnees_filtrees) # 11 supra / 9 intra.sup / 8 intra.inf / 4 infra
+#
+TEST$Chlorophorus.glabromaculatus # 29
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Chlorophorus.glabromaculatus"]] > 0, c("strate", "Chlorophorus.glabromaculatus")]
+print(donnees_filtrees) # 10 supra / 6 intra.sup / 2 intra.inf / 1 infra
+#
+TEST$Tribolium.castaneum # 14
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Tribolium.castaneum"]] > 0, c("strate", "Tribolium.castaneum")]
+print(donnees_filtrees) # 8 supra / 3 intra.sup 
+#
+TEST$Platycerus.caraboides # 15
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Platycerus.caraboides"]] > 0, c("strate", "Platycerus.caraboides")]
+print(donnees_filtrees) # 8 supra / 1 intra.sup / 2 infra
+#
+TEST$Eulagius.filicornis # 595
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Eulagius.filicornis"]] > 0, c("strate", "Eulagius.filicornis")]
+print(donnees_filtrees)
+table(donnees_filtrees$strate) # 18 supra / 17 intra.sup / 17 intra.inf / 19 infra
+#
+TEST$Xyleborus.dryographus # 27
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Xyleborus.dryographus"]] > 0, c("strate", "Xyleborus.dryographus")]
+print(donnees_filtrees)
+table(donnees_filtrees$strate) # 11 supra / 3 intra.sup / 0 intra.inf / 5 infra
+#
+TEST$Cis.pygmaeus # 213
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Cis.pygmaeus"]] > 0, c("strate", "Cis.pygmaeus")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate) # 15 supra / 14 intra.sup / 12 intra.inf / 7 infra
+somme_abondance <- tapply(donnees_filtrees[["Cis.pygmaeus"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(
+  strate = names(nb_occurrences),
+  nb_occurrences = as.vector(nb_occurrences),
+  somme_abondance = as.vector(somme_abondance)
 )
-indval_avec <- multipatt(matrices_AVEC[,7 : 355], matrices_AVEC$strate, func = "IndVal.g", duleg = T, control = perm_control)
-summary(indval_avec, indvalcomp = TRUE)
+print(resultat)
+#
+TEST$Anaspis.maculata # 198
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Anaspis.maculata"]] > 0, c("strate", "Anaspis.maculata")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Anaspis.maculata"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat)
+# 19 supra / 16 intra.sup / 12 intra.inf / 14 infra
+#
+TEST$Rhagium.bifasciatum # 14
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Rhagium.bifasciatum"]] > 0, c("strate", "Rhagium.bifasciatum")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Rhagium.bifasciatum"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 8 supra 
+#
+TEST$Endophloeus.markovichianus # 73
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Endophloeus.markovichianus"]] > 0, c("strate", "Endophloeus.markovichianus")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Endophloeus.markovichianus"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 15 supra / 10 intra.sup / 9 intra.inf / 4 infra
+#
+TEST$Tilloidea.unifasciata # 45
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Tilloidea.unifasciata"]] > 0, c("strate", "Tilloidea.unifasciata")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Tilloidea.unifasciata"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 15 supra / 9 intra.sup / 2 intra.inf / 2 infra
+#
+TEST$Cryptolestes.ferrugineus # 20
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Cryptolestes.ferrugineus"]] > 0, c("strate", "Cryptolestes.ferrugineus")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Cryptolestes.ferrugineus"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 9 supra / 1 intra.sup 
+#
+TEST$Bitoma.crenata # 26
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Bitoma.crenata"]] > 0, c("strate", "Bitoma.crenata")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Bitoma.crenata"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 13 supra / 6 intra.sup 
+#
+TEST$Poecilium.alni # 145
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Poecilium.alni"]] > 0, c("strate", "Poecilium.alni")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Poecilium.alni"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 16 supra / 14 intra.sup / 8 intra.inf / 4 infra
+#
+TEST$Cerambyx.scopolii # 79
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Cerambyx.scopolii"]] > 0, c("strate", "Cerambyx.scopolii")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Cerambyx.scopolii"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 13 supra / 8 intra.sup / 2 intra.inf / 2 infra
+#
+TEST$PTILIIDAE # 32
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["PTILIIDAE"]] > 0, c("strate", "PTILIIDAE")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["PTILIIDAE"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 14 supra / 4 intra.sup / 2 intra.inf / 2 infra
+#
+TEST$Cis.striatulus # 250
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Cis.striatulus"]] > 0, c("strate", "Cis.striatulus")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Cis.striatulus"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 19 supra / 18 intra.sup / 10 intra.inf / 4 infra
+#
+TEST$Xyleborus.monographus # 633
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Xyleborus.monographus"]] > 0, c("strate", "Xyleborus.monographus")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Xyleborus.monographus"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 20 supra / 20 intra.sup / 18 intra.inf / 19 infra
+#
+TEST$Berginus.tamarisci # 1219
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Berginus.tamarisci"]] > 0, c("strate", "Berginus.tamarisci")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Berginus.tamarisci"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 20 supra / 20 intra.sup / 10 intra.inf / 10 infra
+#
+TEST$Abdera.biflexuosa # 141
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Abdera.biflexuosa"]] > 0, c("strate", "Abdera.biflexuosa")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Abdera.biflexuosa"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 19 supra / 20 intra.sup / 7 intra.inf / 5 infra
+#
+TEST$Mordella.brachyura # 20
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Mordella.brachyura"]] > 0, c("strate", "Mordella.brachyura")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Mordella.brachyura"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 13 supra / 2 intra.sup 
+#
+TEST$Attagenus.unicolor # 18
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Attagenus.unicolor"]] > 0, c("strate", "Attagenus.unicolor")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Attagenus.unicolor"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 12 supra 
+#
+TEST$Lygistopterus.sanguineus # 351
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Lygistopterus.sanguineus"]] > 0, c("strate", "Lygistopterus.sanguineus")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Lygistopterus.sanguineus"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 20 supra / 15 intra.sup / 6 intra.inf / 5 infra
+#
+TEST$Anaspis.fasciata # 363
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Anaspis.fasciata"]] > 0, c("strate", "Anaspis.fasciata")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Anaspis.fasciata"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 20 supra / 17 intra.sup / 14 intra.inf / 9 infra
+
+# Intra.sup #
+
+TEST$Opilo.pallidus # 13
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Opilo.pallidus"]] > 0, c("strate", "Opilo.pallidus")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Opilo.pallidus"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 1 supra / 6 intra.sup / 1 intra.inf 
+#
+TEST$Ampedus.pomorum # 28
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Ampedus.pomorum"]] > 0, c("strate", "Ampedus.pomorum")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Ampedus.pomorum"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 5 supra / 9 intra.sup / 5 intra.inf / 3 infra
+#
+TEST$Dacne.bipustulata # 85
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Dacne.bipustulata"]] > 0, c("strate", "Dacne.bipustulata")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Dacne.bipustulata"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 1 supra / 12 intra.sup / 11 intra.inf / 11 infra
+#
+TEST$Abdera.quadrifasciata # 28
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Abdera.quadrifasciata"]] > 0, c("strate", "Abdera.quadrifasciata")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Abdera.quadrifasciata"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 0 supra / 9 intra.sup / 7 intra.inf / 2 infra
+#
+TEST$Ampedus.sanguinolentus # 364
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Ampedus.sanguinolentus"]] > 0, c("strate", "Ampedus.sanguinolentus")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Ampedus.sanguinolentus"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 8 supra / 9 intra.sup / 7 intra.inf / 5 infra
+#
+TEST$Lathropus.sepicola # 43
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Lathropus.sepicola"]] > 0, c("strate", "Lathropus.sepicola")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Lathropus.sepicola"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 9 supra / 9 intra.sup / 3 intra.inf / 1 infra
+#
+TEST$Nacerdes.carniolica # 580
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Nacerdes.carniolica"]] > 0, c("strate", "Nacerdes.carniolica")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Nacerdes.carniolica"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 10 supra / 9 intra.sup / 5 intra.inf / 2 infra
+#
+TEST$Stenagostus.rhombeus # 38
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Stenagostus.rhombeus"]] > 0, c("strate", "Stenagostus.rhombeus")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Stenagostus.rhombeus"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 0 supra / 13 intra.sup / 7 intra.inf / 8 infra
+#
+TEST$Phloiotrya.tenuis# 64
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Phloiotrya.tenuis"]] > 0, c("strate", "Phloiotrya.tenuis")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Phloiotrya.tenuis"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 9 supra / 12 intra.sup / 9 intra.inf / 4 infra
+#
+TEST$Pseudosphegesthes.cinerea # 123
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Pseudosphegesthes.cinerea"]] > 0, c("strate", "Pseudosphegesthes.cinerea")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Pseudosphegesthes.cinerea"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 17 supra / 14 intra.sup / 9 intra.inf / 3 infra
+#
+TEST$Tomoxia.bucephala # 97
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Tomoxia.bucephala"]] > 0, c("strate", "Tomoxia.bucephala")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Tomoxia.bucephala"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 1 supra / 16 intra.sup / 13 intra.inf / 12 infra
+#
+TEST$Megatoma.undata # 385
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Megatoma.undata"]] > 0, c("strate", "Megatoma.undata")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Megatoma.undata"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 20 supra / 20 intra.sup / 20 intra.inf / 19 infra
+#
+TEST$Dasytes.aeratus # 204
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Dasytes.aeratus"]] > 0, c("strate", "Dasytes.aeratus")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Dasytes.aeratus"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 17 supra / 18 intra.sup / 17 intra.inf / 8 infra
+#
+TEST$Clytus.arietis # 47
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Clytus.arietis"]] > 0, c("strate", "Clytus.arietis")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Clytus.arietis"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 6 supra / 13 intra.sup / 3 intra.inf / 5 infra
+#
+TEST$Opilo.mollis # 92
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Opilo.mollis"]] > 0, c("strate", "Opilo.mollis")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Opilo.mollis"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 3 supra / 15 intra.sup / 14 intra.inf / 7 infra
+#
+TEST$Cryptarcha.undata # 59
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Cryptarcha.undata"]] > 0, c("strate", "Cryptarcha.undata")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Cryptarcha.undata"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 2 supra / 11 intra.sup / 6 intra.inf / 4 infra
+#
+TEST$Uleiota.planatus # 33
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Uleiota.planatus"]] > 0, c("strate", "Uleiota.planatus")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Uleiota.planatus"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 3 supra / 10 intra.sup / 1 intra.inf / 3 infra
+#
+TEST$Ampedus.elongatulus # 73
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Ampedus.elongatulus"]] > 0, c("strate", "Ampedus.elongatulus")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Ampedus.elongatulus"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 6 supra / 12 intra.sup / 9 intra.inf / 5 infra
+#
+TEST$Cetonia.aurata # 176
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Cetonia.aurata"]] > 0, c("strate", "Cetonia.aurata")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Cetonia.aurata"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 14 supra / 16 intra.sup / 10 intra.inf / 8 infra
+#
+TEST$Dasytes.pauperculus # 619
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Dasytes.pauperculus"]] > 0, c("strate", "Dasytes.pauperculus")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Dasytes.pauperculus"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 20 supra / 20 intra.sup / 20 intra.inf / 14 infra
+#
+TEST$Rhaphitropis.oxyacanthae # 41
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Rhaphitropis.oxyacanthae"]] > 0, c("strate", "Rhaphitropis.oxyacanthae")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Rhaphitropis.oxyacanthae"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 3 supra / 12 intra.sup / 6 intra.inf / 1 infra
+#
+TEST$Clerus.mutillarius # 417
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Clerus.mutillarius"]] > 0, c("strate", "Clerus.mutillarius")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Clerus.mutillarius"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 15 supra / 20 intra.sup / 14 intra.inf / 17 infra
+#
+TEST$Mesosa.nebulosa # 176
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Mesosa.nebulosa"]] > 0, c("strate", "Mesosa.nebulosa")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Mesosa.nebulosa"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 13 supra / 18 intra.sup / 9 intra.inf / 9 infra
+#
+TEST$Trichoferus.pallidus # 232
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Trichoferus.pallidus"]] > 0, c("strate", "Trichoferus.pallidus")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Trichoferus.pallidus"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 7 supra / 13 intra.sup / 9 intra.inf / 7 infra
+#
+TEST$Dromaeolus.barnabita # 65
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Dromaeolus.barnabita"]] > 0, c("strate", "Dromaeolus.barnabita")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Dromaeolus.barnabita"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 1 supra / 14 intra.sup / 7 intra.inf / 5 infra
+#
+TEST$Potosia.fieberi  # 132
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Potosia.fieberi"]] > 0, c("strate", "Potosia.fieberi")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Potosia.fieberi"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 15 supra / 18 intra.sup / 11 intra.inf / 6 infra
+#
+TEST$Cetonischema.speciosissima # 117
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Cetonischema.speciosissima"]] > 0, c("strate", "Cetonischema.speciosissima")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Cetonischema.speciosissima"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 2 supra / 16 intra.sup / 12 intra.inf / 1 infra
+#
+TEST$Cyclorhipidion.bodoanum # 775
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Cyclorhipidion.bodoanum"]] > 0, c("strate", "Cyclorhipidion.bodoanum")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Cyclorhipidion.bodoanum"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 20 supra / 20 intra.sup / 18 intra.inf / 15 infra
+#
+TEST$Melasis.buprestoides # 70
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Melasis.buprestoides"]] > 0, c("strate", "Melasis.buprestoides")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Melasis.buprestoides"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 4 supra / 17 intra.sup / 7 intra.inf / 3 infra
+#
+TEST$Chrysobothris.affinis # 77
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Chrysobothris.affinis"]] > 0, c("strate", "Chrysobothris.affinis")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Chrysobothris.affinis"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 11 supra / 16 intra.sup 
+#
+TEST$Xylotrechus.antilope # 188
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Xylotrechus.antilope"]] > 0, c("strate", "Xylotrechus.antilope")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Xylotrechus.antilope"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 16 supra / 20 intra.sup / 8 intra.inf / 5 infra
+#
+TEST$Phaeochrotes.pudens # 50
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Phaeochrotes.pudens"]] > 0, c("strate", "Phaeochrotes.pudens")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Phaeochrotes.pudens"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 1 supra / 15 intra.sup / 5 intra.inf / 1 infra
+#
+TEST$Clytus.tropicus # 143
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Clytus.tropicus"]] > 0, c("strate", "Clytus.tropicus")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Clytus.tropicus"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 8 supra / 19 intra.sup / 5 intra.inf / 4 infra
+#
+TEST$Tropideres.albirostris # 191
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Tropideres.albirostris"]] > 0, c("strate", "Tropideres.albirostris")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Tropideres.albirostris"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 9 supra / 20 intra.sup / 13 intra.inf / 4 infra
+
+# intra.inf #
+
+TEST$Triplax.russica # 53
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Triplax.russica"]] > 0, c("strate", "Triplax.russica")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Triplax.russica"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 0 supra / 1 intra.sup / 9 intra.inf / 12 infra
+#
+TEST$Gnathoncus.nidorum # 65
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Gnathoncus.nidorum"]] > 0, c("strate", "Gnathoncus.nidorum")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Gnathoncus.nidorum"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 0 supra / 9 intra.sup / 11 intra.inf / 7 infra
+#
+TEST$Mycetochara.maura # 152
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Mycetochara.maura"]] > 0, c("strate", "Mycetochara.maura")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Mycetochara.maura"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 1 supra / 8 intra.sup / 14 intra.inf / 12 infra
+#
+TEST$Gasterocercus.depressirostris # 117
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Gasterocercus.depressirostris"]] > 0, c("strate", "Gasterocercus.depressirostris")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Gasterocercus.depressirostris"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 3 supra / 10 intra.sup / 14 intra.inf / 14 infra
+#
+TEST$Prionocyphon.serricornis # 17
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Prionocyphon.serricornis"]] > 0, c("strate", "Prionocyphon.serricornis")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Prionocyphon.serricornis"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 0 supra / 0 intra.sup / 9 intra.inf / 3 infra
+#
+TEST$Enicmus.sp. # 1045
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Enicmus.sp."]] > 0, c("strate", "Enicmus.sp.")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Enicmus.sp."]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 15 supra / 19 intra.sup / 20 intra.inf / 20 infra
+#
+TEST$Ctesias.serra # 63
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Ctesias.serra"]] > 0, c("strate", "Ctesias.serra")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Ctesias.serra"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 0 supra / 6 intra.sup / 16 intra.inf / 7 infra
+
+# infra #
+
+#
+TEST$Salpingus.ruficollis # 9
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Salpingus.ruficollis"]] > 0, c("strate", "Salpingus.ruficollis")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Salpingus.ruficollis"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 2 intra.inf / 4 infra
+#
+TEST$Pentaphyllus.testaceus # 5
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Pentaphyllus.testaceus"]] > 0, c("strate", "Pentaphyllus.testaceus")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Pentaphyllus.testaceus"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 1 intra.inf / 4 infra
+#
+TEST$Xestobium.rufovillosum # 13
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Xestobium.rufovillosum"]] > 0, c("strate", "Xestobium.rufovillosum")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Xestobium.rufovillosum"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 1 intra.inf / 4 infra
+#
+TEST$Rutpela.maculata # 4
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Rutpela.maculata"]] > 0, c("strate", "Rutpela.maculata")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Rutpela.maculata"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 4 infra
+#
+TEST$Vincenzellus.ruficollis # 15
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Vincenzellus.ruficollis"]] > 0, c("strate", "Vincenzellus.ruficollis")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Vincenzellus.ruficollis"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 1 intra.inf / 5 infra
+#
+TEST$Triplax.rufipes # 7
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Triplax.rufipes"]] > 0, c("strate", "Triplax.rufipes")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Triplax.rufipes"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 5 intra.inf / 1 infra
+#
+TEST$Pycnomerus.terebrans # 15
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Pycnomerus.terebrans"]] > 0, c("strate", "Pycnomerus.terebrans")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Pycnomerus.terebrans"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 2 supra / 3 intra.sup / 1 intra.inf / 8 infra
+#
+TEST$Ptilinus.pectinicornis # 21
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Ptilinus.pectinicornis"]] > 0, c("strate", "Ptilinus.pectinicornis")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Ptilinus.pectinicornis"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 3 intra.inf / 6 infra
+#
+TEST$Lissodema.denticolle # 11
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Lissodema.denticolle"]] > 0, c("strate", "Lissodema.denticolle")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Lissodema.denticolle"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) #  1 intra.sup / 1 intra.inf / 6 infra
+#
+TEST$Scolytus.carpini # 26
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Scolytus.carpini"]] > 0, c("strate", "Scolytus.carpini")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Scolytus.carpini"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 3 intra.inf / 6 infra
+#
+TEST$Gastrallus.immarginatus # 68
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Gastrallus.immarginatus"]] > 0, c("strate", "Gastrallus.immarginatus")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Gastrallus.immarginatus"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 2 supra / 3 intra.sup / 12 intra.inf / 11 infra
+#
+TEST$Hemicoelus.costatus # 14
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Hemicoelus.costatus"]] > 0, c("strate", "Hemicoelus.costatus")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Hemicoelus.costatus"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 3 intra.inf / 9 infra
+#
+TEST$Aspidiphorus.lareyniei # 30
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Aspidiphorus.lareyniei"]] > 0, c("strate", "Aspidiphorus.lareyniei")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Aspidiphorus.lareyniei"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 0 supra / 3 intra.sup / 6 intra.inf / 12 infra
+#
+TEST$Cis.micans # 58
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Cis.micans"]] > 0, c("strate", "Cis.micans")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Cis.micans"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 0 supra / 6 intra.sup / 11 intra.inf / 13 infra
+#
+TEST$Symbiotes.gibberosus # 42
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Symbiotes.gibberosus"]] > 0, c("strate", "Symbiotes.gibberosus")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Symbiotes.gibberosus"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 2 supra / 1 intra.sup / 8 intra.inf / 16 infra
+#
+TEST$Isorhipis.melasoides # 66
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Isorhipis.melasoides"]] > 0, c("strate", "Isorhipis.melasoides")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Isorhipis.melasoides"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 0 supra / 1 intra.sup / 4 intra.inf / 13 infra
+#
+TEST$Taphrorychus.bicolor # 283
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Taphrorychus.bicolor"]] > 0, c("strate", "Taphrorychus.bicolor")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Taphrorychus.bicolor"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 6 supra / 0 intra.sup / 11 intra.inf / 16 infra
+
 
 # refaire TOUT les modèles en séparant Final par relevé 
 # Réfléchir à intégrer relevé et strates dans modèles (strate * relevé)
