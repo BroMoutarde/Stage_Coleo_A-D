@@ -581,8 +581,128 @@ testOutliers(sim)
   # Test post-hoc de Tukey pour faire comparaison 2 à 2
 RES<-glht(model_ABX_BMPS, linfct = mcp(strate = "Tukey"))
 summary(RES)
-0.00286 **
 # Est ce que supra diffère du reste : strate2 avec supra et autre canopée ou autre appellation (2 eme temps pas urgent)
+
+par(mar = c(5, 8, 4, 2))
+plot(RES)
+
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Ploter glht
+par(mar = c(5, 8, 4, 2))
+plot(RES)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+
+
+#
+# Données
+means <- c(mean_AC, mean_UC, mean_LC, mean_BC)
+sds <- c(sd_AC, sd_UC, sd_LC, sd_BC)
+groupes <- c("AC", "UC", "LC", "BC")
+# On classe les groupes selon la moyenne (du plus petit au plus grand)
+ordre <- order(means)
+# Générer une palette de couleurs dégradées (par exemple du bleu clair au bleu foncé)
+# La palette a autant de couleurs que de groupes
+palette_couleurs <- colorRampPalette(c("lightgreen", "darkgreen"))(length(means))
+# Appliquer la palette selon l’ordre des moyennes (clair = petite moyenne, sombre = grande moyenne)
+couleurs_ordonnee <- palette_couleurs[rank(means)]
+# Barplot
+bar_centers <- barplot(means, 
+                       names.arg = groupes, 
+                       ylim = c(0, max(means + sds) * 1.2),
+                       col = couleurs_ordonnee, 
+                       ylab = "Abondance totale de coléoptères ",
+                       xlab = "Strates",
+                       main = "Moyenne des abondances totales de coléoptères par strates")
+# Ajout des barres d'erreur
+arrows(bar_centers, means - sds, bar_centers, means + sds, angle = 90, code = 3, length = 0.1, col = "black", lwd = 2)
+
+  
+library(multcomp)
+library(multcompView)
+
+# Nettoyage des niveaux du facteur (supprimer espaces en début/fin)
+levels_clean <- trimws(levels(Final$strate))
+# Initialiser matrice carrée des p-values
+pval_mat <- matrix(1, nrow = length(levels_clean), ncol = length(levels_clean))
+rownames(pval_mat) <- colnames(pval_mat) <- levels_clean
+# Récupérer les p-values et noms des comparaisons
+pvals <- summary(RES)$test$pvalues
+names(pvals) <- rownames(summary(RES)$linfct)
+# Remplir la matrice symétrique de p-values
+for(i in seq_along(pvals)) {
+  comp <- names(pvals)[i]
+  groups <- unlist(strsplit(comp, " - "))
+  g1 <- trimws(groups[1])
+  g2 <- trimws(groups[2])
+  
+  idx_g1 <- which(levels_clean == g1)
+  idx_g2 <- which(levels_clean == g2)
+  
+  if(length(idx_g1) == 0 | length(idx_g2) == 0) {
+    warning(paste("Groupe non trouvé :", g1, "ou", g2))
+  } else {
+    pval_mat[idx_g1, idx_g2] <- pvals[i]
+    pval_mat[idx_g2, idx_g1] <- pvals[i]
+  }
+}
+# Générer les lettres de regroupement
+letters_obj <- multcompLetters(pval_mat, threshold = 0.05)
+labels_df <- data.frame(
+  treatment = names(letters_obj$Letters),
+  letters = letters_obj$Letters,
+  stringsAsFactors = FALSE
+)
+# Réordonner selon l’ordre original des niveaux
+labels_df <- labels_df[match(levels_clean, labels_df$treatment), ]
+print(labels_df)
+# Palette de couleurs
+my_colors <- c( 
+  rgb(143, 199, 74 ,maxColorValue = 255),
+  rgb(242, 104, 34, maxColorValue = 255), 
+  rgb(111, 145, 202, maxColorValue = 255),
+  rgb(125, 90, 20, maxColorValue = 255)
+)
+# Dessiner le boxplot
+a <- boxplot(Final$ab.colsx ~ Final$strate,
+             ylim = c(min(Final$ab.colsx), 1.1 * max(Final$ab.colsx)),
+             col = my_colors[as.numeric(factor(labels_df$letters))],
+             xlab = "Strates",
+             ylab = "abcolsx", 
+             main = "Différences entre les strates pour l'abondance totale de coléoptères")
+# Position verticale pour les lettres
+over <- 0.1 * max(a$stats[nrow(a$stats), ])
+# Ajouter les lettres au-dessus des boîtes
+text(x = 1:length(levels_clean), 
+     y = a$stats[nrow(a$stats), ] + over, 
+     labels = labels_df$letters, 
+     col = my_colors[as.numeric(factor(labels_df$letters))])
+
+
   
 ```
 
@@ -4014,6 +4134,13 @@ resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vecto
 
 # Intra.sup #
 
+TEST$Meliboeus.fulgidicollis # 12
+donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Meliboeus.fulgidicollis"]] > 0, c("strate", "Meliboeus.fulgidicollis")]
+print(donnees_filtrees)
+nb_occurrences <- table(donnees_filtrees$strate)
+somme_abondance <- tapply(donnees_filtrees[["Meliboeus.fulgidicollis"]], donnees_filtrees$strate, sum)
+resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vector(nb_occurrences), somme_abondance = as.vector(somme_abondance)) ; print(resultat) # 3 supra / 6 intra.sup / 1 intra.inf 
+#
 TEST$Opilo.pallidus # 13
 donnees_filtrees <- matrices_AVEC[matrices_AVEC[["Opilo.pallidus"]] > 0, c("strate", "Opilo.pallidus")]
 print(donnees_filtrees)
@@ -4583,5 +4710,16 @@ partrs
 # 
 rda.result<-rda(tabtrap2D$rs~dcav+dfun+dsap+dperdw,data=tabtrap2D)
 anova(rda.result, step=200, perm.max=200)
+```
+
+# 8. Citations packages
+
+```{r}
+library(purrr)
+c("here", "readxl", "dplyr", "tidyverse", "stringr", "ggplot2", "gridExtra", "fitdistrplus", "glmmTMB", "AICcmodavg", "DHARMa", "emmeans", "multcomp", "vegan", "tidyr", "pairwiseAdonis", "RVAideMemoire", "dendextend", "permute", "indicspecies") %>%
+  map(citation) %>%
+  print(style = "text")
+
+
 ```
 
