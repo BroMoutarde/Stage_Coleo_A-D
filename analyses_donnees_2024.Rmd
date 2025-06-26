@@ -35,6 +35,7 @@ library(RVAideMemoire) # Outil complémentaire pairwise
 library(dendextend) # color_branches dendrogramme
 library(permute) # Test homogénéité variabilité des variances
 library(indicspecies) # Analyse IndVal
+library(pheatmap) # heatmap
 ```
 
 # 2. working directory
@@ -584,7 +585,10 @@ summary(RES)
 # Est ce que supra diffère du reste : strate2 avec supra et autre canopée ou autre appellation (2 eme temps pas urgent)
 
 par(mar = c(5, 8, 4, 2))
-plot(RES)
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.05, "red", "black"),
+     xlab = "difference in mean levels")
 
 res_sum <- summary(RES)
 pvals <- res_sum$test$pvalues
@@ -599,9 +603,6 @@ stars_signif <- function(p) {
 # Calculer les étoiles
 stars <- sapply(pvals, stars_signif)
 pvals_text <- format(pvals, digits = 5)
-# Ploter glht
-par(mar = c(5, 8, 4, 2))
-plot(RES)
 # Nombre de comparaisons
 n_comp <- length(pvals)
 # Position y (de haut en bas)
@@ -616,7 +617,6 @@ labels <- ifelse(pvals < 0.001,
                  paste0(sprintf("%.5f", pvals), " ", stars))
 # Ajouter le texte au-dessus des intervalles
 text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
-
 
 #
 # Données
@@ -4565,7 +4565,7 @@ resultat <- data.frame(strate = names(nb_occurrences), nb_occurrences = as.vecto
 ?metaMDS # ?vegdist -> method
 nmds_jaccard <- metaMDS(matrices_AVEC[,7 : 355], distance = "jaccard", k = 3, autotransform = T, trymax = 200)
   # stress
-nmds_jaccard$stress # 0.1645184
+nmds_jaccard$stress # 0.1645478
   # Graphique
 plot(nmds_jaccard)
   # Ellipses
@@ -4591,10 +4591,41 @@ dev.off()
 distsupraavec <- vegdist(matrices_AVEC[,7 : 355], method = "jaccard", na.rm = TRUE)
   # Adonis
 adonis2(distsupraavec ~ strate, matrices_AVEC, permutations = 999, method = "jaccard", strata = LOCA)
+  # Mean dissim
+inter_group_dissim_jaccard <- function(distsupraavec, strate) {
+  distsupraavec <- as.matrix(distsupraavec)
+  groups <- unique(strate)
+  n_groups <- length(groups)
+  result <- matrix(0, n_groups, n_groups)
+  rownames(result) <- colnames(result) <- groups
+  
+  for (i in 1:(n_groups-1)) {
+    for (j in (i+1):n_groups) {
+      group1 <- which(strate == groups[i])
+      group2 <- which(strate == groups[j])
+      result[i,j] <- result[j,i] <- mean(distsupraavec[group1, group2], na.rm= T)
+    }
+  }
+  return(result)
+}
+#Apply the function to get the inter-group dissimilarities:
+inter_group_dissimilarities <- inter_group_dissim_jaccard(distsupraavec, matrices_AVEC$strate)
+#View the results:
+print(inter_group_dissimilarities)
+  # heatmap des moyennes des dissimilaritées inter-strates
+pheatmap(inter_group_dissimilarities,
+         cluster_rows = FALSE, # Pas de clustering automatique
+         cluster_cols = FALSE,
+         color = colorRampPalette(c("darkgreen", "white", "darkblue"))(500),
+         main = "Dissimilaritées moyennes inter-strates",
+         display_numbers = TRUE,
+         number_format = "%.4f",
+         number_color = "white"
+         )
   # Comparaison 2 à 2
 res <- pairwise.adonis2(distsupraavec ~ strate,
                         data = matrices_AVEC,
-                        sim.method = "bray",
+                        sim.method = "jaccard",
                         perm = 999,
                         strata = LOCA,
                         p.adjust.m = "bonferroni") ; print(res)
@@ -4604,16 +4635,17 @@ pairwise.perm.manova(distsupraavec, matrices_AVEC$strate, nperm = 999)
 coleo_dispersion <- betadisper(distsupraavec, group = matrices_AVEC$strate)
 plot(coleo_dispersion, hull = FALSE, ellipse = TRUE)
 permutest(coleo_dispersion) # p-value = 0.022 *
+# Dendrogramme de classification UPGMA #
+  # Help
+?agnes
+  # Matrice de distance
+distsupraavec <- vegdist(matrices_AVEC[,7 : 355], method = "jaccard", na.rm = TRUE)
+  # Classification Bray-Curtis
+classif_strate_jaccard <- agnes(distsupraavec, diss = T, method = "average")
   # Dendrogramme
-classif_strate_bray <- agnes(distsupraavec, diss = T, method = "average")
-plot(classif_strate_bray, labels = matrices_AVEC$strate)
-#
-dend <- as.dendrogram(classif_strate_bray, labels = matrices_AVEC$strate)
-d2 = color_branches(dend , k = 4)
-plot(d2)
-  # Indval
+plot(classif_strate_jaccard, labels = matrices_AVEC$strate)
 
-# Présence qui importe mais pas l'abondance, espèces dominantes qui caréctrérise mon patron
+# IndVal = same #
 ```
 
 ## 6.3. Matrice sans singletons et doubletons
@@ -4716,7 +4748,7 @@ anova(rda.result, step=200, perm.max=200)
 
 ```{r}
 library(purrr)
-c("here", "readxl", "dplyr", "tidyverse", "stringr", "ggplot2", "gridExtra", "fitdistrplus", "glmmTMB", "AICcmodavg", "DHARMa", "emmeans", "multcomp", "vegan", "tidyr", "pairwiseAdonis", "RVAideMemoire", "dendextend", "permute", "indicspecies") %>%
+c("here", "readxl", "dplyr", "tidyverse", "stringr", "ggplot2", "gridExtra", "fitdistrplus", "glmmTMB", "AICcmodavg", "DHARMa", "emmeans", "multcomp", "vegan", "tidyr", "pairwiseAdonis", "RVAideMemoire", "dendextend", "permute", "indicspecies", "pheatmap") %>%
   map(citation) %>%
   print(style = "text")
 
