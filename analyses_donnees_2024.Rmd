@@ -589,7 +589,7 @@ pvalues <- adjusted()(RES)$pvalues
 ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
 plot(ci.glht, col = ifelse(pvalues < 0.05, "red", "black"),
      xlab = "difference in mean levels")
-
+#
 res_sum <- summary(RES)
 pvals <- res_sum$test$pvalues
 # Fonction pour étoiles de significativité
@@ -786,6 +786,44 @@ testOutliers(sim)
 RES<-glht(model_SRX_BMPS, linfct = mcp(strate = "Tukey"))
 summary(RES)
 # 0.00531 ** 
+
+  # Graph de Tukey
+png("Tukey_srcolsx.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.05, "red", "black"),
+     xlab = "difference in mean levels")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 4, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
 ```
 
 ## 5.3. Ab_col_rar
@@ -1847,14 +1885,14 @@ sd_BC <- sd(entomo_BC$sr.lig) ; sd_BC # 9.295585
 #
 library(gsl)
 modelSRLIG <- glmmTMB(
-  sr.lig ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
-  family = nbinom1(link = "log"), 
+  sr.lig ~ strate + (1 | LOCA / placette)  + offset(log(prop.trap.season)), 
+  family = gaussian(), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRLIG)
 #
 modelSRLIG2 <- glmmTMB(
-  sr.lig ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
-  family = lognormal(link = "log"), 
+  sr.lig ~ 1 + (1 | LOCA / placette)  + offset(log(prop.trap.season)), 
+  family = gaussian(), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRLIG2)
 #
@@ -3192,15 +3230,15 @@ mean_BC <- mean(entomo_BC$CWM_decay) ; mean_BC # 2.617411
 sd_BC <- sd(entomo_BC$CWM_decay) ; sd_BC # 0.217277
 #
 modelCWM_decay <- glmmTMB(
-  CWM_decay ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
-  family = tweedie(),
+  CWM_decay ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = gaussian(),
   data = Final, 
   na.action = na.fail) ; summary(modelCWM_decay)
 #
 ?glmmTMB
 modelCWM_decay2 <- glmmTMB(
-  CWM_decay ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
-  family = skewnormal(link),
+  CWM_decay ~ 1 + (1 | LOCA / placette)  + offset(log(prop.trap.season)), 
+  family = gaussian(),
   data = Final, 
   na.action = na.fail) ; summary(modelCWM_decay2)
 #
@@ -4744,7 +4782,62 @@ rda.result<-rda(tabtrap2D$rs~dcav+dfun+dsap+dperdw,data=tabtrap2D)
 anova(rda.result, step=200, perm.max=200)
 ```
 
-# 8. Citations packages
+# 8. Graphs GLMM
+
+```{r}
+  # Chargement des infos
+strate_effects = read.csv("Donnees_graphique_glmmTMB.csv", sep = ";", dec = ",", header = T)
+  # p-values en facteur
+strate_effects$pval = factor(strate_effects$pval, 
+                        levels = c("N.S", 
+                                   "P < 0,05", 
+                                   "P < 0,01", 
+                                   "P < 0,001"))
+  # plage de signif chisq.value
+critical_value <- qchisq(0.95, df = 3)
+  # Ordre des variables sur l'axe Y
+ordre_var <- c("General", "Trophic Guilds", "Microhabitat Guilds", "Ecological niches Traits")
+strate_effects$Groupe.var <- factor(strate_effects$Groupe.var, levels = ordre_var)
+  # Graph
+strate_effects_chisqvalue = 
+  ggplot(strate_effects, 
+         aes(x = Y, 
+             y = chisq.value)) + 
+  coord_flip() + 
+  annotate("rect", 
+           xmin = -Inf, 
+           xmax = +Inf, 
+           ymin = 0, 
+           ymax = critical_value, 
+           alpha = 0.2, 
+           fill = "grey40") +
+  geom_hline(yintercept = critical_value, 
+             linetype = "dashed", 
+             color = "red",
+             linewidth = 0.5) + 
+  geom_point(aes(color = County, 
+                 size = pval)) +
+  # geom_line(aes(group = County, 
+  #               color = County)) + 
+  facet_grid(Groupe.var ~ Effect, 
+             scales = "free",
+             space = "free") + 
+  theme_bw() + 
+  theme(axis.title.y = element_blank(), 
+        axis.text.y = element_text(face = "bold"),
+        strip.text.x = element_text(size = 8.5, face = "bold"),
+        strip.text.y = element_text(size = 8.5, face = "bold")) +
+  scale_color_manual(values = c("grey20")) +
+  scale_size_manual(values = c(1.5,5,7)) + 
+  labs(y = "chisq.value", 
+       size = "p.value", 
+       color = "Region") ; strate_effects_chisqvalue
+  # Save en image la sortie du graphique
+ggsave("strate_effects_chisqvalue.png", plot = strate_effects_chisqvalue, width = 20, height = 25, units = "cm")
+```
+
+
+# 9. Citations packages
 
 ```{r}
 library(purrr)
