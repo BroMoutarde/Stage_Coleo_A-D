@@ -5232,7 +5232,6 @@ pheatmap(inter_group_dissimilarities,
          number_color = "white"
          )
 
-# Regarder la dissimilarité 2 à 2 (between puis les classé par type de between : 6 = ONVEUT SAVOIR MEAN ET SD, et différencié les between) #
 
 # Essai de la comparaison 2 à 2 avec pairwiseadonis : réussi
 # install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
@@ -6108,33 +6107,190 @@ coleo_sans_simper_LC_BC <- with(matrice_sans_LC_BC[, 7 : 249], simper(matrice_sa
 
 
 # 7. Analyses : variance des métriques & contributions 
-## 7.1. 
 
 ```{r}
-library(vegan)
+  # Mise en forme des fichiers de métriques
 matrice_varpart <- matrices_AVEC %>%
   mutate(placette = paste0(str_sub(LOCA, 1, 1), "_", parcelle)) %>%
   select(placette, num.trap, 7:355) %>%
-  group_by(placette, num.trap) %>%                 # on groupe par placette
+  group_by(placette, num.trap) %>%                 
   reframe(across(where(is.numeric), sum)) %>%
   arrange(placette) %>%
   mutate(sites = c(1:80)) %>%
   select(sites, everything(), -placette, -num.trap)
-                   
-part_coleo <- varpart(matrice_varpart[, 2 : 350], ~BMP_Strates$Vol_BMP_UC.m3 + Metriques$abon_tot_UC + Metriques$abon_tot_LC + Metriques$abon_tot_BC, ~BMP_Arbres$Vol_BMP_Tot_Arbre + Metriques$abon_tot_arbre, ~BMP_Placettes$Vol_BMP_Placette_Pondere.m3.ha + Metriques$abon_tot_PT, data = Final) ; part_coleo
-#
-rda.result <- rda(, data = Final)
-anova(rda.result, step = 200, perm.max = 200)
 
-partrs<-varpart(tabtrap2$rs,~dcav+dfun+dsap+dperdw,~LSDW+LLDW,~open,~mixture+forest.type,data=tabtrap2)
-partrs
-#test de l'effet propre+conjoint de chaque groupe de variable
-# 
-rda.result<-rda(tabtrap2D$rs~dcav+dfun+dsap+dperdw,data=tabtrap2D)
-anova(rda.result, step=200, perm.max=200)
+BMP_Strates <- BMP_Strates %>%
+  mutate(Vol_BMP_AC.m3 = 0, .before = Vol_BMP_UC.m3) %>%
+  arrange(Placette) %>%
+  pivot_longer(cols = 2:5, names_to = "strates", values_to = "Volume de BMP") %>%
+  mutate(strates = recode(strates,
+                          "Vol_BMP_AC.m3" = "AC",
+                          "Vol_BMP_UC.m3" = "UC",
+                          "Vol_BMP_LC.m3" = "LC",
+                          "Vol_BMP_BC.m3" = "BC"))
+
+AB_tot_DMH_strate <- metriques_strateUC %>%
+  left_join(metriques_strateLC %>% select(placette, abon_tot_LC), by = "placette") %>%
+  left_join(metriques_strateBC %>% select(placette, abon_tot_BC), by = "placette") %>%
+  select(placette, abon_tot_UC, abon_tot_LC, abon_tot_BC) %>%
+  mutate(abon_tot_AC = 0, .before = abon_tot_UC) %>%
+  pivot_longer(cols = 2 : 5, names_to = "strates", values_to = "Abondance totale de DMH") %>%
+  mutate(strates = recode(strates,
+                          "abon_tot_AC" = "AC",
+                          "abon_tot_UC" = "UC",
+                          "abon_tot_LC" = "LC",
+                          "abon_tot_BC" = "BC")) 
+DIV_tot_DMH_strate <- metriques_strateUC %>%
+  left_join(metriques_strateLC %>% select(placette, div_tot_LC), by = "placette") %>%
+  left_join(metriques_strateBC %>% select(placette, div_tot_BC), by = "placette") %>%
+  select(placette, div_tot_UC, div_tot_LC, div_tot_BC) %>%
+  mutate(div_tot_AC = 0, .before = div_tot_UC) %>%
+  pivot_longer(cols = 2 : 5, names_to = "strates", values_to = "Diversité totale de DMH") %>%
+  mutate(strates = recode(strates,
+                          "div_tot_AC" = "AC",
+                          "div_tot_UC" = "UC",
+                          "div_tot_LC" = "LC",
+                          "div_tot_BC" = "BC")) 
+
+AB_tot_arbre <- Metriques %>%
+  select(placette, abon_tot_arbre, div_tot_arbre) %>%
+  slice(rep(1 : n(), each = 4))
+BMP_arbre <- BMP_Arbres %>%
+  slice(rep(1 : n(), each = 4))
+
+AB__tot_placette <- Metriques_Placettes_totalRB %>%
+  select(placette, abon_tot_PT, div_tot_PT) %>%
+  slice(rep(1 : n(), each = 4))
+BMP_placette <- BMP_Placettes %>%
+  slice(rep(1 : n(), each = 4))
+
+Metriques_CWM_saprox_arbre_RB <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/CWM_saprox_arbre.csv", sep=",", header=TRUE, stringsAsFactors = FALSE)
+Metriques_CWM_saprox_placette_RB <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/CWM_saprox_placette.csv", sep=",", header=TRUE, stringsAsFactors = FALSE)
+
+CWM_saprox <- Metriques_CWM_saprox_arbre_RB %>%
+  pivot_wider(names_from = "strate", values_from = c("CWM_saprox", "FDis_saprox")) %>%
+  arrange(id_arbre) %>%
+  mutate(across(everything(), ~replace_na(.x, 0))) %>%
+  rename(placette = id_arbre) %>%
+  mutate(CWM_saprox_AC = 0,
+         FDis_saprox_AC = 0) %>%
+  select(1, 2, 6, 10, 5, 4, 3, 11, 9, 8, 7) %>%
+  pivot_longer(cols = starts_with(c("CWM_saprox", "FDis_saprox")),
+               names_to = c(".value", "strate"), names_pattern = "(CWM_saprox|FDis_saprox)_(.*)")
+
+CWM_saprox_strates <- CWM_saprox %>%
+  filter(strate != "arbre")
+CWM_saprox_arbre <- CWM_saprox %>%
+  filter(strate == "arbre")  %>%
+  slice(rep(1 : n(), each = 4))
+CWM_saprox_placette <- Metriques_CWM_saprox_placette_RB %>%
+  filter(etage == "total") %>%
+  arrange(placette) %>%
+  slice(rep(1 : n(), each = 4))
+
+
+###############################################################
+# 0.19797 / 0.30498 avec CWM et FDis
+part_abcolsx <- varpart(Final$ab.colsx, ~ BMP_Strates[[3]] + AB_tot_DMH_strate[[3]]  + DIV_tot_DMH_strate[[3]] + CWM_saprox_strates[[3]] + CWM_saprox_strates[[4]], ~ BMP_arbre[[2]] + AB_tot_arbre[[2]] + AB_tot_arbre[[3]] + CWM_saprox_arbre[[3]] + CWM_saprox_arbre[[4]], ~ BMP_placette[[6]] + AB__tot_placette[[2]] + AB__tot_placette[[3]] + CWM_saprox_placette[[3]] + CWM_saprox_placette[[4]]) ; part_abcolsx
+  # rda sur 1 seul groupe de variables
+rda.result_strates <- rda(Final$ab.colsx ~ BMP_Strates[[3]] + AB_tot_DMH_strate[[3]]  + DIV_tot_DMH_strate[[3]])
+anova(rda.result_strates, step = 200, perm.max = 200)
+RsquareAdj(rda.result_strates)
+
+rda.result_arbre <- rda(Final$ab.colsx ~ BMP_arbre[[2]] + AB_tot_arbre[[2]] + AB_tot_arbre[[3]])
+anova(rda.result_arbre, step = 200, perm.max = 200)
+RsquareAdj(rda.result_arbre)
+
+rda.result_placette <- rda(Final$ab.colsx ~ BMP_placette[[6]] + AB__tot_placette[[2]] + AB__tot_placette[[3]])
+anova(rda.result_placette, step = 200, perm.max = 200)
+RsquareAdj(rda.result_placette)
+  # RDA partielle 
+rda.result_partielle_strates <- rda(Final$ab.colsx ~ BMP_Strates[[3]] + AB_tot_DMH_strate[[3]]  + DIV_tot_DMH_strate[[3]] + Condition(BMP_arbre[[2]]) + Condition(AB_tot_arbre[[2]]) + Condition(AB_tot_arbre[[3]]) + Condition(BMP_placette[[6]]) + Condition(AB__tot_placette[[2]]) + Condition(AB__tot_placette[[3]]))
+anova(rda.result_partielle_strates, step = 200, perm.max = 200)
+RsquareAdj(rda.result_partielle_strates) # 0.03480612
+
+rda.result_partielle_arbre2 <- rda(Final$ab.colsx ~ BMP_arbre[[2]] + AB_tot_arbre[[2]] + AB_tot_arbre[[3]] + Condition(BMP_Strates[[3]]) + Condition(AB_tot_DMH_strate[[3]])  + Condition(DIV_tot_DMH_strate[[3]]) + Condition(BMP_placette[[6]]) + Condition(AB__tot_placette[[2]]) + Condition(AB__tot_placette[[3]]))
+anova(rda.result_partielle_arbre2, step = 200, perm.max = 200)
+RsquareAdj(rda.result_partielle_arbre2) # 0.08246137
+
+rda.result_partielle_placette3 <- rda(Final$ab.colsx ~ BMP_placette[[6]] + AB__tot_placette[[2]] + AB__tot_placette[[3]] + Condition(BMP_Strates[[3]]) + Condition(AB_tot_DMH_strate[[3]]) + Condition(DIV_tot_DMH_strate[[3]]) + Condition(BMP_arbre[[2]]) + Condition(AB_tot_arbre[[2]]) + Condition(AB_tot_arbre[[3]]))
+anova(rda.result_partielle_placette3, step = 200, perm.max = 200)
+RsquareAdj(rda.result_partielle_placette3) # 0.05682933
+
+#     
+
+part_matrice <- varpart(matrice_varpart[, 2 : 350], ~ BMP_Strates[[3]] + AB_tot_DMH_strate[[3]]  + DIV_tot_DMH_strate[[3]] + CWM_saprox_strates[[3]] + CWM_saprox_strates[[4]], ~ BMP_arbre[[2]] + AB_tot_arbre[[2]] + AB_tot_arbre[[3]] + CWM_saprox_arbre[[3]] + CWM_saprox_arbre[[4]], ~ BMP_placette[[6]] + AB__tot_placette[[2]] + AB__tot_placette[[3]] + CWM_saprox_placette[[3]] + CWM_saprox_placette[[4]]) ; part_matrice
+  # rda sur 1 seul groupe de variables
+rda.result_strates <- rda(matrice_varpart[, 2 : 350] ~ BMP_Strates[[3]] + AB_tot_DMH_strate[[3]] + DIV_tot_DMH_strate[[3]])
+anova(rda.result_strates, step = 200, perm.max = 200)
+RsquareAdj(rda.result_strates)
+
+rda.result_arbre <- rda(matrice_varpart[, 2 : 350] ~ BMP_arbre[[2]] + AB_tot_arbre[[2]] + AB_tot_arbre[[3]])
+anova(rda.result_arbre, step = 200, perm.max = 200)
+RsquareAdj(rda.result_arbre)
+
+rda.result_placette <- rda(matrice_varpart[, 2 : 350] ~ BMP_placette[[6]] + AB__tot_placette[[2]] + AB__tot_placette[[3]])
+anova(rda.result_placette, step = 200, perm.max = 200)
+RsquareAdj(rda.result_placette)
+  # Comparer 2 groupes de variables
+rda.result_S_A <- rda(Final$ab.colsx ~ BMP_Strates[[3]] + AB_tot_DMH_strate[[3]] + DIV_tot_DMH_strate[[3]] + BMP_arbre[[2]] + AB_tot_arbre[[2]] + AB_tot_arbre[[3]])
+anova(rda.result_S_A, step = 200, perm.max = 200)
+RsquareAdj(rda.result_S_A)
+
+rda.result_S_P <- rda(Final$ab.colsx ~ BMP_Strates[[3]] + AB_tot_DMH_strate[[3]] + DIV_tot_DMH_strate[[3]] + BMP_placette[[6]] + AB__tot_placette[[2]] + AB__tot_placette[[3]])
+anova(rda.result_S_P, step = 200, perm.max = 200)
+RsquareAdj(rda.result_S_P)
+
+rda.result_A_P <- rda(Final$ab.colsx ~ BMP_arbre[[2]] + AB_tot_arbre[[2]] + AB_tot_arbre[[3]] + BMP_placette[[6]] + AB__tot_placette[[2]] + AB__tot_placette[[3]])
+anova(rda.result_A_P, step = 200, perm.max = 200)
+RsquareAdj(rda.result_A_P)
+  #
+rda.result_partielle_strates <- rda(matrice_varpart[, 2 : 350] ~ BMP_Strates[[3]] + AB_tot_DMH_strate[[3]]  + DIV_tot_DMH_strate[[3]] + Condition(BMP_arbre[[2]] + AB_tot_arbre[[2]] + AB_tot_arbre[[3]], BMP_placette[[6]] + AB__tot_placette[[2]] + AB__tot_placette[[3]]))
+anova(rda.result_partielle_strates, step = 200, perm.max = 200)
+RsquareAdj(rda.result_partielle_strates)
+
+rda.result_partielle_arbre2 <- rda(matrice_varpart[, 2 : 350] ~ BMP_arbre[[2]] + AB_tot_arbre[[2]] + AB_tot_arbre[[3]] + Condition(BMP_Strates[[3]] + AB_tot_DMH_strate[[3]]  + DIV_tot_DMH_strate[[3]] + BMP_placette[[6]] + AB__tot_placette[[2]] + AB__tot_placette[[3]]))
+anova(rda.result_partielle_arbre2, step = 200, perm.max = 200)
+RsquareAdj(rda.result_partielle_arbre2)
+
+rda.result_partielle_placette3 <- rda(matrice_varpart[, 2 : 350] ~ BMP_placette[[6]] + AB__tot_placette[[2]] + AB__tot_placette[[3]] + Condition(BMP_Strates[[3]] + AB_tot_DMH_strate[[3]]  + DIV_tot_DMH_strate[[3]] + BMP_arbre[[2]] + AB_tot_arbre[[2]] + AB_tot_arbre[[3]]))
+anova(rda.result_partielle_placette3, step = 200, perm.max = 200)
+RsquareAdj(rda.result_partielle_placette3)
+#
+
+part_srcolsx <- varpart(Final$sr.colsx, ~ BMP_Strates[[3]] + AB_tot_DMH_strate[[3]]  + DIV_tot_DMH_strate[[3]], ~ BMP_arbre[[2]] + AB_tot_arbre[[2]] + AB_tot_arbre[[3]], ~ BMP_placette[[6]] + AB__tot_placette[[2]] + AB__tot_placette[[3]]) ; part_srcolsx
+
+part_abcolsxcom <- varpart(Final$ab.colsxcom, ~ BMP_Strates[[3]] + AB_tot_DMH_strate[[3]]  + DIV_tot_DMH_strate[[3]], ~ BMP_arbre[[2]] + AB_tot_arbre[[2]] + AB_tot_arbre[[3]], ~ BMP_placette[[6]] + AB__tot_placette[[2]] + AB__tot_placette[[3]]) ; part_abcolsxcom
+
+part_srcolsxcom <- varpart(Final$sr.colsxcom, ~ BMP_Strates[[3]] + AB_tot_DMH_strate[[3]]  + DIV_tot_DMH_strate[[3]], ~ BMP_arbre[[2]] + AB_tot_arbre[[2]] + AB_tot_arbre[[3]], ~ BMP_placette[[6]] + AB__tot_placette[[2]] + AB__tot_placette[[3]]) ; part_srcolsxcom
+
+part_abcolsxrar <- varpart(Final$ab.colsxrar, ~ BMP_Strates[[3]] + AB_tot_DMH_strate[[3]]  + DIV_tot_DMH_strate[[3]], ~ BMP_arbre[[2]] + AB_tot_arbre[[2]] + AB_tot_arbre[[3]], ~ BMP_placette[[6]] + AB__tot_placette[[2]] + AB__tot_placette[[3]]) ; part_abcolsxrar
+
+part_srcolsxrar <- varpart(Final$sr.colsxrar, ~ BMP_Strates[[3]] + AB_tot_DMH_strate[[3]]  + DIV_tot_DMH_strate[[3]], ~ BMP_arbre[[2]] + AB_tot_arbre[[2]] + AB_tot_arbre[[3]], ~ BMP_placette[[6]] + AB__tot_placette[[2]] + AB__tot_placette[[3]]) ; part_srcolsxrar
+
+
 ```
 
-# 8. Graphs GLMM
+# 8. Richesse spécifique :  comparaison de richesse cumulée par strate
+
+```{r}
+library(rich)
+
+
+```
+
+# 9. nestedness
+
+```{r}
+library(vegan)
+library(bipartite)
+nested <- nestedbetasor(matrices_AVEC[, 7 :355])
+plot(nested)
+?swap.web
+```
+
+
+# 10. Graphs GLMM
 
 ```{r}
   # Chargement des infos
@@ -6189,7 +6345,7 @@ ggsave("strate_effects_chisqvalue.png", plot = strate_effects_chisqvalue, width 
 ```
 
 
-# 9. Citations packages
+# 11. Citations packages
 
 ```{r}
 library(purrr)
