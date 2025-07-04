@@ -6205,7 +6205,7 @@ rda.result_placette <- rda(Final$ab.colsx ~ BMP_placette[[6]] + AB__tot_placette
 anova(rda.result_placette, step = 200, perm.max = 200)
 RsquareAdj(rda.result_placette)
   # RDA partielle 
-rda.result_partielle_strates <- rda(Final$ab.colsx ~ BMP_Strates[[3]] + AB_tot_DMH_strate[[3]]  + DIV_tot_DMH_strate[[3]] + Condition(BMP_arbre[[2]]) + Condition(AB_tot_arbre[[2]]) + Condition(AB_tot_arbre[[3]]) + Condition(BMP_placette[[6]]) + Condition(AB__tot_placette[[2]]) + Condition(AB__tot_placette[[3]]))
+rda.result_partielle_strates <- rda(Final$ab.colsx ~ BMP_Strates[[3]] + AB_tot_DMH_strate[[3]]  + DIV_tot_DMH_strate[[3]] + Condition(CWM_saprox_strates[[3]]) + Condition(CWM_saprox_strates[[4]]) + Condition(BMP_arbre[[2]] + AB_tot_arbre[[2]] + AB_tot_arbre[[3]] + CWM_saprox_arbre[[3]] + CWM_saprox_arbre[[4]] + BMP_placette[[6]] + AB__tot_placette[[2]] + AB__tot_placette[[3]] + CWM_saprox_placette[[3]] + CWM_saprox_placette[[4]]))
 anova(rda.result_partielle_strates, step = 200, perm.max = 200)
 RsquareAdj(rda.result_partielle_strates) # 0.03480612
 
@@ -6275,8 +6275,71 @@ part_srcolsxrar <- varpart(Final$sr.colsxrar, ~ BMP_Strates[[3]] + AB_tot_DMH_st
 
 ```{r}
 library(rich)
+test <- rich(matrix = matrices_AVEC[, 7:355], nrandom = 499, verbose = T)
+test$cr # 349 : observed cumulative species richness
+test$mr # 58.3375 : observed mean value of species richness over the n samples
 
 
+matrices_list <- matrices_AVEC %>%
+  group_split(strate) %>%  # sépare en liste de 4 data frames
+  lapply(function(df) df[, 7:355])
+accum_list <- lapply(matrices_list, function(mat) {
+  specaccum(mat, method = "random", permutations = 100)
+})
+colors <- c("red", "blue", "green", "orange")
+
+plot(accum_list[[1]], col = colors[1], lwd = 2, ci.type = "polygon", ci.lty = 0,
+     ci.col = adjustcolor(colors[1], alpha.f = 0.2), 
+     xlab = "Number of sites", ylab = "Species richness",
+     main = "Species accumulation curves by strata")
+
+for (i in 2:length(accum_list)) {
+  plot(accum_list[[i]], add = TRUE, col = colors[i], lwd = 2,
+       ci.type = "polygon", ci.lty = 0,
+       ci.col = adjustcolor(colors[i], alpha.f = 0.2))
+}
+names(matrices_list) <- c("infra", "intra.inf", "intra.sup", "supra")
+legend("bottomright", legend = names(matrices_list), col = colors, lwd = 2)
+
+
+
+# 1. Extraire les strates dans l’ordre unique d’apparition
+strates_order <- matrices_AVEC %>% 
+  distinct(strate) %>% 
+  pull(strate)
+# 2. Séparer la table par strate en liste
+matrices_list <- matrices_AVEC %>%
+  group_split(strate) %>%
+  lapply(function(df) df[, 7:355])
+# 3. Affecter les noms automatiquement selon l'ordre des strates dans le dataframe
+names(matrices_list) <- strates_order
+# 4. Calculer specaccum pour chaque strate
+accum_list <- lapply(matrices_list, function(mat) {
+  specaccum(mat, method = "random", permutations = 100)
+})
+# 5. Transformer les résultats en un data frame ggplot-compatible
+accum_df <- do.call(rbind, lapply(seq_along(accum_list), function(i) {
+  acc <- accum_list[[i]]
+  data.frame(
+    Sites = acc$sites,
+    Richness = acc$richness,
+    SD = acc$sd,
+    Strate = names(accum_list)[i]
+  )
+}))
+# 6. Représentation graphique ggplot
+ggplot(accum_df, aes(x = Sites, y = Richness, color = Strate, fill = Strate)) +
+  geom_line(size = 1.2) +
+  geom_ribbon(aes(ymin = Richness - SD, ymax = Richness + SD), alpha = 0.2, color = NA) +
+  labs(title = "Courbes de richesse spécifique cumulée par strate",
+       x = "Sites",
+       y = "RS cumulée") +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "bottom") +
+  scale_color_manual(values = c("infra" = "red", "intra.inf" = "blue",
+                                "intra.sup" = "green", "supra" = "orange")) +
+  scale_fill_manual(values = c("infra" = "red", "intra.inf" = "blue",
+                               "intra.sup" = "green", "supra" = "orange"))
 ```
 
 # 9. nestedness
@@ -6287,6 +6350,8 @@ library(bipartite)
 nested <- nestedbetasor(matrices_AVEC[, 7 :355])
 plot(nested)
 ?swap.web
+web <- swap.web(100, as.matrix(matrices_AVEC[, 7 :355]))
+plotweb(web)
 ```
 
 
