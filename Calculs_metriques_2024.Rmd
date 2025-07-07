@@ -368,11 +368,11 @@ BMP_PlacetteTot3 <- BMP_PlacetteTot2 %>%
 # Les différences minimes entre la somme des bois morts des 2 étages et le bois mort totale correspondent aux NAs dans la hauteurs du BMP (H_BMP) #
 
 # Création de la métrique Vol_BMP_Tot.m3/ha #
-  # Diamètre = 30m
-  # Aire = 706.858m²
-  # Hectare = 0.070686
+  # rayon = 30 m
+  # Aire = 2827.433388 m²
+  # Hectare = 0.2827433388
 BMP_PlacetteTot4 <- BMP_PlacetteTot3 %>%
-  mutate(Vol_BMP_Tot.m3.ha = BMP_PlacetteTot3$Vol_BMP_Tot.m3 / 0.070686)
+  mutate(Vol_BMP_Tot.m3.ha = BMP_PlacetteTot3$Vol_BMP_Tot.m3 / 0.2827433388)
 
   # Couleur différente pour les massifs sur le ggplot
 BMP_PlacetteTot4 <- BMP_PlacetteTot4 %>%
@@ -423,7 +423,7 @@ DMH_placette <- DMH_placette %>%
   # Garder que les arbres vivants (remarque : les 4 arbres DMH sont vivants)
 G <- DMH_placette %>% 
   filter(Cat_arbre !="M" & Cat_arbre !="C" & Cat_arbre !="S") %>%
-  filter(!BMP_sp %in% c("hetre", "charme", "pin sylvestre", "alisier torminal")) %>%
+  filter(!BMP_sp %in% c("bouleau", " hetre", "hetre", "charme", "pin sylvestre", "alisier torminal")) %>%
   group_by(num_arbre) %>% 
   mutate(g = pi*(DBH.m/2)^2) %>%
   distinct(g , .keep_all = T)
@@ -448,7 +448,7 @@ G_plac <- G %>%
 G_DMH <- DMH_placette %>% 
   filter(Cat_arbre !="M" & Cat_arbre !="C" & Cat_arbre !="S" & Cat_arbre !="V") %>%
   group_by(num_arbre) %>% 
-  summarise(g = pi*(DBH.m/2)^2) %>% 
+  reframe(g = pi*(DBH.m/2)^2) %>% 
   distinct()
 
 # Calcul G par placette #
@@ -459,7 +459,7 @@ G_DMH <- separate(G_DMH, num_arbre, sep = "_", into = c("massif", "placette", "r
 G_DMH <- G_DMH %>% 
   unite("placette", massif, placette, sep = "_") %>% 
   group_by(placette) %>%
-  summarise(Gdmh.m2.ha = sum(g, na.rm=TRUE)) %>% 
+  reframe(Gdmh.m2.ha = sum(g, na.rm=TRUE)) %>% 
   mutate(placette = ifelse(placette == "V_169", "V_170", placette))
   # Changer 169 en 170 (arbre thèse V_170  dans la parcelle 169)
 
@@ -517,15 +517,15 @@ BMPAPRES <- ggplot(BMP_PlacetteTot5, aes(x = placette, y = Vol_BMP_Tot_Pondere.m
 grid.arrange(plotvolbmp, plotpond, BMPAVANT, BMPAPRES, ncol = 2 : 2)
 
   # Ecart_type BMP par placette sans pondération
-sd(BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha) # 6.293047
-min(BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha) # 0.05555543
-max(BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha) # 24.44439
-mean(BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha) # 9.306923
+sd(BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha) # 1.573265
+min(BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha) # 0.01388889
+max(BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha) # 6.111111
+mean(BMP_PlacetteTot5$Vol_BMP_Tot.m3.ha) # 2.326736
   # Ecart_type BMP par placette avec pondération
-sd(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 22.14602
-min(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 0.3290758
-max(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 85.84921
-mean(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 34.91436
+sd(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 5.536517
+min(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 0.08226915
+max(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 21.46235
+mean(BMP_PlacetteTot5$Vol_BMP_Tot_Pondere.m3.ha) # 8.72861
 
   # EXPORT
 write.table(x = BMP_PlacetteTot5, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMPtot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
@@ -579,7 +579,7 @@ BMD_S <- BMD_S %>%
   select(placette, DBH.m, vol.m3)
   # m3.ha
 BMD_S2 <- BMD_S %>%
-  mutate(Vol_BMD_S.m3.ha = BMD_S$vol.m3 / 0.070686) %>%
+  mutate(Vol_BMD_S.m3.ha = BMD_S$vol.m3 / 0.2827433388) %>%
   select(placette, Vol_BMD_S.m3.ha) %>%
   setNames(c("placette", "BM_wagner.ha"))
 
@@ -620,10 +620,10 @@ ggplot(BM_wagner, aes(x = placette, y = BMS_F.m3.ha)) +
   theme(axis.text.x = element_text(angle = 90))
 
   # Ecart_type BMP par placette avec pondération
-sd(BM_wagner$BMS_F.m3.ha) # 29.6807
+sd(BM_wagner$BMS_F.m3.ha) # 29.56522
 min(BM_wagner$BMS_F.m3.ha) # 2.570209
 max(BM_wagner$BMS_F.m3.ha) # 134.936
-mean(BM_wagner$BMS_F.m3.ha) # 27.0312
+mean(BM_wagner$BMS_F.m3.ha) # 26.81507
 
   # EXPORT
 write.table(x = BM_wagner, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMStot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
@@ -843,7 +843,7 @@ BMD_C <- BMD_C %>%
   summarise(VolTotC.m3 = sum(vol.m3)) # vol.m3 par placette
   # Vol.m3.ha
 BMD_C2 <- BMD_C %>% 
-  mutate(VolTotC.m3.ha = (BMD_C$VolTotC.m3 / 0.070686)) 
+  mutate(VolTotC.m3.ha = (BMD_C$VolTotC.m3 / 0.2827433388)) 
 
   # IMPORT pour avoir la colonne placette avec les 20 ID
 MSS <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_Seuils_Strates_AD.csv", sep=";", header=TRUE, stringsAsFactors = FALSE)
@@ -923,7 +923,7 @@ BMD_M4 <- BMD_M3 %>%
   summarise(Vol_BMD_Mtot.m3 = sum(vol.m3))  # summarise par placette
 
 BMD_M5 <- BMD_M4 %>%
-  mutate(Vol_BMD_Mtot.m3.ha = (BMD_M4$Vol_BMD_Mtot.m3 / 0.070686))
+  mutate(Vol_BMD_Mtot.m3.ha = (BMD_M4$Vol_BMD_Mtot.m3 / 0.2827433388))
   # m3.ha
   # Jointure 20 id
 BMD_M6 <- MSS %>% 
@@ -1005,20 +1005,20 @@ grid.arrange(C, M, Tot, ncol = 2 : 2)
 grid.arrange(C2, M2, Tot2, ncol = 2 : 2)
 
   # Vol de BMD pour les chandelles
-sd(BMDtot2$VolTotC.m3.ha) # 9.844941
+sd(BMDtot2$VolTotC.m3.ha) # 2.461241
 min(BMDtot2$VolTotC.m3.ha) # 0
-max(BMDtot2$VolTotC.m3.ha) # 32.19232
-mean(BMDtot2$VolTotC.m3.ha) # 7.981241
+max(BMDtot2$VolTotC.m3.ha) # 8.048099
+mean(BMDtot2$VolTotC.m3.ha) # 1.995315
   # Vol de BMD pour les arbres mort debout (M)
-sd(BMDtot2$Vol_BMD_Mtot.m3.ha) # 49.82605
-min(BMDtot2$Vol_BMD_Mtot.m3.ha) # 0.7388666
-max(BMDtot2$Vol_BMD_Mtot.m3.ha) # 217.9143
-mean(BMDtot2$Vol_BMD_Mtot.m3.ha) # 33.24946
+sd(BMDtot2$Vol_BMD_Mtot.m3.ha) # 12.45654
+min(BMDtot2$Vol_BMD_Mtot.m3.ha) # 0.1847171
+max(BMDtot2$Vol_BMD_Mtot.m3.ha) # 54.47871
+mean(BMDtot2$Vol_BMD_Mtot.m3.ha) # 8.312384
   # Vol de BMD totale
-sd(BMDtot2$Vol_BMD_tot_m3.ha) # 50.10593
-min(BMDtot2$Vol_BMD_tot_m3.ha) # 2.295189
-max(BMDtot2$Vol_BMD_tot_m3.ha) # 223.4094
-mean(BMDtot2$Vol_BMD_tot_m3.ha) # 41.2307
+sd(BMDtot2$Vol_BMD_tot_m3.ha) # 12.52651
+min(BMDtot2$Vol_BMD_tot_m3.ha) # 0.5737986
+max(BMDtot2$Vol_BMD_tot_m3.ha) # 55.85249
+mean(BMDtot2$Vol_BMD_tot_m3.ha) # 10.3077
 
   # EXPORT
 write.table(x = BMDtot2, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMDtot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
@@ -1082,10 +1082,10 @@ ggplot(BMtot, aes(x = placette, y = BMtot.m3.ha)) +
   theme(axis.text.x = element_text(angle = 90))
 
   # Vol de BM totale
-sd(BMtot$BMtot.m3.ha) # 71.46799
-min(BMtot$BMtot.m3.ha) # 14.91858
-max(BMtot$BMtot.m3.ha) # 305.0853
-mean(BMtot$BMtot.m3.ha) # 98.4517
+sd(BMtot$BMtot.m3.ha) # 36.64801
+min(BMtot$BMtot.m3.ha) # 8.608548
+max(BMtot$BMtot.m3.ha) # 159.0089
+mean(BMtot$BMtot.m3.ha) # 43.85607
 
   # EXPORT
 write.table(x = BMtot, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_BMtot_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
@@ -1179,10 +1179,10 @@ ggplot(BMtot_pivot, aes(x = placette, y = Vol_m3.ha, fill = categorie_BM)) +
 # max(BMtot$Proportion_BM) # 92.32504
 
    # Proportion de BMP + BMD sur le Bois Mort Total
-sd(BMtot$Volume_BMP_BMD) # 55.70878
-min(BMtot$Volume_BMP_BMD) # 6.950929
-max(BMtot$Volume_BMP_BMD) # 259.8496
-mean(BMtot$Volume_BMP_BMD) # 71.42051
+sd(BMtot$Volume_BMP_BMD) # 13.90818
+min(BMtot$Volume_BMP_BMD) # 1.597314
+max(BMtot$Volume_BMP_BMD) # 64.96255
+mean(BMtot$Volume_BMP_BMD) # 17.04099
 
   # EXPORT
 write.table(x = BMtot, file = "//no-datafile.inra.local/Biodiversite/projets/Bois_mort/Canopee/These_Balvay/Stagiaires/Adrien Debout - 03-02 au 01-08-2025/Data/Metriques_Vol_BMP&BMD_Placette_AD.csv", row.names = FALSE, dec=".", sep=";")
