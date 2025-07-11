@@ -484,10 +484,10 @@ entomo_R3 <- entomo_releves %>%
   mutate(offset_releves = offset_releves$Offset.temporel[3])
 
 entomo_R4_R5 <- entomo_releves %>%
-  filter(num.releve %in% "R4" & "R5") %>%
+  filter(num.releve %in% c("R4","R5")) %>%
   mutate(strate = as.factor(strate)) %>%
   left_join(GPS, by = "placette") %>%
-  mutate()
+  mutate(offset_releves = offset_releves$Offset.temporel[4])
 
 entomo_AC_R1 <- entomo_R1 %>%
   filter(num.trap == "1") 
@@ -506,6 +506,35 @@ entomo_LC_R2 <- entomo_R2 %>%
   filter(num.trap == "3")
 entomo_BC_R2 <- entomo_R2 %>%
   filter(num.trap == "4")
+
+entomo_AC_R3 <- entomo_R3 %>%
+  filter(num.trap == "1") 
+entomo_UC_R3 <- entomo_R3 %>%
+  filter(num.trap == "2")
+entomo_LC_R3 <- entomo_R3 %>%
+  filter(num.trap == "3")
+entomo_BC_R3 <- entomo_R3 %>%
+  filter(num.trap == "4")
+
+entomo_AC_R4_R5 <- entomo_R4_R5 %>%
+  filter(num.trap == "1") 
+entomo_UC_R4_R5 <- entomo_R4_R5 %>%
+  filter(num.trap == "2")
+entomo_LC_R4_R5 <- entomo_R4_R5 %>%
+  filter(num.trap == "3")
+entomo_BC_R4_R5 <- entomo_R4_R5 %>%
+  filter(num.trap == "4")
+
+### depe ###
+
+deperissement <- read.csv(here::here("Data", "Data placettes", "DATA_placette_CANOPIX", "Metriques_note_depe.csv"), sep=",", header=TRUE, stringsAsFactors = FALSE)
+
+deperissement <- deperissement %>%
+  arrange(placette) %>%
+  select(placette, note2)
+
+Final <- Final %>%
+  left_join(deperissement, by = "placette")
 
 ```
 
@@ -10905,6 +10934,7 @@ modelABFONSPER2 <- glmmTMB(
   ziformula = ~ strate,
   data = entomo_R2, 
   na.action = na.fail) ; summary(modelABFONSPER2)
+?glmmTMB
 #
 modelABFONSPER2_2 <- glmmTMB(
   ab.fonspe ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2 + offset(log(offset_releves))),
@@ -11798,38 +11828,40 @@ gofstat(fitunif)$chisqpvalue
 gofstat(fitbeta)$chisqpvalue
 gofstat(fitg)$chisqpvalue # 
 #
-mean_AC <- mean(entomo_AC_R2$sr.pho) ; mean_AC # 9.157895
-sd_AC <- sd(entomo_AC_R2$sr.pho) ; sd_AC # 1.572795
-mean_UC <- mean(entomo_UC_R2$sr.pho) ; mean_UC # 12.10526
-sd_UC <- sd(entomo_UC_R2$sr.pho) ; sd_UC # 2.884725
-mean_LC <- mean(entomo_LC_R2$sr.pho) ; mean_LC # 11.68421
-sd_LC <- sd(entomo_LC_R2$sr.pho) ; sd_LC # 4.607393
-mean_BC <- mean(entomo_BC_R2$sr.pho) ; mean_BC # 9.111111
-sd_BC <- sd(entomo_BC_R2$sr.pho) ; sd_BC # 2.564208
+mean_AC <- mean(entomo_AC_R2$sr.pho) ; mean_AC # 1.052632
+sd_AC <- sd(entomo_AC_R2$sr.pho) ; sd_AC # 0.4046513
+mean_UC <- mean(entomo_UC_R2$sr.pho) ; mean_UC # 2.052632
+sd_UC <- sd(entomo_UC_R2$sr.pho) ; sd_UC # 1.078769
+mean_LC <- mean(entomo_LC_R2$sr.pho) ; mean_LC # 2.473684
+sd_LC <- sd(entomo_LC_R2$sr.pho) ; sd_LC # 1.306753
+mean_BC <- mean(entomo_BC_R2$sr.pho) ; mean_BC # 1.222222
+sd_BC <- sd(entomo_BC_R2$sr.pho) ; sd_BC # 0.8782038
 #
 modelSRPHOR2 <- glmmTMB(
-  sr.pho ~ strate + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2), 
-  family = genpois(), 
+  sr.pho ~ strate + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)), 
+  family = truncated_nbinom2(), 
+  ziformula = ~ strate,
   data = entomo_R2, 
   na.action = na.fail) ; summary(modelSRPHOR2)
 #
 modelSRPHOR2_2 <- glmmTMB(
-  sr.pho ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2),
-  family = genpois(), 
+  sr.pho ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)),
+  family = truncated_nbinom2(), 
+  ziformula = ~ 1,
   data = entomo_R2, 
   na.action = na.fail) ; summary(modelSRPHOR2_2)
 #
-AICc(modelSRPHOR2) # 387.0769
-AICc(modelSRPHOR2_2) # 398.6687
+AICc(modelSRPHOR2) # 211.3355
+AICc(modelSRPHOR2_2) # 230.5462
 #
-anova(modelSRPHOR2,modelSRPHOR2_2) # 0.0002575 ***
+anova(modelSRPHOR2,modelSRPHOR2_2) # 3.438e-06 ***
 #
 sim<-simulateResiduals(modelSRPHOR2)
 testUniformity(sim)
 testOutliers(sim)
 #
 RES<-glht(modelSRPHOR2, linfct = mcp(strate = "Tukey"))
-summary(RES) # 0.00250 ** 0.00423 ** 0.00478 ** 0.00232 **
+summary(RES) # 0.00252 **
   # Graph de Tukey
 png("Tukey_srpho_R2.png", width = 900, height = 500)
 par(mar = c(5, 8, 4, 2))
@@ -11872,199 +11904,233 @@ dev.off()
 ## 10.2.21. ab.myc
 
 ```{r}
-descdist(entomo_R2$sr.fon,discrete=TRUE,boot=1001)
-plot(fitdist(entomo_R2$sr.fon,"norm")) #
+descdist(entomo_R2$ab.myc,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R2$ab.myc,"norm")) #
 #
-fitnb<-fitdist(entomo_R2$sr.fon,"nbinom")
-plot(fitdist(entomo_R2$sr.fon,"nbinom")) # oui
+fitnb<-fitdist(entomo_R2$ab.myc,"nbinom")
+plot(fitdist(entomo_R2$ab.myc,"nbinom")) # oui
 # 
-fitp<-fitdist(entomo_R2$sr.fon,"pois")
+fitp<-fitdist(entomo_R2$ab.myc,"pois")
 plot(fitp) 
 #
-fitn<-fitdist(entomo_R2$sr.fon,"norm")
+fitn<-fitdist(entomo_R2$ab.myc,"norm")
 plot(fitn) # 
 #
-fitlnorm<-fitdist(entomo_R2$sr.fon,"lnorm")
+fitlnorm<-fitdist(entomo_R2$ab.myc,"lnorm")
 plot(fitlnorm) # 
 #
-fitexp<-fitdist(entomo_R2$sr.fon,"exp")
+fitexp<-fitdist(entomo_R2$ab.myc,"exp")
 plot(fitexp)
 #
-fitgeom<-fitdist(entomo_R2$sr.fon,"geom")
+fitgeom<-fitdist(entomo_R2$ab.myc,"geom")
 plot(fitgeom)
 #
-fitbeta<-fitdist(entomo_R2$sr.fon,"beta") # Pas possible, pas 0/1
+fitbeta<-fitdist(entomo_R2$ab.myc,"beta") # Pas possible, pas 0/1
 plot(fitbeta)
 #
-fitunif<-fitdist(entomo_R2$sr.fon,"unif")
+fitunif<-fitdist(entomo_R2$ab.myc,"unif")
 plot(fitunif)
 #
-fitg<-fitdist(entomo_R2$sr.fon,"gamma",method="mme")
+fitg<-fitdist(entomo_R2$ab.myc,"gamma",method="mme")
 plot(fitg) # 
 #
 gofstat(fitnb)$chisqpvalue # 2
-gofstat(fitp)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 
 gofstat(fitn)$chisqpvalue # 
-gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 1
 gofstat(fitexp)$chisqpvalue
 gofstat(fitgeom)$chisqpvalue
 gofstat(fitunif)$chisqpvalue
 gofstat(fitbeta)$chisqpvalue
-gofstat(fitg)$chisqpvalue # 
+gofstat(fitg)$chisqpvalue # 3
 #
-mean_AC <- mean(entomo_AC_R2$sr.fon) ; mean_AC # 9.157895
-sd_AC <- sd(entomo_AC_R2$sr.fon) ; sd_AC # 1.572795
-mean_UC <- mean(entomo_UC_R2$sr.fon) ; mean_UC # 12.10526
-sd_UC <- sd(entomo_UC_R2$sr.fon) ; sd_UC # 2.884725
-mean_LC <- mean(entomo_LC_R2$sr.fon) ; mean_LC # 11.68421
-sd_LC <- sd(entomo_LC_R2$sr.fon) ; sd_LC # 4.607393
-mean_BC <- mean(entomo_BC_R2$sr.fon) ; mean_BC # 9.111111
-sd_BC <- sd(entomo_BC_R2$sr.fon) ; sd_BC # 2.564208
+mean_AC <- mean(entomo_AC_R2$ab.myc) ; mean_AC # 22.89474
+sd_AC <- sd(entomo_AC_R2$ab.myc) ; sd_AC # 13.32456
+mean_UC <- mean(entomo_UC_R2$ab.myc) ; mean_UC # 26.84211
+sd_UC <- sd(entomo_UC_R2$ab.myc) ; sd_UC # 17.93898
+mean_LC <- mean(entomo_LC_R2$ab.myc) ; mean_LC # 27.15789
+sd_LC <- sd(entomo_LC_R2$ab.myc) ; sd_LC # 21.70577
+mean_BC <- mean(entomo_BC_R2$ab.myc) ; mean_BC # 18.72222
+sd_BC <- sd(entomo_BC_R2$ab.myc) ; sd_BC # 10.94804
 #
-modelSRFONR2 <- glmmTMB(
-  sr.fon ~ strate + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2), 
-  family = genpois(), 
+modelABMYCR2 <- glmmTMB(
+  ab.myc ~ strate + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)), 
+  family = nbinom12(), 
   data = entomo_R2, 
-  na.action = na.fail) ; summary(modelSRFONR2)
+  na.action = na.fail) ; summary(modelABMYCR2)
 #
-modelSRFONR2_2 <- glmmTMB(
-  sr.fon ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2),
-  family = genpois(), 
+modelABMYCR2_2 <- glmmTMB(
+  ab.myc ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)),
+  family = nbinom12(), 
   data = entomo_R2, 
-  na.action = na.fail) ; summary(modelSRFONR2_2)
+  na.action = na.fail) ; summary(modelABMYCR2_2)
 #
-AICc(modelSRFONR2) # 387.0769
-AICc(modelSRFONR2_2) # 398.6687
+AICc(modelABMYCR2) # 598.6284
+AICc(modelABMYCR2_2) # 597.4419
 #
-anova(modelSRFONR2,modelSRFONR2_2) # 0.0002575 ***
+anova(modelABMYCR2,modelABMYCR2_2) # 0.08659 .
 #
-sim<-simulateResiduals(modelSRFONR2)
+sim<-simulateResiduals(modelABMYCR2_2)
 testUniformity(sim)
 testOutliers(sim)
-#
-RES<-glht(modelSRFONR2, linfct = mcp(strate = "Tukey"))
-summary(RES) # 0.00250 ** 0.00423 ** 0.00478 ** 0.00232 **
-  # Graph de Tukey
-png("Tukey_srfon_R2.png", width = 900, height = 500)
-par(mar = c(5, 8, 4, 2))
-pvalues <- adjusted()(RES)$pvalues
-ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
-plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
-     xlab = "difference in mean levels : sr.fon")
-#
-res_sum <- summary(RES)
-pvals <- res_sum$test$pvalues
-# Fonction pour étoiles de significativité
-stars_signif <- function(p) {
-  if (p < 0.001) return("***")
-  else if (p < 0.01) return("**")
-  else if (p < 0.05) return("*")
-  else if (p < 0.1) return(".")
-  else return("")
-}
-# Calculer les étoiles
-stars <- sapply(pvals, stars_signif)
-pvals_text <- format(pvals, digits = 5)
-# Nombre de comparaisons
-n_comp <- length(pvals)
-# Position y (de haut en bas)
-y_pos <- seq(n_comp, 1)
-# Extraction des bornes supérieures des intervalles
-conf_int <- confint(RES)$confint[, "upr"]
-# Position x un peu au-dessus des bornes supérieures
-x_pos <- conf_int + 0.05 * diff(range(conf_int))
-# Texte p-values non arrondies + étoiles, collés ensemble
-labels <- ifelse(pvals < 0.001,
-                 "< 0.001 ***",
-                 paste0(sprintf("%.5f", pvals), " ", stars))
-# Ajouter le texte au-dessus des intervalles
-text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
-#
-dev.off()
 ```
 
 ## 10.2.22. sr.myc
 
 ```{r}
-descdist(entomo_R2$sr.fon,discrete=TRUE,boot=1001)
-plot(fitdist(entomo_R2$sr.fon,"norm")) #
+descdist(entomo_R2$sr.myc,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R2$sr.myc,"norm")) #
 #
-fitnb<-fitdist(entomo_R2$sr.fon,"nbinom")
-plot(fitdist(entomo_R2$sr.fon,"nbinom")) # oui
+fitnb<-fitdist(entomo_R2$sr.myc,"nbinom")
+plot(fitdist(entomo_R2$sr.myc,"nbinom")) # oui
 # 
-fitp<-fitdist(entomo_R2$sr.fon,"pois")
+fitp<-fitdist(entomo_R2$sr.myc,"pois")
 plot(fitp) 
 #
-fitn<-fitdist(entomo_R2$sr.fon,"norm")
+fitn<-fitdist(entomo_R2$sr.myc,"norm")
 plot(fitn) # 
 #
-fitlnorm<-fitdist(entomo_R2$sr.fon,"lnorm")
+fitlnorm<-fitdist(entomo_R2$sr.myc,"lnorm")
 plot(fitlnorm) # 
 #
-fitexp<-fitdist(entomo_R2$sr.fon,"exp")
+fitexp<-fitdist(entomo_R2$sr.myc,"exp")
 plot(fitexp)
 #
-fitgeom<-fitdist(entomo_R2$sr.fon,"geom")
+fitgeom<-fitdist(entomo_R2$sr.myc,"geom")
 plot(fitgeom)
 #
-fitbeta<-fitdist(entomo_R2$sr.fon,"beta") # Pas possible, pas 0/1
+fitbeta<-fitdist(entomo_R2$sr.myc,"beta") # Pas possible, pas 0/1
 plot(fitbeta)
 #
-fitunif<-fitdist(entomo_R2$sr.fon,"unif")
+fitunif<-fitdist(entomo_R2$sr.myc,"unif")
 plot(fitunif)
 #
-fitg<-fitdist(entomo_R2$sr.fon,"gamma",method="mme")
+fitg<-fitdist(entomo_R2$sr.myc,"gamma",method="mme")
 plot(fitg) # 
 #
-gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitnb)$chisqpvalue # 
 gofstat(fitp)$chisqpvalue # 1
-gofstat(fitn)$chisqpvalue # 
-gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 2
+gofstat(fitlnorm)$chisqpvalue # 3
 gofstat(fitexp)$chisqpvalue
 gofstat(fitgeom)$chisqpvalue
 gofstat(fitunif)$chisqpvalue
 gofstat(fitbeta)$chisqpvalue
-gofstat(fitg)$chisqpvalue # 
+gofstat(fitg)$chisqpvalue # 4
 #
-mean_AC <- mean(entomo_AC_R2$sr.fon) ; mean_AC # 9.157895
-sd_AC <- sd(entomo_AC_R2$sr.fon) ; sd_AC # 1.572795
-mean_UC <- mean(entomo_UC_R2$sr.fon) ; mean_UC # 12.10526
-sd_UC <- sd(entomo_UC_R2$sr.fon) ; sd_UC # 2.884725
-mean_LC <- mean(entomo_LC_R2$sr.fon) ; mean_LC # 11.68421
-sd_LC <- sd(entomo_LC_R2$sr.fon) ; sd_LC # 4.607393
-mean_BC <- mean(entomo_BC_R2$sr.fon) ; mean_BC # 9.111111
-sd_BC <- sd(entomo_BC_R2$sr.fon) ; sd_BC # 2.564208
+mean_AC <- mean(entomo_AC_R2$sr.myc) ; mean_AC # 9.157895
+sd_AC <- sd(entomo_AC_R2$sr.myc) ; sd_AC # 1.572795
+mean_UC <- mean(entomo_UC_R2$sr.myc) ; mean_UC # 12.10526
+sd_UC <- sd(entomo_UC_R2$sr.myc) ; sd_UC # 2.884725
+mean_LC <- mean(entomo_LC_R2$sr.myc) ; mean_LC # 11.68421
+sd_LC <- sd(entomo_LC_R2$sr.myc) ; sd_LC # 4.607393
+mean_BC <- mean(entomo_BC_R2$sr.myc) ; mean_BC # 9.111111
+sd_BC <- sd(entomo_BC_R2$sr.myc) ; sd_BC # 2.564208
 #
-modelSRFONR2 <- glmmTMB(
-  sr.fon ~ strate + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2), 
-  family = genpois(), 
+modelSRMYCR2 <- glmmTMB(
+  sr.myc ~ strate + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2), 
+  family = lognormal(), 
   data = entomo_R2, 
-  na.action = na.fail) ; summary(modelSRFONR2)
+  na.action = na.fail) ; summary(modelSRMYCR2)
 #
-modelSRFONR2_2 <- glmmTMB(
-  sr.fon ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2),
-  family = genpois(), 
+modelSRMYCR2_2 <- glmmTMB(
+  sr.myc ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2),
+  family = lognormal(), 
   data = entomo_R2, 
-  na.action = na.fail) ; summary(modelSRFONR2_2)
+  na.action = na.fail) ; summary(modelSRMYCR2_2)
 #
-AICc(modelSRFONR2) # 387.0769
-AICc(modelSRFONR2_2) # 398.6687
+AICc(modelSRMYCR2) # 353.3845
+AICc(modelSRMYCR2_2) # 350.2946
 #
-anova(modelSRFONR2,modelSRFONR2_2) # 0.0002575 ***
+anova(modelSRMYCR2,modelSRMYCR2_2) # 0.2173
 #
-sim<-simulateResiduals(modelSRFONR2)
+sim<-simulateResiduals(modelSRMYCR2_2)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.2.23. ab.xyl
+
+```{r}
+descdist(entomo_R2$ab.xyl,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R2$ab.xyl,"norm")) #
+#
+fitnb<-fitdist(entomo_R2$ab.xyl,"nbinom")
+plot(fitdist(entomo_R2$ab.xyl,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R2$ab.xyl,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R2$ab.xyl,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R2$ab.xyl,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R2$ab.xyl,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R2$ab.xyl,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R2$ab.xyl,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R2$ab.xyl,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R2$ab.xyl,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 1
+#
+mean_AC <- mean(entomo_AC_R2$ab.xyl) ; mean_AC # 19.47368
+sd_AC <- sd(entomo_AC_R2$ab.xyl) ; sd_AC # 9.23982
+mean_UC <- mean(entomo_UC_R2$ab.xyl) ; mean_UC # 14.78947
+sd_UC <- sd(entomo_UC_R2$ab.xyl) ; sd_UC # 11.57382
+mean_LC <- mean(entomo_LC_R2$ab.xyl) ; mean_LC # 8
+sd_LC <- sd(entomo_LC_R2$ab.xyl) ; sd_LC # 6.806859
+mean_BC <- mean(entomo_BC_R2$ab.xyl) ; mean_BC # 6.944444
+sd_BC <- sd(entomo_BC_R2$ab.xyl) ; sd_BC # 4.345007
+#
+modelABXYLR2 <- glmmTMB(
+  ab.xyl ~ strate + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)), 
+  family = truncated_nbinom2(),
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelABXYLR2)
+#
+modelABXYLR2_2 <- glmmTMB(
+  ab.xyl ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)),
+  family = truncated_nbinom2(),
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelABXYLR2_2)
+#
+AICc(modelABXYLR2) # 510.5793
+AICc(modelABXYLR2_2) # 529.7868
+#
+anova(modelABXYLR2,modelABXYLR2_2) # 6.67e-06 ***
+#
+sim<-simulateResiduals(modelABXYLR2)
 testUniformity(sim)
 testOutliers(sim)
 #
-RES<-glht(modelSRFONR2, linfct = mcp(strate = "Tukey"))
-summary(RES) # 0.00250 ** 0.00423 ** 0.00478 ** 0.00232 **
+RES<-glht(modelABXYLR2, linfct = mcp(strate = "Tukey"))
+summary(RES) # 0.00189 ** < 0.001 ***
   # Graph de Tukey
-png("Tukey_srfon_R2.png", width = 900, height = 500)
+png("Tukey_abxyl_R2.png", width = 900, height = 500)
 par(mar = c(5, 8, 4, 2))
 pvalues <- adjusted()(RES)$pvalues
 ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
 plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
-     xlab = "difference in mean levels : sr.fon")
+     xlab = "difference in mean levels : ab.xyl")
 #
 res_sum <- summary(RES)
 pvals <- res_sum$test$pvalues
@@ -12097,52 +12163,643 @@ text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col 
 dev.off()
 ```
 
-## 10.2.23. ab.xyl
-
-```{r}
-
-```
-
 ## 10.2.24. sr.xyl
 
 ```{r}
-
+descdist(entomo_R2$sr.xyl,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R2$sr.xyl,"norm")) #
+#
+fitnb<-fitdist(entomo_R2$sr.xyl,"nbinom")
+plot(fitdist(entomo_R2$sr.xyl,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R2$sr.xyl,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R2$sr.xyl,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R2$sr.xyl,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R2$sr.xyl,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R2$sr.xyl,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R2$sr.xyl,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R2$sr.xyl,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R2$sr.xyl,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 4
+gofstat(fitn)$chisqpvalue # 3
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 2
+#
+mean_AC <- mean(entomo_AC_R2$sr.xyl) ; mean_AC # 7.947368
+sd_AC <- sd(entomo_AC_R2$sr.xyl) ; sd_AC # 2.676517
+mean_UC <- mean(entomo_UC_R2$sr.xyl) ; mean_UC # 6.631579
+sd_UC <- sd(entomo_UC_R2$sr.xyl) ; sd_UC # 2.966677
+mean_LC <- mean(entomo_LC_R2$sr.xyl) ; mean_LC # 4.578947
+sd_LC <- sd(entomo_LC_R2$sr.xyl) ; sd_LC # 2.652374
+mean_BC <- mean(entomo_BC_R2$sr.xyl) ; mean_BC # 3.611111
+sd_BC <- sd(entomo_BC_R2$sr.xyl) ; sd_BC # 1.460817
+#
+modelSRXYLR2 <- glmmTMB(
+  sr.xyl ~ strate + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)), 
+  family = gaussian(),
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelSRXYLR2)
+#
+modelSRXYLR2_2 <- glmmTMB(
+  sr.xyl ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)),
+  family = gaussian(),
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelSRXYLR2_2)
+#
+AICc(modelSRXYLR2) # 368.0383
+AICc(modelSRXYLR2_2) # 389.762
+#
+anova(modelSRXYLR2,modelSRXYLR2_2) # 1.977e-06 ***
+#
+sim<-simulateResiduals(modelSRXYLR2)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelSRXYLR2, linfct = mcp(strate = "Tukey"))
+summary(RES) # 0.00119 ** < 0.001 ***
+  # Graph de Tukey
+png("Tukey_srxyl_R2.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : sr.xyl")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
 ```
 
 ## 10.2.25. ab.sxy
 
 ```{r}
-
+descdist(entomo_R2$ab.sxy,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R2$ab.sxy,"norm")) #
+#
+fitnb<-fitdist(entomo_R2$ab.sxy,"nbinom")
+plot(fitdist(entomo_R2$ab.sxy,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R2$ab.sxy,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R2$ab.sxy,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R2$ab.sxy,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R2$ab.sxy,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R2$ab.sxy,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R2$ab.sxy,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R2$ab.sxy,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R2$ab.sxy,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 2
+#
+mean_AC <- mean(entomo_AC_R2$ab.sxy) ; mean_AC # 19.31579
+sd_AC <- sd(entomo_AC_R2$ab.sxy) ; sd_AC # 6.807289
+mean_UC <- mean(entomo_UC_R2$ab.sxy) ; mean_UC # 24.26316
+sd_UC <- sd(entomo_UC_R2$ab.sxy) ; sd_UC # 15.81786
+mean_LC <- mean(entomo_LC_R2$ab.sxy) ; mean_LC # 14.94737
+sd_LC <- sd(entomo_LC_R2$ab.sxy) ; sd_LC # 10.53815
+mean_BC <- mean(entomo_BC_R2$ab.sxy) ; mean_BC # 9.833333
+sd_BC <- sd(entomo_BC_R2$ab.sxy) ; sd_BC # 8.991826
+#
+modelABSXYR2 <- glmmTMB(
+  ab.sxy ~ strate + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)), 
+  family = truncated_nbinom2(link = "sqrt"),
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelABSXYR2)
+#
+modelABSXYR2_2 <- glmmTMB(
+  ab.sxy ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)),
+  family = truncated_nbinom1(link = "identity"),
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelABSXYR2_2)
+#
+AICc(modelABSXYR2) # 
+AICc(modelABSXYR2_2) # 
+#
+anova(modelABSXYR2,modelABSXYR2_2) # 
+#
+sim<-simulateResiduals(modelABSXYR2)
+testUniformity(sim)
+testOutliers(sim)
 ```
 
 ## 10.2.26. sr.sxy
 
 ```{r}
-
+descdist(entomo_R2$sr.sxy,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R2$sr.sxy,"norm")) #
+#
+fitnb<-fitdist(entomo_R2$sr.sxy,"nbinom")
+plot(fitdist(entomo_R2$sr.sxy,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R2$sr.sxy,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R2$sr.sxy,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R2$sr.sxy,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R2$sr.sxy,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R2$sr.sxy,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R2$sr.sxy,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R2$sr.sxy,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R2$sr.sxy,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 2
+gofstat(fitn)$chisqpvalue # 3
+gofstat(fitlnorm)$chisqpvalue # 4
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC_R2$sr.sxy) ; mean_AC # 6.894737
+sd_AC <- sd(entomo_AC_R2$sr.sxy) ; sd_AC # 3.125073
+mean_UC <- mean(entomo_UC_R2$sr.sxy) ; mean_UC # 9.526316
+sd_UC <- sd(entomo_UC_R2$sr.sxy) ; sd_UC # 2.480332
+mean_LC <- mean(entomo_LC_R2$sr.sxy) ; mean_LC # 7.157895
+sd_LC <- sd(entomo_LC_R2$sr.sxy) ; sd_LC # 2.948882
+mean_BC <- mean(entomo_BC_R2$sr.sxy) ; mean_BC # 5.777778
+sd_BC <- sd(entomo_BC_R2$sr.sxy) ; sd_BC # 2.798225
+#
+modelSRSXYR2 <- glmmTMB(
+  sr.sxy ~ strate + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)), 
+  family = Gamma(link = "identity"),
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelSRSXYR2)
+#
+modelSRSXYR2_2 <- glmmTMB(
+  sr.sxy ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)),
+  family = gaussian(link = "log"),
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelSRSXYR2_2)
+#
+AICc(modelSRSXYR2) # 
+AICc(modelSRSXYR2_2) # 
+#
+anova(modelSRSXYR2,modelSRSXYR2_2) # 
+#
+sim<-simulateResiduals(modelSRSXYR2)
+testUniformity(sim)
+testOutliers(sim)
 ```
 
 ## 10.2.27. ab.zoo
 
 ```{r}
-
+descdist(entomo_R2$ab.zoo,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R2$ab.zoo,"norm")) #
+#
+fitnb<-fitdist(entomo_R2$ab.zoo,"nbinom")
+plot(fitdist(entomo_R2$ab.zoo,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R2$ab.zoo,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R2$ab.zoo,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R2$ab.zoo,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R2$ab.zoo,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R2$ab.zoo,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R2$ab.zoo,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R2$ab.zoo,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R2$ab.zoo,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 2
+#
+mean_AC <- mean(entomo_AC_R2$ab.zoo) ; mean_AC # 16.05263
+sd_AC <- sd(entomo_AC_R2$ab.zoo) ; sd_AC # 12.59397
+mean_UC <- mean(entomo_UC_R2$ab.zoo) ; mean_UC # 21.84211
+sd_UC <- sd(entomo_UC_R2$ab.zoo) ; sd_UC # 14.88199
+mean_LC <- mean(entomo_LC_R2$ab.zoo) ; mean_LC # 12.21053
+sd_LC <- sd(entomo_LC_R2$ab.zoo) ; sd_LC # 11.01806
+mean_BC <- mean(entomo_BC_R2$ab.zoo) ; mean_BC # 4.777778
+sd_BC <- sd(entomo_BC_R2$ab.zoo) ; sd_BC # 3.456546
+#
+modelABZOOR2 <- glmmTMB(
+  ab.zoo ~ strate + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)), 
+  family = nbinom2(), 
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelABZOOR2)
+#
+modelABZOOR2_2 <- glmmTMB(
+  ab.zoo ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)),
+  family = nbinom2(),
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelABZOOR2_2)
+#
+AICc(modelABZOOR2) # 524.3
+AICc(modelABZOOR2_2) # 555.4223
+#
+anova(modelABZOOR2,modelABZOOR2_2) # 2.053e-08 ***
+#
+sim<-simulateResiduals(modelABZOOR2)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelABZOOR2, linfct = mcp(strate = "Tukey"))
+summary(RES) # 0.00473 ** < 0.001 ***
+  # Graph de Tukey
+png("Tukey_abzoo_R2.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : ab.zoo")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
 ```
 
 ## 10.2.28. sr.zoo
 
 ```{r}
-
+descdist(entomo_R2$sr.zoo,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R2$sr.zoo,"norm")) #
+#
+fitnb<-fitdist(entomo_R2$sr.zoo,"nbinom")
+plot(fitdist(entomo_R2$sr.zoo,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R2$sr.zoo,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R2$sr.zoo,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R2$sr.zoo,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R2$sr.zoo,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R2$sr.zoo,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R2$sr.zoo,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R2$sr.zoo,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R2$sr.zoo,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 4
+gofstat(fitn)$chisqpvalue # 2
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC_R2$sr.zoo) ; mean_AC # 5.947368
+sd_AC <- sd(entomo_AC_R2$sr.zoo) ; sd_AC # 2.272387
+mean_UC <- mean(entomo_UC_R2$sr.zoo) ; mean_UC # 8.315789
+sd_UC <- sd(entomo_UC_R2$sr.zoo) ; sd_UC # 2.887764
+mean_LC <- mean(entomo_LC_R2$sr.zoo) ; mean_LC # 5.842105
+sd_LC <- sd(entomo_LC_R2$sr.zoo) ; sd_LC # 3.077935
+mean_BC <- mean(entomo_BC_R2$sr.zoo) ; mean_BC # 3.055556
+sd_BC <- sd(entomo_BC_R2$sr.zoo) ; sd_BC # 1.954549
+#
+modelSRZOOR2 <- glmmTMB(
+  sr.zoo ~ strate + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)), 
+  family = nbinom2(link = "sqrt"), 
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelSRZOOR2)
+#
+modelSRZOOR2_2 <- glmmTMB(
+  sr.zoo ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)),
+  family = nbinom2(link = "sqrt"),
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelSRZOOR2_2)
+#
+AICc(modelSRZOOR2) # 358.4173
+AICc(modelSRZOOR2_2) # 389.1188
+#
+anova(modelSRZOOR2,modelSRZOOR2_2) # 2.52e-08 ***
+#
+sim<-simulateResiduals(modelSRZOOR2)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelSRZOOR2, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***
+  # Graph de Tukey
+png("Tukey_srzoo_R2.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : sr.zoo")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
 ```
 
 ## 10.2.29. ab.cavspe
 
 ```{r}
-
+descdist(entomo_R2$ab.cavspe,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R2$ab.cavspe,"norm")) #
+#
+fitnb<-fitdist(entomo_R2$ab.cavspe,"nbinom")
+plot(fitdist(entomo_R2$ab.cavspe,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R2$ab.cavspe,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R2$ab.cavspe,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R2$ab.cavspe,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R2$ab.cavspe,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R2$ab.cavspe,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R2$ab.cavspe,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R2$ab.cavspe,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R2$ab.cavspe,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 1
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC_R2$ab.cavspe) ; mean_AC # 0.2105263
+sd_AC <- sd(entomo_AC_R2$ab.cavspe) ; sd_AC # 0.7132825
+mean_UC <- mean(entomo_UC_R2$ab.cavspe) ; mean_UC # 0.8947368
+sd_UC <- sd(entomo_UC_R2$ab.cavspe) ; sd_UC # 0.9365858
+mean_LC <- mean(entomo_LC_R2$ab.cavspe) ; mean_LC # 1.105263
+sd_LC <- sd(entomo_LC_R2$ab.cavspe) ; sd_LC # 1.448936
+mean_BC <- mean(entomo_BC_R2$ab.cavspe) ; mean_BC # 0.6666667
+sd_BC <- sd(entomo_BC_R2$ab.cavspe) ; sd_BC # 0.8401681
+#
+modelABCAVSPER2 <- glmmTMB(
+  ab.cavspe ~ strate + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)), 
+  family = nbinom12(link = "sqrt"),
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelABCAVSPER2)
+#
+modelABCAVSPER2_2 <- glmmTMB(
+  ab.cavspe ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)),
+  family = nbinom12(link = "sqrt"),
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelABCAVSPER2_2)
+#
+AICc(modelABCAVSPER2) # 193.4979
+AICc(modelABCAVSPER2_2) # 183.619
+#
+anova(modelABCAVSPER2,modelABCAVSPER2_2) # 1
+#
+sim<-simulateResiduals(modelABCAVSPER2_2)
+testUniformity(sim)
+testOutliers(sim)
 ```
 
 ## 10.2.30. sr.cavspe
 
 ```{r}
-
+descdist(entomo_R2$sr.cavspe,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R2$sr.cavspe,"norm")) #
+#
+fitnb<-fitdist(entomo_R2$sr.cavspe,"nbinom")
+plot(fitdist(entomo_R2$sr.cavspe,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R2$sr.cavspe,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R2$sr.cavspe,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R2$sr.cavspe,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R2$sr.cavspe,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R2$sr.cavspe,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R2$sr.cavspe,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R2$sr.cavspe,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R2$sr.cavspe,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 
+gofstat(fitp)$chisqpvalue # 1
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC_R2$sr.cavspe) ; mean_AC # 0.1052632
+sd_AC <- sd(entomo_AC_R2$sr.cavspe) ; sd_AC # 0.3153018
+mean_UC <- mean(entomo_UC_R2$sr.cavspe) ; mean_UC # 0.8421053
+sd_UC <- sd(entomo_UC_R2$sr.cavspe) ; sd_UC # 0.8983416
+mean_LC <- mean(entomo_LC_R2$sr.cavspe) ; mean_LC # 0.8947368
+sd_LC <- sd(entomo_LC_R2$sr.cavspe) ; sd_LC # 0.875261
+mean_BC <- mean(entomo_BC_R2$sr.cavspe) ; mean_BC # 0.5555556
+sd_BC <- sd(entomo_BC_R2$sr.cavspe) ; sd_BC # 0.6156988
+#
+modelSRCAVSPER2 <- glmmTMB(
+  sr.cavspe ~ strate + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)), 
+  family = truncated_compois(),
+  ziformula = ~ strate,
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelSRCAVSPER2)
+#
+modelSRCAVSPER2_2 <- glmmTMB(
+  sr.cavspe ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)),
+  family = compois(),
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelSRCAVSPER2_2)
+#
+AICc(modelSRCAVSPER2) # 211.3355
+AICc(modelSRCAVSPER2_2) # 230.5462
+#
+anova(modelSRCAVSPER2,modelSRCAVSPER2_2) # 3.438e-06 ***
+#
+sim<-simulateResiduals(modelSRCAVSPER2)
+testUniformity(sim)
+testOutliers(sim)
 ```
 
 ## 10.2.31. ab.colsxrsx
@@ -12150,6 +12807,3061 @@ dev.off()
 ## 10.2.32. sr.colsxrsx
 
 ## 10.2.33. CWM_diam
+
+```{r}
+descdist(entomo_R2$CWM_diam,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R2$CWM_diam,"norm")) #
+#
+fitnb<-fitdist(entomo_R2$CWM_diam,"nbinom")
+plot(fitdist(entomo_R2$CWM_diam,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R2$CWM_diam,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R2$CWM_diam,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R2$CWM_diam,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R2$CWM_diam,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R2$CWM_diam,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R2$CWM_diam,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R2$CWM_diam,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R2$CWM_diam,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 3
+gofstat(fitlnorm)$chisqpvalue # 1
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 2
+#
+mean_AC <- mean(entomo_AC_R2$CWM_diam) ; mean_AC # 2.108965
+sd_AC <- sd(entomo_AC_R2$CWM_diam) ; sd_AC # 0.1287482
+mean_UC <- mean(entomo_UC_R2$CWM_diam) ; mean_UC # 2.190831
+sd_UC <- sd(entomo_UC_R2$CWM_diam) ; sd_UC # 0.1313124
+mean_LC <- mean(entomo_LC_R2$CWM_diam) ; mean_LC # 2.246043
+sd_LC <- sd(entomo_LC_R2$CWM_diam) ; sd_LC # 0.1377533
+mean_BC <- mean(entomo_BC_R2$CWM_diam) ; mean_BC # 2.201171
+sd_BC <- sd(entomo_BC_R2$CWM_diam) ; sd_BC # 0.1660311
+#
+modelCWMDIAMR2 <- glmmTMB(
+  CWM_diam ~ strate + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)), 
+  family = gaussian(link = "log"),
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelCWMDIAMR2)
+#
+modelCWMDIAMR2_2 <- glmmTMB(
+  CWM_diam ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)),
+  family = gaussian(link = "log"),
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelCWMDIAMR2_2)
+#
+AICc(modelCWMDIAMR2) # 
+AICc(modelCWMDIAMR2_2) # 
+#
+anova(modelCWMDIAMR2,modelCWMDIAMR2_2) # 
+#
+sim<-simulateResiduals(modelCWMDIAMR2)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.2.34. CWM_canop
+
+```{r}
+descdist(entomo_R2$CWM_canop,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R2$CWM_canop,"norm")) #
+#
+fitnb<-fitdist(entomo_R2$CWM_canop,"nbinom")
+plot(fitdist(entomo_R2$CWM_canop,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R2$CWM_canop,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R2$CWM_canop,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R2$CWM_canop,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R2$CWM_canop,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R2$CWM_canop,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R2$CWM_canop,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R2$CWM_canop,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R2$CWM_canop,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 3
+gofstat(fitlnorm)$chisqpvalue # 1
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 2
+#
+mean_AC <- mean(entomo_AC_R2$CWM_canop) ; mean_AC # 1.498594
+sd_AC <- sd(entomo_AC_R2$CWM_canop) ; sd_AC # 0.06566179
+mean_UC <- mean(entomo_UC_R2$CWM_canop) ; mean_UC # 1.544653
+sd_UC <- sd(entomo_UC_R2$CWM_canop) ; sd_UC # 0.08205376
+mean_LC <- mean(entomo_LC_R2$CWM_canop) ; mean_LC # 1.654094
+sd_LC <- sd(entomo_LC_R2$CWM_canop) ; sd_LC # 0.1014669
+mean_BC <- mean(entomo_BC_R2$CWM_canop) ; mean_BC # 1.697148
+sd_BC <- sd(entomo_BC_R2$CWM_canop) ; sd_BC # 0.0968937
+#
+modelCWMCANOPR2 <- glmmTMB(
+  CWM_canop ~ strate + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)), 
+  family = gaussian(link = "log"), 
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelCWMCANOPR2)
+#
+modelCWMCANOPR2_2 <- glmmTMB(
+  CWM_canop ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)),
+  family = nbinom2(link = "sqrt"),
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelCWMCANOPR2_2)
+#
+AICc(modelCWMCANOPR2) # 
+AICc(modelCWMCANOPR2_2) # 
+#
+anova(modelCWMCANOPR2,modelCWMCANOPR2_2) # 
+#
+sim<-simulateResiduals(modelCWMCANOPR2)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.2.35. CWM_decay
+
+```{r}
+descdist(entomo_R2$CWM_decay,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R2$CWM_decay,"norm")) #
+#
+fitnb<-fitdist(entomo_R2$CWM_decay,"nbinom")
+plot(fitdist(entomo_R2$CWM_decay,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R2$CWM_decay,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R2$CWM_decay,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R2$CWM_decay,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R2$CWM_decay,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R2$CWM_decay,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R2$CWM_decay,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R2$CWM_decay,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R2$CWM_decay,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 1
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 2
+#
+mean_AC <- mean(entomo_AC_R2$CWM_decay) ; mean_AC # 2.796679
+sd_AC <- sd(entomo_AC_R2$CWM_decay) ; sd_AC # 0.1947045
+mean_UC <- mean(entomo_UC_R2$CWM_decay) ; mean_UC # 2.840857
+sd_UC <- sd(entomo_UC_R2$CWM_decay) ; sd_UC # 0.2074764
+mean_LC <- mean(entomo_LC_R2$CWM_decay) ; mean_LC # 2.906761
+sd_LC <- sd(entomo_LC_R2$CWM_decay) ; sd_LC # 0.2368957
+mean_BC <- mean(entomo_BC_R2$CWM_decay) ; mean_BC # 2.747038
+sd_BC <- sd(entomo_BC_R2$CWM_decay) ; sd_BC # 0.2047135
+#
+modelCWMDECAYR2 <- glmmTMB(
+  CWM_decay ~ strate + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)), 
+  family = nbinom2(link = "sqrt"), 
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelCWMDECAYR2)
+#
+modelCWMDECAYR2_2 <- glmmTMB(
+  CWM_decay ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)),
+  family = nbinom2(link = "sqrt"),
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelCWMDECAYR2_2)
+#
+AICc(modelCWMDECAYR2) # 358.4173
+AICc(modelCWMDECAYR2_2) # 389.1188
+#
+anova(modelCWMDECAYR2,modelCWMDECAYR2_2) # 2.52e-08 ***
+#
+sim<-simulateResiduals(modelCWMDECAYR2)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelCWMDECAYR2, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***
+  # Graph de Tukey
+png("Tukey_CWMDECAY_R2.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : CWM_decay")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
+```
+
+## 10.2.36. CWM_size
+
+```{r}
+descdist(entomo_R2$sr.zoo,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R2$sr.zoo,"norm")) #
+#
+fitnb<-fitdist(entomo_R2$sr.zoo,"nbinom")
+plot(fitdist(entomo_R2$sr.zoo,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R2$sr.zoo,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R2$sr.zoo,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R2$sr.zoo,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R2$sr.zoo,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R2$sr.zoo,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R2$sr.zoo,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R2$sr.zoo,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R2$sr.zoo,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 4
+gofstat(fitn)$chisqpvalue # 2
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC_R2$sr.zoo) ; mean_AC # 5.947368
+sd_AC <- sd(entomo_AC_R2$sr.zoo) ; sd_AC # 2.272387
+mean_UC <- mean(entomo_UC_R2$sr.zoo) ; mean_UC # 8.315789
+sd_UC <- sd(entomo_UC_R2$sr.zoo) ; sd_UC # 2.887764
+mean_LC <- mean(entomo_LC_R2$sr.zoo) ; mean_LC # 5.842105
+sd_LC <- sd(entomo_LC_R2$sr.zoo) ; sd_LC # 3.077935
+mean_BC <- mean(entomo_BC_R2$sr.zoo) ; mean_BC # 3.055556
+sd_BC <- sd(entomo_BC_R2$sr.zoo) ; sd_BC # 1.954549
+#
+modelSRZOOR2 <- glmmTMB(
+  sr.zoo ~ strate + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)), 
+  family = nbinom2(link = "sqrt"), 
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelSRZOOR2)
+#
+modelSRZOOR2_2 <- glmmTMB(
+  sr.zoo ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)),
+  family = nbinom2(link = "sqrt"),
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelSRZOOR2_2)
+#
+AICc(modelSRZOOR2) # 358.4173
+AICc(modelSRZOOR2_2) # 389.1188
+#
+anova(modelSRZOOR2,modelSRZOOR2_2) # 2.52e-08 ***
+#
+sim<-simulateResiduals(modelSRZOOR2)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelSRZOOR2, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***
+  # Graph de Tukey
+png("Tukey_srzoo_R2.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : sr.zoo")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
+```
+
+## 10.2.37. FD_diam
+
+```{r}
+descdist(entomo_R2$sr.zoo,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R2$sr.zoo,"norm")) #
+#
+fitnb<-fitdist(entomo_R2$sr.zoo,"nbinom")
+plot(fitdist(entomo_R2$sr.zoo,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R2$sr.zoo,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R2$sr.zoo,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R2$sr.zoo,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R2$sr.zoo,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R2$sr.zoo,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R2$sr.zoo,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R2$sr.zoo,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R2$sr.zoo,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 4
+gofstat(fitn)$chisqpvalue # 2
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC_R2$sr.zoo) ; mean_AC # 5.947368
+sd_AC <- sd(entomo_AC_R2$sr.zoo) ; sd_AC # 2.272387
+mean_UC <- mean(entomo_UC_R2$sr.zoo) ; mean_UC # 8.315789
+sd_UC <- sd(entomo_UC_R2$sr.zoo) ; sd_UC # 2.887764
+mean_LC <- mean(entomo_LC_R2$sr.zoo) ; mean_LC # 5.842105
+sd_LC <- sd(entomo_LC_R2$sr.zoo) ; sd_LC # 3.077935
+mean_BC <- mean(entomo_BC_R2$sr.zoo) ; mean_BC # 3.055556
+sd_BC <- sd(entomo_BC_R2$sr.zoo) ; sd_BC # 1.954549
+#
+modelSRZOOR2 <- glmmTMB(
+  sr.zoo ~ strate + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)), 
+  family = nbinom2(link = "sqrt"), 
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelSRZOOR2)
+#
+modelSRZOOR2_2 <- glmmTMB(
+  sr.zoo ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)),
+  family = nbinom2(link = "sqrt"),
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelSRZOOR2_2)
+#
+AICc(modelSRZOOR2) # 358.4173
+AICc(modelSRZOOR2_2) # 389.1188
+#
+anova(modelSRZOOR2,modelSRZOOR2_2) # 2.52e-08 ***
+#
+sim<-simulateResiduals(modelSRZOOR2)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelSRZOOR2, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***
+  # Graph de Tukey
+png("Tukey_srzoo_R2.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : sr.zoo")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
+```
+
+## 10.2.38. FD_canop
+
+```{r}
+descdist(entomo_R2$sr.zoo,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R2$sr.zoo,"norm")) #
+#
+fitnb<-fitdist(entomo_R2$sr.zoo,"nbinom")
+plot(fitdist(entomo_R2$sr.zoo,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R2$sr.zoo,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R2$sr.zoo,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R2$sr.zoo,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R2$sr.zoo,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R2$sr.zoo,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R2$sr.zoo,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R2$sr.zoo,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R2$sr.zoo,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 4
+gofstat(fitn)$chisqpvalue # 2
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC_R2$sr.zoo) ; mean_AC # 5.947368
+sd_AC <- sd(entomo_AC_R2$sr.zoo) ; sd_AC # 2.272387
+mean_UC <- mean(entomo_UC_R2$sr.zoo) ; mean_UC # 8.315789
+sd_UC <- sd(entomo_UC_R2$sr.zoo) ; sd_UC # 2.887764
+mean_LC <- mean(entomo_LC_R2$sr.zoo) ; mean_LC # 5.842105
+sd_LC <- sd(entomo_LC_R2$sr.zoo) ; sd_LC # 3.077935
+mean_BC <- mean(entomo_BC_R2$sr.zoo) ; mean_BC # 3.055556
+sd_BC <- sd(entomo_BC_R2$sr.zoo) ; sd_BC # 1.954549
+#
+modelSRZOOR2 <- glmmTMB(
+  sr.zoo ~ strate + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)), 
+  family = nbinom2(link = "sqrt"), 
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelSRZOOR2)
+#
+modelSRZOOR2_2 <- glmmTMB(
+  sr.zoo ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)),
+  family = nbinom2(link = "sqrt"),
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelSRZOOR2_2)
+#
+AICc(modelSRZOOR2) # 358.4173
+AICc(modelSRZOOR2_2) # 389.1188
+#
+anova(modelSRZOOR2,modelSRZOOR2_2) # 2.52e-08 ***
+#
+sim<-simulateResiduals(modelSRZOOR2)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelSRZOOR2, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***
+  # Graph de Tukey
+png("Tukey_srzoo_R2.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : sr.zoo")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
+```
+
+## 10.2.39. FD_decay
+
+```{r}
+descdist(entomo_R2$sr.zoo,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R2$sr.zoo,"norm")) #
+#
+fitnb<-fitdist(entomo_R2$sr.zoo,"nbinom")
+plot(fitdist(entomo_R2$sr.zoo,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R2$sr.zoo,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R2$sr.zoo,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R2$sr.zoo,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R2$sr.zoo,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R2$sr.zoo,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R2$sr.zoo,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R2$sr.zoo,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R2$sr.zoo,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 4
+gofstat(fitn)$chisqpvalue # 2
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC_R2$sr.zoo) ; mean_AC # 5.947368
+sd_AC <- sd(entomo_AC_R2$sr.zoo) ; sd_AC # 2.272387
+mean_UC <- mean(entomo_UC_R2$sr.zoo) ; mean_UC # 8.315789
+sd_UC <- sd(entomo_UC_R2$sr.zoo) ; sd_UC # 2.887764
+mean_LC <- mean(entomo_LC_R2$sr.zoo) ; mean_LC # 5.842105
+sd_LC <- sd(entomo_LC_R2$sr.zoo) ; sd_LC # 3.077935
+mean_BC <- mean(entomo_BC_R2$sr.zoo) ; mean_BC # 3.055556
+sd_BC <- sd(entomo_BC_R2$sr.zoo) ; sd_BC # 1.954549
+#
+modelSRZOOR2 <- glmmTMB(
+  sr.zoo ~ strate + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)), 
+  family = nbinom2(link = "sqrt"), 
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelSRZOOR2)
+#
+modelSRZOOR2_2 <- glmmTMB(
+  sr.zoo ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)),
+  family = nbinom2(link = "sqrt"),
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelSRZOOR2_2)
+#
+AICc(modelSRZOOR2) # 358.4173
+AICc(modelSRZOOR2_2) # 389.1188
+#
+anova(modelSRZOOR2,modelSRZOOR2_2) # 2.52e-08 ***
+#
+sim<-simulateResiduals(modelSRZOOR2)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelSRZOOR2, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***
+  # Graph de Tukey
+png("Tukey_srzoo_R2.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : sr.zoo")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
+```
+
+## 10.2.40. FD_size
+
+```{r}
+descdist(entomo_R2$sr.zoo,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R2$sr.zoo,"norm")) #
+#
+fitnb<-fitdist(entomo_R2$sr.zoo,"nbinom")
+plot(fitdist(entomo_R2$sr.zoo,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R2$sr.zoo,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R2$sr.zoo,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R2$sr.zoo,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R2$sr.zoo,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R2$sr.zoo,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R2$sr.zoo,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R2$sr.zoo,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R2$sr.zoo,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 4
+gofstat(fitn)$chisqpvalue # 2
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC_R2$sr.zoo) ; mean_AC # 5.947368
+sd_AC <- sd(entomo_AC_R2$sr.zoo) ; sd_AC # 2.272387
+mean_UC <- mean(entomo_UC_R2$sr.zoo) ; mean_UC # 8.315789
+sd_UC <- sd(entomo_UC_R2$sr.zoo) ; sd_UC # 2.887764
+mean_LC <- mean(entomo_LC_R2$sr.zoo) ; mean_LC # 5.842105
+sd_LC <- sd(entomo_LC_R2$sr.zoo) ; sd_LC # 3.077935
+mean_BC <- mean(entomo_BC_R2$sr.zoo) ; mean_BC # 3.055556
+sd_BC <- sd(entomo_BC_R2$sr.zoo) ; sd_BC # 1.954549
+#
+modelSRZOOR2 <- glmmTMB(
+  sr.zoo ~ strate + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)), 
+  family = nbinom2(link = "sqrt"), 
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelSRZOOR2)
+#
+modelSRZOOR2_2 <- glmmTMB(
+  sr.zoo ~ 1 + (1 | massif / placette) + exp(pos_R2 + 0 | ID_R2) + offset(log(offset_releves)),
+  family = nbinom2(link = "sqrt"),
+  data = entomo_R2, 
+  na.action = na.fail) ; summary(modelSRZOOR2_2)
+#
+AICc(modelSRZOOR2) # 358.4173
+AICc(modelSRZOOR2_2) # 389.1188
+#
+anova(modelSRZOOR2,modelSRZOOR2_2) # 2.52e-08 ***
+#
+sim<-simulateResiduals(modelSRZOOR2)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelSRZOOR2, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***
+  # Graph de Tukey
+png("Tukey_srzoo_R2.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : sr.zoo")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
+```
+
+# 10.3. R3
+
+## 10.3.1. ab.colsx
+
+```{r}
+entomo_R3$longitude <- as.numeric(entomo_R3$longitude) ; entomo_R3$longitude
+entomo_R3$latitude <- as.numeric(entomo_R3$latitude) ; entomo_R3$latitude
+entomo_R3$strate <- as.factor(entomo_R3$strate)
+entomo_R3$placette <- as.factor(entomo_R3$placette)
+pos_R3 <- numFactor(scale(entomo_R3$longitude),scale(entomo_R3$latitude)) ; pos_R3
+ID_R3 <- entomo_R3$placette ; ID_R3
+is.factor(entomo_R3$strate)
+entomo_R3$massif <- as.factor(entomo_R3$massif)
+entomo_R3$num.trap <- as.factor (entomo_R3$num.trap)
+entomo_R3$offset_releves <- as.numeric(entomo_R3$offset_releves)
+
+###
+
+descdist(entomo_R3$ab.colsx,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R3$ab.colsx,"norm")) #
+#
+fitnb<-fitdist(entomo_R3$ab.colsx,"nbinom")
+plot(fitdist(entomo_R3$ab.colsx,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R3$ab.colsx,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R3$ab.colsx,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R3$ab.colsx,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R3$ab.colsx,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R3$ab.colsx,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R3$ab.colsx,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R3$ab.colsx,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R3$ab.colsx,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 1
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 3
+#
+mean_AC <- mean(entomo_AC_R3$ab.colsx) ; mean_AC # 90.6
+sd_AC <- sd(entomo_AC_R3$ab.colsx) ; sd_AC # 100.7714
+mean_UC <- mean(entomo_UC_R3$ab.colsx) ; mean_UC # 99.6
+sd_UC <- sd(entomo_UC_R3$ab.colsx) ; sd_UC # 78.54828
+mean_LC <- mean(entomo_LC_R3$ab.colsx) ; mean_LC # 80.35294
+sd_LC <- sd(entomo_LC_R3$ab.colsx) ; sd_LC # 79.89754
+mean_BC <- mean(entomo_BC_R3$ab.colsx) ; mean_BC # 60.8
+sd_BC <- sd(entomo_BC_R3$ab.colsx) ; sd_BC # 57.88428
+#
+modelABCOLSXR3 <- glmmTMB(
+  ab.colsx ~ strate + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)), 
+  family = truncated_nbinom2(), 
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelABCOLSXR3)
+#
+modelABCOLSXR3_2 <- glmmTMB(
+  ab.colsx ~ 1 + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)),
+  family = truncated_nbinom2(),
+  dispformula = ~ 1,
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelABCOLSXR3_2)
+#
+AICc(modelABCOLSXR3) # 775.6894
+AICc(modelABCOLSXR3_2) # 787.622
+#
+anova(modelABCOLSXR3,modelABCOLSXR3_2) # 0.0002239 ***
+#
+sim<-simulateResiduals(modelABCOLSXR3_2)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelABCOLSXR3, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 *** 0.00353 **
+  # Graph de Tukey
+png("Tukey_abcolsx_R3.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : ab.colsx")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
+```
+
+## 10.3.2. sr.colsx
+
+```{r}
+descdist(entomo_R3$sr.colsx,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R3$sr.colsx,"norm")) #
+#
+fitnb<-fitdist(entomo_R3$sr.colsx,"nbinom")
+plot(fitdist(entomo_R3$sr.colsx,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R3$sr.colsx,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R3$sr.colsx,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R3$sr.colsx,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R3$sr.colsx,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R3$sr.colsx,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R3$sr.colsx,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R3$sr.colsx,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R3$sr.colsx,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 4
+gofstat(fitlnorm)$chisqpvalue # 2
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 3
+#
+mean_AC <- mean(entomo_AC_R3$sr.colsx) ; mean_AC # 23.6
+sd_AC <- sd(entomo_AC_R3$sr.colsx) ; sd_AC # 5.752803
+mean_UC <- mean(entomo_UC_R3$sr.colsx) ; mean_UC # 31.35
+sd_UC <- sd(entomo_UC_R3$sr.colsx) ; sd_UC # 6.52344
+mean_LC <- mean(entomo_LC_R3$sr.colsx) ; mean_LC # 21.94118
+sd_LC <- sd(entomo_LC_R3$sr.colsx) ; sd_LC # 6.087596
+mean_BC <- mean(entomo_BC_R3$sr.colsx) ; mean_BC # 20.6
+sd_BC <- sd(entomo_BC_R3$sr.colsx) ; sd_BC # 6.336195
+#
+modelSRCOLSXR3 <- glmmTMB(
+  sr.colsx ~ strate + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)), 
+  family = gaussian(), 
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelSRCOLSXR3)
+#
+modelSRCOLSXR3_2 <- glmmTMB(
+  sr.colsx ~ 1 + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)),
+  family = gaussian(),
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelSRCOLSXR3_2)
+#
+AICc(modelSRCOLSXR3) # 514.5129
+AICc(modelSRCOLSXR3_2) # 538.964
+#
+anova(modelSRCOLSXR3,modelSRCOLSXR3_2) # 5.394e-07 ***
+#
+sim<-simulateResiduals(modelSRCOLSXR3)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelSRCOLSXR3, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 1e-04 ***
+  # Graph de Tukey
+png("Tukey_srcolsx_R3.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : sr.colsx")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
+```
+
+## 10.3.3. ab.colsxrar
+
+```{r}
+descdist(entomo_R3$ab.colsxrar,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R3$ab.colsxrar,"norm")) #
+#
+fitnb<-fitdist(entomo_R3$ab.colsxrar,"nbinom")
+plot(fitdist(entomo_R3$ab.colsxrar,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R3$ab.colsxrar,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R3$ab.colsxrar,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R3$ab.colsxrar,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R3$ab.colsxrar,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R3$ab.colsxrar,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R3$ab.colsxrar,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R3$ab.colsxrar,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R3$ab.colsxrar,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 2
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC_R3$ab.colsxrar) ; mean_AC # 4.4
+sd_AC <- sd(entomo_AC_R3$ab.colsxrar) ; sd_AC # 3.574765
+mean_UC <- mean(entomo_UC_R3$ab.colsxrar) ; mean_UC # 8.55
+sd_UC <- sd(entomo_UC_R3$ab.colsxrar) ; sd_UC # 4.673272
+mean_LC <- mean(entomo_LC_R3$ab.colsxrar) ; mean_LC # 3.470588
+sd_LC <- sd(entomo_LC_R3$ab.colsxrar) ; sd_LC # 2.960525
+mean_BC <- mean(entomo_BC_R3$ab.colsxrar) ; mean_BC # 1.9
+sd_BC <- sd(entomo_BC_R3$ab.colsxrar) ; sd_BC # 1.943951
+#
+modelABCOLSXRARR3 <- glmmTMB(
+  ab.colsxrar ~ strate + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)), 
+  family = tweedie(link = "sqrt"), 
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelABCOLSXRARR3)
+#
+modelABCOLSXRARR3_2 <- glmmTMB(
+  ab.colsxrar ~ 1 + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)),
+  family = tweedie(link = "identity"),
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelABCOLSXRARR3_2)
+#
+AICc(modelABCOLSXRARR3) # 
+AICc(modelABCOLSXRARR3_2) # 
+#
+anova(modelABCOLSXRARR3,modelABCOLSXRARR3_2) # 
+#
+sim<-simulateResiduals(modelABCOLSXRARR3)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.3.4. sr.colsxrar
+
+```{r}
+descdist(entomo_R3$sr.colsxrar,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R3$sr.colsxrar,"norm")) #
+#
+fitnb<-fitdist(entomo_R3$sr.colsxrar,"nbinom")
+plot(fitdist(entomo_R3$sr.colsxrar,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R3$sr.colsxrar,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R3$sr.colsxrar,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R3$sr.colsxrar,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R3$sr.colsxrar,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R3$sr.colsxrar,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R3$sr.colsxrar,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R3$sr.colsxrar,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R3$sr.colsxrar,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 1
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC_R3$sr.colsxrar) ; mean_AC # 2.2
+sd_AC <- sd(entomo_AC_R3$sr.colsxrar) ; sd_AC # 1.239694
+mean_UC <- mean(entomo_UC_R3$sr.colsxrar) ; mean_UC # 4.15
+sd_UC <- sd(entomo_UC_R3$sr.colsxrar) ; sd_UC # 2.158825
+mean_LC <- mean(entomo_LC_R3$sr.colsxrar) ; mean_LC # 1.941176
+sd_LC <- sd(entomo_LC_R3$sr.colsxrar) ; sd_LC # 1.144038
+mean_BC <- mean(entomo_BC_R3$sr.colsxrar) ; mean_BC # 1.25
+sd_BC <- sd(entomo_BC_R3$sr.colsxrar) ; sd_BC # 1.019546
+#
+modelSRCOLSXRARR3 <- glmmTMB(
+  sr.colsxrar ~ strate + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)), 
+  family = compois(), 
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelSRCOLSXRARR3)
+#
+modelSRCOLSXRARR3_2 <- glmmTMB(
+  sr.colsxrar ~ 1 + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)),
+  family = compois(),
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelSRCOLSXRARR3_2)
+#
+AICc(modelSRCOLSXRARR3) # 265.9138
+AICc(modelSRCOLSXRARR3_2) # 300.4872
+#
+anova(modelSRCOLSXRARR3,modelSRCOLSXRARR3_2) # 3.896e-09 ***
+#
+sim<-simulateResiduals(modelSRCOLSXRARR3)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelSRCOLSXRARR3, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 *** < 0.001 ***
+  # Graph de Tukey
+png("Tukey_srcolsxrar_R3.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : sr.colsxrar")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
+```
+
+## 10.3.5. ab.colsxcom
+
+```{r}
+descdist(entomo_R3$ab.colsxcom,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R3$ab.colsxcom,"norm")) #
+#
+fitnb<-fitdist(entomo_R3$ab.colsxcom,"nbinom")
+plot(fitdist(entomo_R3$ab.colsxcom,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R3$ab.colsxcom,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R3$ab.colsxcom,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R3$ab.colsxcom,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R3$ab.colsxcom,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R3$ab.colsxcom,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R3$ab.colsxcom,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R3$ab.colsxcom,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R3$ab.colsxcom,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 1
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC_R3$ab.colsxcom) ; mean_AC # 78.55
+sd_AC <- sd(entomo_AC_R3$ab.colsxcom) ; sd_AC # 99.01647
+mean_UC <- mean(entomo_UC_R3$ab.colsxcom) ; mean_UC # 81.35
+sd_UC <- sd(entomo_UC_R3$ab.colsxcom) ; sd_UC # 77.61191
+mean_LC <- mean(entomo_LC_R3$ab.colsxcom) ; mean_LC # 58
+sd_LC <- sd(entomo_LC_R3$ab.colsxcom) ; sd_LC # 80.37801
+mean_BC <- mean(entomo_BC_R3$ab.colsxcom) ; mean_BC # 47.35
+sd_BC <- sd(entomo_BC_R3$ab.colsxcom) ; sd_BC # 57.11049
+#
+modelABCOLSXCOMR3 <- glmmTMB(
+  ab.colsxcom ~ strate + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)), 
+  family = truncated_nbinom2(), 
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelABCOLSXCOMR3)
+#
+modelABCOLSXCOMR3_2 <- glmmTMB(
+  ab.colsxcom ~ 1 + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)),
+  family = truncated_nbinom2(),
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelABCOLSXCOMR3_2)
+#
+AICc(modelABCOLSXCOMR3) # 747.3005
+AICc(modelABCOLSXCOMR3_2) # 765.8311
+#
+anova(modelABCOLSXCOMR3,modelABCOLSXCOMR3_2) # 9.459e-06 ***
+#
+sim<-simulateResiduals(modelABCOLSXCOMR3)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelABCOLSXCOMR3, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 *** 0.00537 ** 0.00104 **
+  # Graph de Tukey
+png("Tukey_abcolsxcom_R3.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : ab.colsxcom")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
+```
+
+## 10.3.6. sr.colsxcom
+
+```{r}
+descdist(entomo_R3$sr.colsxcom,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R3$sr.colsxcom,"norm")) #
+#
+fitnb<-fitdist(entomo_R3$sr.colsxcom,"nbinom")
+plot(fitdist(entomo_R3$sr.colsxcom,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R3$sr.colsxcom,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R3$sr.colsxcom,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R3$sr.colsxcom,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R3$sr.colsxcom,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R3$sr.colsxcom,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R3$sr.colsxcom,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R3$sr.colsxcom,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R3$sr.colsxcom,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 2
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 4
+#
+mean_AC <- mean(entomo_AC_R3$sr.colsxcom) ; mean_AC # 18.65
+sd_AC <- sd(entomo_AC_R3$sr.colsxcom) ; sd_AC # 5.142956
+mean_UC <- mean(entomo_UC_R3$sr.colsxcom) ; mean_UC # 24.3
+sd_UC <- sd(entomo_UC_R3$sr.colsxcom) ; sd_UC # 5.282543
+mean_LC <- mean(entomo_LC_R3$sr.colsxcom) ; mean_LC # 17.41176
+sd_LC <- sd(entomo_LC_R3$sr.colsxcom) ; sd_LC # 5.668541
+mean_BC <- mean(entomo_BC_R3$sr.colsxcom) ; mean_BC # 16.4
+sd_BC <- sd(entomo_BC_R3$sr.colsxcom) ; sd_BC # 5.432844
+#
+modelSRCOLSXCOMR3 <- glmmTMB(
+  sr.colsxcom ~ strate + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)), 
+  family = lognormal(), 
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelSRCOLSXCOMR3)
+#
+modelSRCOLSXCOMR3_2 <- glmmTMB(
+  sr.colsxcom ~ 1 + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)),
+  family = lognormal(),
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelSRCOLSXCOMR3_2)
+#
+AICc(modelSRCOLSXCOMR3) # 494.9097
+AICc(modelSRCOLSXCOMR3_2) # 512.942
+#
+anova(modelSRCOLSXCOMR3,modelSRCOLSXCOMR3_2) # 1.203e-05 ***
+#
+sim<-simulateResiduals(modelSRCOLSXCOMR3)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelSRCOLSXCOMR3, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 *** 0.00205 **
+  # Graph de Tukey
+png("Tukey_srcolsxcom_R3.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : sr.colsxcom")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
+```
+
+## 10.3.7. ab.fon
+
+```{r}
+descdist(entomo_R3$ab.fon,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R3$ab.fon,"norm")) #
+#
+fitnb<-fitdist(entomo_R3$ab.fon,"nbinom")
+plot(fitdist(entomo_R3$ab.fon,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R3$ab.fon,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R3$ab.fon,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R3$ab.fon,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R3$ab.fon,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R3$ab.fon,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R3$ab.fon,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R3$ab.fon,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R3$ab.fon,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 1
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 3
+#
+mean_AC <- mean(entomo_AC_R3$ab.fon) ; mean_AC # 60.15
+sd_AC <- sd(entomo_AC_R3$ab.fon) ; sd_AC # 91.09872
+mean_UC <- mean(entomo_UC_R3$ab.fon) ; mean_UC # 58.55
+sd_UC <- sd(entomo_UC_R3$ab.fon) ; sd_UC # 72.40346
+mean_LC <- mean(entomo_LC_R3$ab.fon) ; mean_LC # 59.29412
+sd_LC <- sd(entomo_LC_R3$ab.fon) ; sd_LC # 76.91941
+mean_BC <- mean(entomo_BC_R3$ab.fon) ; mean_BC # 43.05
+sd_BC <- sd(entomo_BC_R3$ab.fon) ; sd_BC # 54.45759
+#
+modelABFONR3 <- glmmTMB(
+  ab.fon ~ strate + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)), 
+  family = nbinom2(), 
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelABFONR3)
+#
+modelABFONR3_2 <- glmmTMB(
+  ab.fon ~ 1 + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)),
+  family = nbinom2(),
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelABFONR3_2)
+#
+AICc(modelABFONR3) # 717.4465
+AICc(modelABFONR3_2) # 717.8706
+#
+anova(modelABFONR3,modelABFONR3_2) # 0.04789 *
+#
+sim<-simulateResiduals(modelABFONR3_2)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.3.8. sr.fon
+
+```{r}
+descdist(entomo_R3$sr.fon,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R3$sr.fon,"norm")) #
+#
+fitnb<-fitdist(entomo_R3$sr.fon,"nbinom")
+plot(fitdist(entomo_R3$sr.fon,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R3$sr.fon,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R3$sr.fon,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R3$sr.fon,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R3$sr.fon,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R3$sr.fon,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R3$sr.fon,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R3$sr.fon,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R3$sr.fon,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 1
+gofstat(fitn)$chisqpvalue # 3
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC_R3$sr.fon) ; mean_AC # 9.25
+sd_AC <- sd(entomo_AC_R3$sr.fon) ; sd_AC # 2.552089
+mean_UC <- mean(entomo_UC_R3$sr.fon) ; mean_UC # 11.25
+sd_UC <- sd(entomo_UC_R3$sr.fon) ; sd_UC # 2.149051
+mean_LC <- mean(entomo_LC_R3$sr.fon) ; mean_LC # 10.35294
+sd_LC <- sd(entomo_LC_R3$sr.fon) ; sd_LC # 3.296611
+mean_BC <- mean(entomo_BC_R3$sr.fon) ; mean_BC # 9.75
+sd_BC <- sd(entomo_BC_R3$sr.fon) ; sd_BC # 3.274704
+#
+modelSRFONR3 <- glmmTMB(
+  sr.fon ~ strate + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)), 
+  family = gaussian(), 
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelSRFONR3)
+#
+modelSRFONR3_2 <- glmmTMB(
+  sr.fon ~ 1 + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)),
+  family = gaussian(),
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelSRFONR3_2)
+#
+AICc(modelSRFONR3) # 390.143
+AICc(modelSRFONR3_2) # 389.8798
+#
+anova(modelSRFONR3,modelSRFONR3_2) #  0.06511 .
+#
+sim<-simulateResiduals(modelSRFONR3_2)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.3.9. ab.lig
+
+```{r}
+descdist(entomo_R3$ab.lig,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R3$ab.lig,"norm")) #
+#
+fitnb<-fitdist(entomo_R3$ab.lig,"nbinom")
+plot(fitdist(entomo_R3$ab.lig,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R3$ab.lig,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R3$ab.lig,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R3$ab.lig,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R3$ab.lig,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R3$ab.lig,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R3$ab.lig,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R3$ab.lig,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R3$ab.lig,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 1
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 3
+#
+mean_AC <- mean(entomo_AC_R3$ab.lig) ; mean_AC # 84.8
+sd_AC <- sd(entomo_AC_R3$ab.lig) ; sd_AC # 100.7658
+mean_UC <- mean(entomo_UC_R3$ab.lig) ; mean_UC # 93.35
+sd_UC <- sd(entomo_UC_R3$ab.lig) ; sd_UC # 78.71753
+mean_LC <- mean(entomo_LC_R3$ab.lig) ; mean_LC # 75.35294
+sd_LC <- sd(entomo_LC_R3$ab.lig) ; sd_LC # 80.37563
+mean_BC <- mean(entomo_BC_R3$ab.lig) ; mean_BC # 57.5
+sd_BC <- sd(entomo_BC_R3$ab.lig) ; sd_BC # 57.81777
+#
+modelABLIGR3 <- glmmTMB(
+  ab.lig ~ strate + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)), 
+  family = gaussian(link = "log"), 
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelABLIGR3)
+#
+modelABLIGR3_2 <- glmmTMB(
+  ab.lig ~ 1 + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)),
+  family = gaussian(link = "log"),
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelABLIGR3_2)
+#
+AICc(modelABLIGR3) # 
+AICc(modelABLIGR3_2) # 
+#
+anova(modelABLIGR3,modelABLIGR3_2) # 
+#
+sim<-simulateResiduals(modelABLIGR3)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.3.10. sr.lig
+
+```{r}
+descdist(entomo_R3$sr.lig,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R3$sr.lig,"norm")) #
+#
+fitnb<-fitdist(entomo_R3$sr.lig,"nbinom")
+plot(fitdist(entomo_R3$sr.lig,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R3$sr.lig,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R3$sr.lig,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R3$sr.lig,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R3$sr.lig,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R3$sr.lig,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R3$sr.lig,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R3$sr.lig,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R3$sr.lig,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 4
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 2
+#
+mean_AC <- mean(entomo_AC_R3$sr.lig) ; mean_AC # 20.85
+sd_AC <- sd(entomo_AC_R3$sr.lig) ; sd_AC # 5.363375
+mean_UC <- mean(entomo_UC_R3$sr.lig) ; mean_UC # 27.85
+sd_UC <- sd(entomo_UC_R3$sr.lig) ; sd_UC # 5.984849
+mean_LC <- mean(entomo_LC_R3$sr.lig) ; mean_LC # 18.94118
+sd_LC <- sd(entomo_LC_R3$sr.lig) ; sd_LC # 5.005879
+mean_BC <- mean(entomo_BC_R3$sr.lig) ; mean_BC # 18.2
+sd_BC <- sd(entomo_BC_R3$sr.lig) ; sd_BC # 5.463756
+#
+modelSRLIGR3 <- glmmTMB(
+  sr.lig ~ strate + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)), 
+  family = Gamma(link = "identity"), 
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelSRLIGR3)
+#
+modelSRLIGR3_2 <- glmmTMB(
+  sr.lig ~ 1 + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)),
+  family = Gamma(link = "identity"),
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelSRLIGR3_2)
+#
+AICc(modelSRLIGR3) # 493.7308
+AICc(modelSRLIGR3_2) # 517.6467
+#
+anova(modelSRLIGR3,modelSRLIGR3_2) # 6.993e-07 ***
+#
+sim<-simulateResiduals(modelSRLIGR3)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelSRLIGR3, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 *** 
+  # Graph de Tukey
+png("Tukey_srlig_R3.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : sr.lig")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
+```
+
+## 10.3.11. ab.xyl
+
+```{r}
+descdist(entomo_R3$ab.xyl,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R3$ab.xyl,"norm")) #
+#
+fitnb<-fitdist(entomo_R3$ab.xyl,"nbinom")
+plot(fitdist(entomo_R3$ab.xyl,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R3$ab.xyl,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R3$ab.xyl,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R3$ab.xyl,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R3$ab.xyl,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R3$ab.xyl,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R3$ab.xyl,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R3$ab.xyl,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R3$ab.xyl,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 1
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 3
+#
+mean_AC <- mean(entomo_AC_R3$ab.xyl) ; mean_AC # 39.3
+sd_AC <- sd(entomo_AC_R3$ab.xyl) ; sd_AC # 92.40306
+mean_UC <- mean(entomo_UC_R3$ab.xyl) ; mean_UC # 38.3
+sd_UC <- sd(entomo_UC_R3$ab.xyl) ; sd_UC # 72.61079
+mean_LC <- mean(entomo_LC_R3$ab.xyl) ; mean_LC # 38.64706
+sd_LC <- sd(entomo_LC_R3$ab.xyl) ; sd_LC # 80.68453
+mean_BC <- mean(entomo_BC_R3$ab.xyl) ; mean_BC # 27.55
+sd_BC <- sd(entomo_BC_R3$ab.xyl) ; sd_BC # 55.07074
+#
+modelABXYLR3 <- glmmTMB(
+  ab.xyl ~ strate + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)), 
+  family = ziGamma(link = "log"), 
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelABXYLR3)
+#
+modelABXYLR3_2 <- glmmTMB(
+  ab.xyl ~ 1 + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)),
+  family =  Gamma(link = "log"),
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelABCOLSXR3_2)
+#
+AICc(modelABXYLR3) # 
+AICc(modelABXYLR3_2) # 
+#
+anova(modelABXYLR3,modelABXYLR3_2) # 
+#
+sim<-simulateResiduals(modelABXYLR3)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.3.12. sr.xyl
+
+```{r}
+descdist(entomo_R3$sr.xyl,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R3$sr.xyl,"norm")) #
+#
+fitnb<-fitdist(entomo_R3$sr.xyl,"nbinom")
+plot(fitdist(entomo_R3$sr.xyl,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R3$sr.xyl,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R3$sr.xyl,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R3$sr.xyl,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R3$sr.xyl,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R3$sr.xyl,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R3$sr.xyl,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R3$sr.xyl,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R3$sr.xyl,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 1
+gofstat(fitn)$chisqpvalue # 3
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 3
+#
+mean_AC <- mean(entomo_AC_R3$sr.xyl) ; mean_AC # 7.5
+sd_AC <- sd(entomo_AC_R3$sr.xyl) ; sd_AC # 2.039092
+mean_UC <- mean(entomo_UC_R3$sr.xyl) ; mean_UC # 7.75
+sd_UC <- sd(entomo_UC_R3$sr.xyl) ; sd_UC # 2.244877
+mean_LC <- mean(entomo_LC_R3$sr.xyl) ; mean_LC # 4.647059
+sd_LC <- sd(entomo_LC_R3$sr.xyl) ; sd_LC # 2.119587
+mean_BC <- mean(entomo_BC_R3$sr.xyl) ; mean_BC # 4.75
+sd_BC <- sd(entomo_BC_R3$sr.xyl) ; sd_BC # 1.650359
+#
+modelSRXYLR3 <- glmmTMB(
+  sr.xyl ~ strate + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)), 
+  family = tweedie(link = "sqrt"), 
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelSRXYLR3)
+#
+modelSRXYLR3_2 <- glmmTMB(
+  sr.xyl ~ 1 + (1 | massif / placette) + exp(pos_R3 + 0 | ID_R3) + offset(log(offset_releves)),
+  family = Gamma(link = "identity"),
+  data = entomo_R3, 
+  na.action = na.fail) ; summary(modelSRXYLR3_2)
+#
+AICc(modelSRXYLR3) # 
+AICc(modelSRXYLR3_2) # 
+#
+anova(modelSRXYLR3,modelSRXYLR3_2) # 
+#
+sim<-simulateResiduals(modelSRXYLR3)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.3.13. ab.colsxrsx
+
+```{r}
+
+```
+
+## 10.3.14. sr.colsxrsx
+
+```{r}
+
+```
+
+# 10.4. R4-5
+
+## 10.4.1. ab.colsx
+
+```{r}
+entomo_R4_R5$longitude <- as.numeric(entomo_R4_R5$longitude) ; entomo_R4_R5$longitude
+entomo_R4_R5$latitude <- as.numeric(entomo_R4_R5$latitude) ; entomo_R4_R5$latitude
+entomo_R4_R5$strate <- as.factor(entomo_R4_R5$strate)
+entomo_R4_R5$placette <- as.factor(entomo_R4_R5$placette)
+pos_R4_R5 <- numFactor(scale(entomo_R4_R5$longitude),scale(entomo_R4_R5$latitude)) ; pos_R4_R5
+ID_R4_R5 <- entomo_R4_R5$placette ; ID_R4_R5
+is.factor(entomo_R4_R5$strate)
+entomo_R4_R5$massif <- as.factor(entomo_R4_R5$massif)
+entomo_R4_R5$num.trap <- as.factor (entomo_R4_R5$num.trap)
+entomo_R4_R5$offset_releves <- as.numeric(entomo_R4_R5$offset_releves)
+
+descdist(entomo_R4_R5$ab.colsx,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R4_R5$ab.colsx,"norm")) #
+#
+fitnb<-fitdist(entomo_R4_R5$ab.colsx,"nbinom")
+plot(fitdist(entomo_R4_R5$ab.colsx,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R4_R5$ab.colsx,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R4_R5$ab.colsx,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R4_R5$ab.colsx,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R4_R5$ab.colsx,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R4_R5$ab.colsx,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R4_R5$ab.colsx,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R4_R5$ab.colsx,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R4_R5$ab.colsx,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 1
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC_R4_R5$ab.colsx) ; mean_AC # 44.71429
+sd_AC <- sd(entomo_AC_R4_R5$ab.colsx) ; sd_AC # 29.72281
+mean_UC <- mean(entomo_UC_R4_R5$ab.colsx) ; mean_UC # 67.25
+sd_UC <- sd(entomo_UC_R4_R5$ab.colsx) ; sd_UC # 78.33304
+mean_LC <- mean(entomo_LC_R4_R5$ab.colsx) ; mean_LC # 31.46667
+sd_LC <- sd(entomo_LC_R4_R5$ab.colsx) ; sd_LC # 20.49177
+mean_BC <- mean(entomo_BC_R4_R5$ab.colsx) ; mean_BC # 29.48571
+sd_BC <- sd(entomo_BC_R4_R5$ab.colsx) ; sd_BC # 30.90248
+#
+modelABCOLSXR4_R5 <- glmmTMB(
+  ab.colsx ~ strate + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)), 
+  family = truncated_nbinom1(link = "identity"), 
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelABCOLSXR4_R5)
+#
+modelABCOLSXR4_R5_2 <- glmmTMB(
+  ab.colsx ~ 1 + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)),
+  family = truncated_nbinom1(link = "identity"),
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelABCOLSXR4_R5_2)
+#
+AICc(modelABCOLSXR4_R5) # 493.7308
+AICc(modelABCOLSXR4_R5_2) # 517.6467
+#
+anova(modelABCOLSXR4_R5,modelABCOLSXR4_R5_2) # 6.993e-07 ***
+#
+sim<-simulateResiduals(modelABCOLSXR4_R5)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.4.2. sr.colsx
+
+```{r}
+descdist(entomo_R4_R5$sr.colsx,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R4_R5$sr.colsx,"norm")) #
+#
+fitnb<-fitdist(entomo_R4_R5$sr.colsx,"nbinom")
+plot(fitdist(entomo_R4_R5$sr.colsx,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R4_R5$sr.colsx,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R4_R5$sr.colsx,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R4_R5$sr.colsx,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R4_R5$sr.colsx,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R4_R5$sr.colsx,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R4_R5$sr.colsx,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R4_R5$sr.colsx,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R4_R5$sr.colsx,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 2
+#
+mean_AC <- mean(entomo_AC_R4_R5$sr.colsx) ; mean_AC # 15.17143
+sd_AC <- sd(entomo_AC_R4_R5$sr.colsx) ; sd_AC # 5.002856
+mean_UC <- mean(entomo_UC_R4_R5$sr.colsx) ; mean_UC # 18
+sd_UC <- sd(entomo_UC_R4_R5$sr.colsx) ; sd_UC # 7.841165
+mean_LC <- mean(entomo_LC_R4_R5$sr.colsx) ; mean_LC # 14.63333
+sd_LC <- sd(entomo_LC_R4_R5$sr.colsx) ; sd_LC # 6.635762
+mean_BC <- mean(entomo_BC_R4_R5$sr.colsx) ; mean_BC # 12.42857
+sd_BC <- sd(entomo_BC_R4_R5$sr.colsx) ; sd_BC # 5.962065
+#
+modelSRCOLSXR4_R5 <- glmmTMB(
+  sr.colsx ~ strate + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)), 
+  family = nbinom2(link = "identity"), 
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelSRCOLSXR4_R5)
+#
+modelSRCOLSXR4_R5_2 <- glmmTMB(
+  sr.colsx ~ 1 + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)),
+  family = nbinom2(link = "identity"),
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelSRCOLSXR4_R5_2)
+#
+AICc(modelSRCOLSXR4_R5) # 863.0912
+AICc(modelSRCOLSXR4_R5_2) # 869.0903
+#
+anova(modelSRCOLSXR4_R5,modelSRCOLSXR4_R5_2) # 0.005084 **
+#
+sim<-simulateResiduals(modelSRCOLSXR4_R5_2)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.4.3. ab.colsxrar
+
+```{r}
+descdist(entomo_R4_R5$ab.colsxrar,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R4_R5$ab.colsxrar,"norm")) #
+#
+fitnb<-fitdist(entomo_R4_R5$ab.colsxrar,"nbinom")
+plot(fitdist(entomo_R4_R5$ab.colsxrar,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R4_R5$ab.colsxrar,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R4_R5$ab.colsxrar,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R4_R5$ab.colsxrar,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R4_R5$ab.colsxrar,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R4_R5$ab.colsxrar,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R4_R5$ab.colsxrar,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R4_R5$ab.colsxrar,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R4_R5$ab.colsxrar,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC_R4_R5$ab.colsxrar) ; mean_AC # 44.71429
+sd_AC <- sd(entomo_AC_R4_R5$ab.colsxrar) ; sd_AC # 1.742857
+mean_UC <- mean(entomo_UC_R4_R5$ab.colsxrar) ; mean_UC # 1.651076
+sd_UC <- sd(entomo_UC_R4_R5$ab.colsxrar) ; sd_UC # 3.65625
+mean_LC <- mean(entomo_LC_R4_R5$ab.colsxrar) ; mean_LC # 3
+sd_LC <- sd(entomo_LC_R4_R5$ab.colsxrar) ; sd_LC # 3.600766
+mean_BC <- mean(entomo_BC_R4_R5$ab.colsxrar) ; mean_BC # 1.342857
+sd_BC <- sd(entomo_BC_R4_R5$ab.colsxrar) ; sd_BC # 2.363234
+#
+modelABCOLSXRARR4_R5 <- glmmTMB(
+  ab.colsxrar ~ strate + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)), 
+  family = truncated_nbinom1(), 
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelABCOLSXRARR4_R5)
+#
+modelABCOLSXRARR4_R5_2 <- glmmTMB(
+  ab.colsxrar ~ 1 + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)),
+  family = gaussian(),
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelABCOLSXRARR4_R5_2)
+#
+AICc(modelABCOLSXRARR4_R5) # 
+AICc(modelABCOLSXRARR4_R5_2) # 
+#
+anova(modelABCOLSXRARR4_R5,modelABCOLSXRARR4_R5_2) #
+#
+sim<-simulateResiduals(modelABCOLSXRARR4_R5_2)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.4.4. sr.colsxrar
+
+```{r}
+descdist(entomo_R4_R5$sr.colsxrar,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R4_R5$sr.colsxrar,"norm")) #
+#
+fitnb<-fitdist(entomo_R4_R5$sr.colsxrar,"nbinom")
+plot(fitdist(entomo_R4_R5$sr.colsxrar,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R4_R5$sr.colsxrar,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R4_R5$sr.colsxrar,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R4_R5$sr.colsxrar,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R4_R5$sr.colsxrar,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R4_R5$sr.colsxrar,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R4_R5$sr.colsxrar,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R4_R5$sr.colsxrar,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R4_R5$sr.colsxrar,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 2
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC_R4_R5$sr.colsxrar) ; mean_AC # 1.2
+sd_AC <- sd(entomo_AC_R4_R5$sr.colsxrar) ; sd_AC # 0.9009799
+mean_UC <- mean(entomo_UC_R4_R5$sr.colsxrar) ; mean_UC # 2
+sd_UC <- sd(entomo_UC_R4_R5$sr.colsxrar) ; sd_UC # 1.545023
+mean_LC <- mean(entomo_LC_R4_R5$sr.colsxrar) ; mean_LC # 1.433333
+sd_LC <- sd(entomo_LC_R4_R5$sr.colsxrar) ; sd_LC # 1.356551
+mean_BC <- mean(entomo_BC_R4_R5$sr.colsxrar) ; mean_BC # 0.8285714
+sd_BC <- sd(entomo_BC_R4_R5$sr.colsxrar) ; sd_BC # 1.014185
+#
+modelSRCOLSXRARR4_R5 <- glmmTMB(
+  sr.colsxrar ~ strate + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)), 
+  family = nbinom1(), 
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelSRCOLSXRARR4_R5)
+#
+modelSRCOLSXRARR4_R5_2 <- glmmTMB(
+  sr.colsxrar ~ 1 + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)),
+  family = nbinom1(),
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelSRCOLSXRARR4_R5_2)
+#
+AICc(modelSRCOLSXRARR4_R5) # 493.7308
+AICc(modelSRCOLSXRARR4_R5_2) # 517.6467
+#
+anova(modelSRCOLSXRARR4_R5,modelSRCOLSXRARR4_R5_2) # 0.001427 **
+#
+sim<-simulateResiduals(modelSRCOLSXRARR4_R5_2)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.4.5. ab.colsxcom
+
+```{r}
+descdist(entomo_R4_R5$ab.colsxcom,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R4_R5$ab.colsxcom,"norm")) #
+#
+fitnb<-fitdist(entomo_R4_R5$ab.colsxcom,"nbinom")
+plot(fitdist(entomo_R4_R5$ab.colsxcom,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R4_R5$ab.colsxcom,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R4_R5$ab.colsxcom,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R4_R5$ab.colsxcom,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R4_R5$ab.colsxcom,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R4_R5$ab.colsxcom,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R4_R5$ab.colsxcom,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R4_R5$ab.colsxcom,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R4_R5$ab.colsxcom,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 1
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC_R4_R5$ab.colsxcom) ; mean_AC # 33.74286
+sd_AC <- sd(entomo_AC_R4_R5$ab.colsxcom) ; sd_AC # 23.99307
+mean_UC <- mean(entomo_UC_R4_R5$ab.colsxcom) ; mean_UC # 48.90625
+sd_UC <- sd(entomo_UC_R4_R5$ab.colsxcom) ; sd_UC # 66.56666
+mean_LC <- mean(entomo_LC_R4_R5$ab.colsxcom) ; mean_LC # 19.53333
+sd_LC <- sd(entomo_LC_R4_R5$ab.colsxcom) ; sd_LC # 14.15124
+mean_BC <- mean(entomo_BC_R4_R5$ab.colsxcom) ; mean_BC # 23.28571
+sd_BC <- sd(entomo_BC_R4_R5$ab.colsxcom) ; sd_BC # 27.92487
+#
+modelABCOLSXCOMR4_R5 <- glmmTMB(
+  ab.colsxcom ~ strate + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)), 
+  family = truncated_nbinom2(), 
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelABCOLSXCOMR4_R5)
+#
+modelABCOLSXCOMR4_R5_2 <- glmmTMB(
+  ab.colsxcom ~ 1 + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)),
+  family = truncated_nbinom2(),
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelABCOLSXCOMR4_R5_2)
+#
+AICc(modelABCOLSXCOMR4_R5) # 1141.366
+AICc(modelABCOLSXCOMR4_R5_2) # 1160.039
+#
+anova(modelABCOLSXCOMR4_R5,modelABCOLSXCOMR4_R5_2) # 1.228e-05 ***
+#
+sim<-simulateResiduals(modelABCOLSXCOMR4_R5)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelABCOLSXCOMR4_R5, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 *** 
+  # Graph de Tukey
+png("Tukey_abcolsxcom_R4_R5.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : ab.colsxcom")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
+```
+
+## 10.4.6. sr.colsxcom
+
+```{r}
+descdist(entomo_R4_R5$sr.colsxcom,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R4_R5$sr.colsxcom,"norm")) #
+#
+fitnb<-fitdist(entomo_R4_R5$sr.colsxcom,"nbinom")
+plot(fitdist(entomo_R4_R5$sr.colsxcom,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R4_R5$sr.colsxcom,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R4_R5$sr.colsxcom,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R4_R5$sr.colsxcom,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R4_R5$sr.colsxcom,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R4_R5$sr.colsxcom,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R4_R5$sr.colsxcom,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R4_R5$sr.colsxcom,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R4_R5$sr.colsxcom,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 3
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 1
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 2
+#
+mean_AC <- mean(entomo_AC_R4_R5$sr.colsxcom) ; mean_AC # 11.42857
+sd_AC <- sd(entomo_AC_R4_R5$sr.colsxcom) ; sd_AC # 4.045955
+mean_UC <- mean(entomo_UC_R4_R5$sr.colsxcom) ; mean_UC # 13.59375
+sd_UC <- sd(entomo_UC_R4_R5$sr.colsxcom) ; sd_UC # 6.92289
+mean_LC <- mean(entomo_LC_R4_R5$sr.colsxcom) ; mean_LC # 10.73333
+sd_LC <- sd(entomo_LC_R4_R5$sr.colsxcom) ; sd_LC # 5.172429
+mean_BC <- mean(entomo_BC_R4_R5$sr.colsxcom) ; mean_BC # 9.457143
+sd_BC <- sd(entomo_BC_R4_R5$sr.colsxcom) ; sd_BC # 4.767185
+#
+modelSRCOLSXCOMR4_R5 <- glmmTMB(
+  sr.colsxcom ~ strate + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)), 
+  family = nbinom1(link = "sqrt"), 
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelSRCOLSXCOMR4_R5)
+#
+modelSRCOLSXCOMR4_R5_2 <- glmmTMB(
+  sr.colsxcom ~ 1 + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)),
+  family = nbinom1(link = "sqrt"),
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelSRCOLSXCOMR4_R5_2)
+#
+AICc(modelSRCOLSXCOMR4_R5) # 803.1407
+AICc(modelSRCOLSXCOMR4_R5_2) # 808.0994
+#
+anova(modelSRCOLSXCOMR4_R5,modelSRCOLSXCOMR4_R5_2) # 0.008244 **
+#
+sim<-simulateResiduals(modelSRCOLSXCOMR4_R5_2)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.4.7. ab.fon
+
+```{r}
+descdist(entomo_R4_R5$ab.fon,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R4_R5$ab.fon,"norm")) #
+#
+fitnb<-fitdist(entomo_R4_R5$ab.fon,"nbinom")
+plot(fitdist(entomo_R4_R5$ab.fon,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R4_R5$ab.fon,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R4_R5$ab.fon,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R4_R5$ab.fon,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R4_R5$ab.fon,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R4_R5$ab.fon,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R4_R5$ab.fon,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R4_R5$ab.fon,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R4_R5$ab.fon,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 1
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 3
+#
+mean_AC <- mean(entomo_AC_R4_R5$ab.fon) ; mean_AC # 18.2
+sd_AC <- sd(entomo_AC_R4_R5$ab.fon) ; sd_AC # 10.32644
+mean_UC <- mean(entomo_UC_R4_R5$ab.fon) ; mean_UC # 15.90625
+sd_UC <- sd(entomo_UC_R4_R5$ab.fon) ; sd_UC # 16.17716
+mean_LC <- mean(entomo_LC_R4_R5$ab.fon) ; mean_LC # 15.66667
+sd_LC <- sd(entomo_LC_R4_R5$ab.fon) ; sd_LC # 11.63625
+mean_BC <- mean(entomo_BC_R4_R5$ab.fon) ; mean_BC # 18.02857
+sd_BC <- sd(entomo_BC_R4_R5$ab.fon) ; sd_BC # 22.89039
+#
+modelABFONR4_R5 <- glmmTMB(
+  ab.fon ~ strate + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)), 
+  family = nbinom2(), 
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelABFONR4_R5)
+#
+modelABFONR4_R5_2 <- glmmTMB(
+  ab.fon ~ 1 + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)),
+  family = nbinom2(),
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelABFONR4_R5_2)
+#
+AICc(modelABFONR4_R5) # 989.816
+AICc(modelABFONR4_R5_2) # 984.7194
+#
+anova(modelABFONR4_R5,modelABFONR4_R5_2) # 0.6354
+#
+sim<-simulateResiduals(modelABFONR4_R5_2)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.4.8. sr.fon
+
+```{r}
+descdist(entomo_R4_R5$sr.fon,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R4_R5$sr.fon,"norm")) #
+#
+fitnb<-fitdist(entomo_R4_R5$sr.fon,"nbinom")
+plot(fitdist(entomo_R4_R5$sr.fon,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R4_R5$sr.fon,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R4_R5$sr.fon,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R4_R5$sr.fon,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R4_R5$sr.fon,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R4_R5$sr.fon,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R4_R5$sr.fon,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R4_R5$sr.fon,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R4_R5$sr.fon,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 1
+gofstat(fitn)$chisqpvalue # 5
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 4
+#
+mean_AC <- mean(entomo_AC_R4_R5$sr.fon) ; mean_AC # 5.971429
+sd_AC <- sd(entomo_AC_R4_R5$sr.fon) ; sd_AC # 1.688816
+mean_UC <- mean(entomo_UC_R4_R5$sr.fon) ; mean_UC # 5.59375
+sd_UC <- sd(entomo_UC_R4_R5$sr.fon) ; sd_UC # 2.339829
+mean_LC <- mean(entomo_LC_R4_R5$sr.fon) ; mean_LC # 5.766667
+sd_LC <- sd(entomo_LC_R4_R5$sr.fon) ; sd_LC # 2.387949
+mean_BC <- mean(entomo_BC_R4_R5$sr.fon) ; mean_BC # 5.714286
+sd_BC <- sd(entomo_BC_R4_R5$sr.fon) ; sd_BC # 2.371044
+#
+modelSRFONR4_R5 <- glmmTMB(
+  sr.fon ~ strate + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)), 
+  family = gaussian(link = "log"), 
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelSRFONR4_R5)
+#
+modelSRFONR4_R5_2 <- glmmTMB(
+  sr.fon ~ 1 + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)),
+  family = gaussian(link = "log"),
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelSRFONR4_R5_2)
+#
+AICc(modelSRFONR4_R5) # 594.4048
+AICc(modelSRFONR4_R5_2) # 587.9092
+#
+anova(modelSRFONR4_R5,modelSRFONR4_R5_2) # 0.9585
+#
+sim<-simulateResiduals(modelSRFONR4_R5_2)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.4.9. ab.lig
+
+```{r}
+descdist(entomo_R4_R5$ab.lig,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R4_R5$ab.lig,"norm")) #
+#
+fitnb<-fitdist(entomo_R4_R5$ab.lig,"nbinom")
+plot(fitdist(entomo_R4_R5$ab.lig,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R4_R5$ab.lig,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R4_R5$ab.lig,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R4_R5$ab.lig,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R4_R5$ab.lig,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R4_R5$ab.lig,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R4_R5$ab.lig,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R4_R5$ab.lig,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R4_R5$ab.lig,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 1
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC_R4_R5$ab.lig) ; mean_AC # 43.2
+sd_AC <- sd(entomo_AC_R4_R5$ab.lig) ; sd_AC # 29.33859
+mean_UC <- mean(entomo_UC_R4_R5$ab.lig) ; mean_UC # 66
+sd_UC <- sd(entomo_UC_R4_R5$ab.lig) ; sd_UC # 78.25063
+mean_LC <- mean(entomo_LC_R4_R5$ab.lig) ; mean_LC # 29.3
+sd_LC <- sd(entomo_LC_R4_R5$ab.lig) ; sd_LC # 19.7382
+mean_BC <- mean(entomo_BC_R4_R5$ab.lig) ; mean_BC # 28.25714
+sd_BC <- sd(entomo_BC_R4_R5$ab.lig) ; sd_BC # 30.4557
+#
+modelABLIGR4_R5 <- glmmTMB(
+  ab.lig ~ strate + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)), 
+  family = lognormal(), 
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelABLIGR4_R5)
+#
+modelABLIGR4_R5_2 <- glmmTMB(
+  ab.lig ~ 1 + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)),
+  family = lognormal(),
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelABLIGR4_R5_2)
+#
+AICc(modelABLIGR4_R5) # 1208.397
+AICc(modelABLIGR4_R5_2) # 1226.047
+#
+anova(modelABLIGR4_R5,modelABLIGR4_R5_2) # 2.009e-05 ***
+#
+sim<-simulateResiduals(modelABLIGR4_R5)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelABLIGR4_R5, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 *** 
+  # Graph de Tukey
+png("Tukey_ablig_R4_R5.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : ab.lig")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
+```
+
+## 10.4.10. sr.lig
+
+```{r}
+descdist(entomo_R4_R5$sr.lig,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R4_R5$sr.lig,"norm")) #
+#
+fitnb<-fitdist(entomo_R4_R5$sr.lig,"nbinom")
+plot(fitdist(entomo_R4_R5$sr.lig,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R4_R5$sr.lig,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R4_R5$sr.lig,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R4_R5$sr.lig,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R4_R5$sr.lig,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R4_R5$sr.lig,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R4_R5$sr.lig,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R4_R5$sr.lig,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R4_R5$sr.lig,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 2
+#
+mean_AC <- mean(entomo_AC_R4_R5$sr.lig) ; mean_AC # 14.08571
+sd_AC <- sd(entomo_AC_R4_R5$sr.lig) ; sd_AC # 4.57854
+mean_UC <- mean(entomo_UC_R4_R5$sr.lig) ; mean_UC # 17.0625
+sd_UC <- sd(entomo_UC_R4_R5$sr.lig) ; sd_UC # 7.543155
+mean_LC <- mean(entomo_LC_R4_R5$sr.lig) ; mean_LC # 13.13333
+sd_LC <- sd(entomo_LC_R4_R5$sr.lig) ; sd_LC # 6.179685
+mean_BC <- mean(entomo_BC_R4_R5$sr.lig) ; mean_BC # 11.42857
+sd_BC <- sd(entomo_BC_R4_R5$sr.lig) ; sd_BC # 5.621836
+#
+modelSRLIGR4_R5 <- glmmTMB(
+  sr.lig ~ strate + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)), 
+  family = nbinom2(), 
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelSRLIGR4_R5)
+#
+modelSRLIGR4_R5_2 <- glmmTMB(
+  sr.lig ~ 1 + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)),
+  family = nbinom2(),
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelSRLIGR4_R5_2)
+#
+AICc(modelSRLIGR4_R5) # 843.8525
+AICc(modelSRLIGR4_R5_2) # 853.088
+#
+anova(modelSRLIGR4_R5,modelSRLIGR4_R5_2) # 0.001113 **
+#
+sim<-simulateResiduals(modelSRLIGR4_R5_2)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.4.11. ab.xyl
+
+```{r}
+descdist(entomo_R4_R5$ab.xyl,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R4_R5$ab.xyl,"norm")) #
+#
+fitnb<-fitdist(entomo_R4_R5$ab.xyl,"nbinom")
+plot(fitdist(entomo_R4_R5$ab.xyl,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R4_R5$ab.xyl,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R4_R5$ab.xyl,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R4_R5$ab.xyl,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R4_R5$ab.xyl,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R4_R5$ab.xyl,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R4_R5$ab.xyl,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R4_R5$ab.xyl,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R4_R5$ab.xyl,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 
+gofstat(fitlnorm)$chisqpvalue # 1
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC_R4_R5$ab.xyl) ; mean_AC # 15.25714
+sd_AC <- sd(entomo_AC_R4_R5$ab.xyl) ; sd_AC # 12.85746
+mean_UC <- mean(entomo_UC_R4_R5$ab.xyl) ; mean_UC # 29.40625
+sd_UC <- sd(entomo_UC_R4_R5$ab.xyl) ; sd_UC # 38.38167
+mean_LC <- mean(entomo_LC_R4_R5$ab.xyl) ; mean_LC # 12.36667
+sd_LC <- sd(entomo_LC_R4_R5$ab.xyl) ; sd_LC # 13.26256
+mean_BC <- mean(entomo_BC_R4_R5$ab.xyl) ; mean_BC # 15.94286
+sd_BC <- sd(entomo_BC_R4_R5$ab.xyl) ; sd_BC # 26.66783
+#
+modelABXYLR4_R5 <- glmmTMB(
+  ab.xyl ~ strate + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)), 
+  family = nbinom2(), 
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelABXYLR4_R5)
+#
+modelABXYLR4_R5_2 <- glmmTMB(
+  ab.xyl ~ 1 + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)),
+  family = nbinom2(),
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelABXYLR4_R5_2)
+#
+AICc(modelABXYLR4_R5) # 1013.683
+AICc(modelABXYLR4_R5_2) # 1025.777
+#
+anova(modelABXYLR4_R5,modelABXYLR4_R5_2) # 0.0002871 ***
+#
+sim<-simulateResiduals(modelABXYLR4_R5)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelABXYLR4_R5, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***  0.00195 **
+  # Graph de Tukey
+png("Tukey_abxyl_R4_R5.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : ab.xyl")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
+```
+
+## 10.4.12. sr.xyl
+
+```{r}
+descdist(entomo_R4_R5$sr.xyl,discrete=TRUE,boot=1001)
+plot(fitdist(entomo_R4_R5$sr.xyl,"norm")) #
+#
+fitnb<-fitdist(entomo_R4_R5$sr.xyl,"nbinom")
+plot(fitdist(entomo_R4_R5$sr.xyl,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo_R4_R5$sr.xyl,"pois")
+plot(fitp) 
+#
+fitn<-fitdist(entomo_R4_R5$sr.xyl,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo_R4_R5$sr.xyl,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo_R4_R5$sr.xyl,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo_R4_R5$sr.xyl,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo_R4_R5$sr.xyl,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo_R4_R5$sr.xyl,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo_R4_R5$sr.xyl,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 2
+gofstat(fitn)$chisqpvalue # 3
+gofstat(fitlnorm)$chisqpvalue # 4
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 
+#
+mean_AC <- mean(entomo_AC_R4_R5$sr.xyl) ; mean_AC # 5.685714
+sd_AC <- sd(entomo_AC_R4_R5$sr.xyl) ; sd_AC # 2.097217
+mean_UC <- mean(entomo_UC_R4_R5$sr.xyl) ; mean_UC # 5.96875
+sd_UC <- sd(entomo_UC_R4_R5$sr.xyl) ; sd_UC # 2.989059
+mean_LC <- mean(entomo_LC_R4_R5$sr.xyl) ; mean_LC # 4.033333
+sd_LC <- sd(entomo_LC_R4_R5$sr.xyl) ; sd_LC # 2.456284
+mean_BC <- mean(entomo_BC_R4_R5$sr.xyl) ; mean_BC # 3.971429
+sd_BC <- sd(entomo_BC_R4_R5$sr.xyl) ; sd_BC # 2.479157
+#
+modelSRXYLR4_R5 <- glmmTMB(
+  sr.xyl ~ strate + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)), 
+  family = nbinom1(link = "sqrt"), 
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelSRXYLR4_R5)
+#
+modelSRXYLR4_R5_2 <- glmmTMB(
+  sr.xyl ~ 1 + (1 | massif / placette) + exp(pos_R4_R5 + 0 | ID_R4_R5) + offset(log(offset_releves)),
+  family = nbinom1(link = "sqrt"),
+  data = entomo_R4_R5, 
+  na.action = na.fail) ; summary(modelSRXYLR4_R5_2)
+#
+AICc(modelSRXYLR4_R5) # 609.2301
+AICc(modelSRXYLR4_R5_2) # 623.1773
+#
+anova(modelSRXYLR4_R5,modelSRXYLR4_R5_2) # 0.0001186 ***
+#
+sim<-simulateResiduals(modelSRXYLR4_R5)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(modelSRXYLR4_R5, linfct = mcp(strate = "Tukey"))
+summary(RES) # 0.00147 **  0.00716 ** 0.00331 **
+  # Graph de Tukey
+png("Tukey_srxyl_R4_R5.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : sr.xyl")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
+```
+
+## 10.4.13. ab.colsxrsx
+
+```{r}
+
+```
+
+## 10.4.14. sr.colsxrsx
 
 ```{r}
 

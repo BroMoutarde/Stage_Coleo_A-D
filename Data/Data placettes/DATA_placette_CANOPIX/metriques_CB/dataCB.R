@@ -75,7 +75,7 @@ testOutliers(sim)
 
 distinfra<-vegdist(buprbuchetotmat[,6:15], method="bray",na.rm = TRUE)
 bupr.cap<-capscale(distbupr~as.numeric(depefeu2)+as.factor(depetree3)+as.factor(annee),buprbuchetotmat)
-
+?capscale
 #Pour conna?tre la contribution ? l'inertie de chaque variable X du mod?le et tester leur significativit?, construire tous les mod?les ?l?mentaires ? pour la contribution marginale , utiliser la fonction anova (by=margin)
 library(vegan)
 #toto est la matrice esp?ces-relev?s
