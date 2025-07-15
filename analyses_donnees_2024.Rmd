@@ -3280,20 +3280,20 @@ sd_BC <- sd(entomo_BC$sr.xyl) ; sd_BC # 2.425197
 #
 modelSRXYL <- glmmTMB(
   sr.xyl ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
-  family = lognormal(link = "identity"), 
+  family = gaussian(), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRXYL)
 #
 modelSRXYL2 <- glmmTMB(
   sr.xyl ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
-  family = lognormal(link = "identity"), 
+  family = gaussian(), 
   data = Final, 
   na.action = na.fail) ; summary(modelSRXYL2)
 #
-AICc(modelSRXYL) # 449.5758
-AICc(modelSRXYL2) # 483.8576
+AICc(modelSRXYL) # 446.844
+AICc(modelSRXYL2) # 485.8987
 #
-anova(modelSRXYL,modelSRXYL2) # 4.64e-09 ***
+anova(modelSRXYL,modelSRXYL2) # 4.494e-10 ***
 #
 sim<-simulateResiduals(modelSRXYL)
 testUniformity(sim)
@@ -15865,6 +15865,1363 @@ dev.off()
 
 ```{r}
 
+```
+
+# 10.5. Deperissement GLMM
+## 10.5.1. ab.colsx
+
+```{r}
+Final$longitude <- as.numeric(Final$longitude) ; Final$longitude
+Final$latitude <- as.numeric(Final$latitude) ; Final$latitude
+Final$strates <- as.factor(Final$strates)
+Final$placette <- as.factor(Final$placette)
+Final$strate <- as.factor(Final$strate)
+pos<-numFactor(scale(Final$longitude),scale(Final$latitude)) ; pos
+ID <- Final$placette ; ID
+is.factor(Final$strate)
+is.numeric(Final$ab.colsx)
+is.numeric(Final$num.trap)
+Final$LOCA <- as.factor(Final$LOCA)
+is.numeric(Final$note2)
+#
+descdist(entomo$ab.colsx,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$ab.colsx,"norm"))
+#
+fitnb<-fitdist(entomo$ab.colsx,"nbinom")
+plot(fitdist(entomo$ab.colsx,"nbinom"))
+#
+fitp<-fitdist(entomo$ab.colsx,"pois")
+plot(fitp)
+#
+fitn<-fitdist(entomo$ab.colsx,"norm")
+plot(fitn) # oui
+#
+fitlnorm<-fitdist(entomo$ab.colsx,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(entomo$ab.colsx,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$ab.colsx,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo$ab.colsx,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$ab.colsx,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$ab.colsx,"gamma",method="mme")
+plot(fitg) # oui
+#
+gofstat(fitnb)$chisqpvalue # 3
+gofstat(fitp)$chisqpvalue #
+gofstat(fitn)$chisqpvalue #
+gofstat(fitlnorm)$chisqpvalue # 1
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue #
+gofstat(fitg)$chisqpvalue # 2
+#
+mean_AC <- mean(entomo_AC$ab.colsx) ; mean_AC # 276.45
+sd_AC <- sd(entomo_AC$ab.colsx) ; sd_AC # 126.8681
+mean_UC <- mean(entomo_UC$ab.colsx) ; mean_UC # 331.65
+sd_UC <- sd(entomo_UC$ab.colsx) ; sd_UC # 160.7447
+mean_LC <- mean(entomo_LC$ab.colsx) ; mean_LC # 206.5
+sd_LC <- sd(entomo_LC$ab.colsx) ; sd_LC # 109.3524
+mean_BC <- mean(entomo_BC$ab.colsx) ; mean_BC # 180.55
+sd_BC <- sd(entomo_BC$ab.colsx) ; sd_BC # 84.40097
+#
+model_ABXDEPE_1 <- glmmTMB(
+  ab.colsx ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = truncated_nbinom2(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABXDEPE_1) 
+#
+model_ABXDEPE_2 <- glmmTMB(
+  ab.colsx ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = truncated_nbinom2(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABXDEPE_2)
+#
+model_ABXDEPE_3 <- glmmTMB(
+  ab.colsx ~ strate + note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = truncated_nbinom2(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABXDEPE_3)
+#
+model_ABXDEPE_4 <- glmmTMB(
+  ab.colsx ~ strate * note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = truncated_nbinom2(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABXDEPE_4)
+#
+AICc(model_ABXDEPE_1) # 942.452
+AICc(model_ABXDEPE_2) # 974.2258
+AICc(model_ABXDEPE_3) # 945.006
+AICc(model_ABXDEPE_4) # 944.976
+#
+anova(model_ABXDEPE_1, model_ABXDEPE_2) # 1.579e-08 ***
+anova(model_ABXDEPE_1, model_ABXDEPE_3) # 0.8018
+anova(model_ABXDEPE_1, model_ABXDEPE_4) # 0.07736 .
+anova(model_ABXDEPE_2, model_ABXDEPE_3) # 6.163e-08 ***
+anova(model_ABXDEPE_2, model_ABXDEPE_4) # 6.163e-08 ***
+anova(model_ABXDEPE_3, model_ABXDEPE_4) # 0.03919 *
+#
+sim<-simulateResiduals(model_ABXDEPE_1)
+testUniformity(sim)
+testOutliers(sim)
+# 
+RES<-glht(model_ABXDEPE_1, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***
+#
+# Graph de Tukey
+png("Tukey_abcolsx_depe.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : abcolsx")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
+```
+
+## 10.5.2. sr.colsx
+
+```{r}
+descdist(entomo$sr.colsx,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$sr.colsx,"norm")) # oui
+#
+fitnb<-fitdist(entomo$sr.colsx,"nbinom")
+plot(fitdist(entomo$sr.colsx,"nbinom"))
+#
+fitp<-fitdist(entomo$sr.colsx,"pois")
+plot(fitp)
+#
+fitn<-fitdist(entomo$sr.colsx,"norm")
+plot(fitn) # oui
+#
+fitlnorm<-fitdist(entomo$sr.colsx,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo$sr.colsx,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$sr.colsx,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo$sr.colsx,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$sr.colsx,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$sr.colsx,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1ère
+gofstat(fitp)$chisqpvalue
+gofstat(fitn)$chisqpvalue # 3ème
+gofstat(fitlnorm)$chisqpvalue # 4ème
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 2ème
+#
+mean_AC <- mean(entomo_AC$sr.colsx) ; mean_AC # 58.85
+sd_AC <- sd(entomo_AC$sr.colsx) ; sd_AC # 10.63893
+mean_UC <- mean(entomo_UC$sr.colsx) ; mean_UC # 68.65
+sd_UC <- sd(entomo_UC$sr.colsx) ; sd_UC # 13.25568
+mean_LC <- mean(entomo_LC$sr.colsx) ; mean_LC # 56.85
+sd_LC <- sd(entomo_LC$sr.colsx) ; sd_LC # 14.05356
+mean_BC <- mean(entomo_BC$sr.colsx) ; mean_BC # 54.05
+sd_BC <- sd(entomo_BC$sr.colsx) ; sd_BC # 10.57542
+#
+model_SRXDEPE_1 <- glmmTMB(
+  sr.colsx ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = gaussian(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRXDEPE_1) 
+#
+model_SRXDEPE_2 <- glmmTMB(
+  sr.colsx ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = gaussian(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRXDEPE_2)
+#
+model_SRXDEPE_3 <- glmmTMB(
+  sr.colsx ~ strate + note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = gaussian(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRXDEPE_3)
+#
+model_SRXDEPE_4 <- glmmTMB(
+  sr.colsx ~ strate * note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = gaussian(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRXDEPE_4)
+#
+AICc(model_SRXDEPE_1) # 641.5032
+AICc(model_SRXDEPE_2) # 650.8616
+AICc(model_SRXDEPE_3) # 643.7974
+AICc(model_SRXDEPE_4) # 646.5631
+#
+anova(model_SRXDEPE_1, model_SRXDEPE_2) # 0.0007847 ***
+anova(model_SRXDEPE_3, model_SRXDEPE_2) # 0.001847 **
+anova(model_SRXDEPE_4, model_SRXDEPE_2) # 0.001951 **
+anova(model_SRXDEPE_2, model_SRXDEPE_3) # 0.001847 **
+anova(model_SRXDEPE_2, model_SRXDEPE_4) # 0.001951 **
+anova(model_SRXDEPE_3, model_SRXDEPE_4) # 0.135
+#
+sim<-simulateResiduals(model_SRXDEPE_1)
+testUniformity(sim)
+testOutliers(sim)
+# 
+RES<-glht(model_SRXDEPE_1, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***
+#
+# Graph de Tukey
+png("Tukey_srcolsx_depe.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : sr.colsx")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
+```
+
+## 10.5.3. ab.colsxrar
+
+```{r}
+descdist(entomo$ab.colsxrar,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$ab.colsxrar,"norm")) # oui
+#
+fitnb<-fitdist(entomo$ab.colsxrar,"nbinom")
+plot(fitdist(entomo$ab.colsxrar,"nbinom"))
+#
+fitp<-fitdist(entomo$ab.colsxrar,"pois")
+plot(fitp)
+#
+fitn<-fitdist(entomo$ab.colsxrar,"norm")
+plot(fitn) # oui
+#
+fitlnorm<-fitdist(entomo$ab.colsxrar,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo$ab.colsxrar,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$ab.colsxrar,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo$ab.colsxrar,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$ab.colsxrar,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$ab.colsxrar,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1ère
+gofstat(fitp)$chisqpvalue
+gofstat(fitn)$chisqpvalue # 3
+gofstat(fitlnorm)$chisqpvalue # 4
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 2ème
+#
+mean_AC <- mean(entomo_AC$ab.colsxrar) ; mean_AC # 19.2
+sd_AC <- sd(entomo_AC$ab.colsxrar) ; sd_AC # 9.128325
+mean_UC <- mean(entomo_UC$ab.colsxrar) ; mean_UC # 34.3
+sd_UC <- sd(entomo_UC$ab.colsxrar) ; sd_UC # 16.94915
+mean_LC <- mean(entomo_LC$ab.colsxrar) ; mean_LC # 18.15
+sd_LC <- sd(entomo_LC$ab.colsxrar) ; sd_LC # 9.062793
+mean_BC <- mean(entomo_BC$ab.colsxrar) ; mean_BC # 7.9
+sd_BC <- sd(entomo_BC$ab.colsxrar) ; sd_BC # 5.848077
+#
+model_ABRARDEPE_1 <- glmmTMB(
+  ab.colsxrar ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = tweedie(link = "sqrt"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABRARDEPE_1) 
+#
+model_ABRARDEPE_2 <- glmmTMB(
+  ab.colsxrar ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = tweedie(link = "sqrt"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABRARDEPE_2)
+#
+model_ABRARDEPE_3 <- glmmTMB(
+  ab.colsxrar ~ strate + note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = nbinom1(link = "identity"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABRARDEPE_3)
+#
+model_ABRARDEPE_4 <- glmmTMB(
+  ab.colsxrar ~ strate * note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = nbinom1(link = "sqrt"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABRARDEPE_4)
+#
+AICc(model_ABRARDEPE_1) # 942.452
+AICc(model_ABRARDEPE_2) # 974.2258
+AICc(model_ABRARDEPE_3) # 945.006
+AICc(model_ABRARDEPE_4) # 944.976
+#
+anova(model_ABRARDEPE_1, model_ABRARDEPE_2) # 1.579e-08 ***
+anova(model_ABRARDEPE_1, model_ABRARDEPE_3) # 1.579e-08 ***
+anova(model_ABRARDEPE_1, model_ABRARDEPE_4) # 1.579e-08 ***
+anova(model_ABRARDEPE_2, model_ABRARDEPE_3) # 1.579e-08 ***
+anova(model_ABRARDEPE_2, model_ABRARDEPE_4) # 1.579e-08 ***
+anova(model_ABRARDEPE_3, model_ABRARDEPE_4) # 1.579e-08 ***
+#
+sim<-simulateResiduals(model_ABRARDEPE_1)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.5.4. sr.colsxrar
+
+```{r}
+descdist(entomo$sr.colsxrar,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$sr.colsxrar,"norm")) #
+#
+fitnb<-fitdist(entomo$sr.colsxrar,"nbinom")
+plot(fitdist(entomo$sr.colsxrar,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo$sr.colsxrar,"pois")
+plot(fitp) # oui
+#
+fitn<-fitdist(entomo$sr.colsxrar,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$sr.colsxrar,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo$sr.colsxrar,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$sr.colsxrar,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo$sr.colsxrar,"beta") # 
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$sr.colsxrar,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$sr.colsxrar,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 2ème
+gofstat(fitp)$chisqpvalue # 1ère
+gofstat(fitn)$chisqpvalue # 5
+gofstat(fitlnorm)$chisqpvalue # 4
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 3
+#
+mean_AC <- mean(entomo_AC$sr.colsxrar) ; mean_AC # 5.8
+sd_AC <- sd(entomo_AC$sr.colsxrar) ; sd_AC # 1.609184
+mean_UC <- mean(entomo_UC$sr.colsxrar) ; mean_UC # 8.35
+sd_UC <- sd(entomo_UC$sr.colsxrar) ; sd_UC # 2.641272
+mean_LC <- mean(entomo_LC$sr.colsxrar) ; mean_LC # 5.95
+sd_LC <- sd(entomo_LC$sr.colsxrar) ; sd_LC # 2.282081
+mean_BC <- mean(entomo_BC$sr.colsxrar) ; mean_BC # 3.95
+sd_BC <- sd(entomo_BC$sr.colsxrar) ; sd_BC # 1.700619
+#
+model_SRRARDEPE_1 <- glmmTMB(
+  sr.colsxrar ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = gaussian(link = "log"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRRARDEPE_1) 
+#
+model_SRRARDEPE_2 <- glmmTMB(
+  sr.colsxrar ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = lognormal(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRRARDEPE_2)
+#
+model_SRRARDEPE_3 <- glmmTMB(
+  sr.colsxrar ~ strate + note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = truncated_compois(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRRARDEPE_3)
+#
+model_SRRARDEPE_4 <- glmmTMB(
+  sr.colsxrar ~ strate * note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = truncated_compois(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRRARDEPE_4)
+#
+AICc(model_SRRARDEPE_1) # 942.452
+AICc(model_SRRARDEPE_2) # 974.2258
+AICc(model_SRRARDEPE_3) # 945.006
+AICc(model_SRRARDEPE_4) # 944.976
+#
+anova(model_SRRARDEPE_1, model_SRRARDEPE_2) # 1.579e-08 ***
+#
+sim<-simulateResiduals(model_SRRARDEPE_1)
+testUniformity(sim)
+testOutliers(sim)
+# 
+RES<-glht(model_SRRARDEPE_1, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***
+#
+# Graph de Tukey
+png("Tukey_srcolsxrar_depe.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : sr.colsxrar")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
+```
+
+## 10.5.5. ab.colsxcom
+
+```{r}
+descdist(entomo$ab.colsxcom,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$ab.colsxcom,"norm")) #
+#
+fitnb<-fitdist(entomo$ab.colsxcom,"nbinom")
+plot(fitdist(entomo$ab.colsxcom,"nbinom")) # 
+# 
+fitp<-fitdist(entomo$ab.colsxcom,"pois")
+plot(fitp) # 
+#
+fitn<-fitdist(entomo$ab.colsxcom,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$ab.colsxcom,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(entomo$ab.colsxcom,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$ab.colsxcom,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo$ab.colsxcom,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$ab.colsxcom,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$ab.colsxcom,"gamma",method="mme")
+plot(fitg) # oui
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 4
+gofstat(fitlnorm)$chisqpvalue # 1ère
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 3
+#
+mean_AC <- mean(entomo_AC$ab.colsxcom) ; mean_AC # 224.05
+sd_AC <- sd(entomo_AC$ab.colsxcom) ; sd_AC # 117.8793
+mean_UC <- mean(entomo_UC$ab.colsxcom) ; mean_UC # 248.2
+sd_UC <- sd(entomo_UC$ab.colsxcom) ; sd_UC # 142.8888
+mean_LC <- mean(entomo_LC$ab.colsxcom) ; mean_LC # 132.7
+sd_LC <- sd(entomo_LC$ab.colsxcom) ; sd_LC # 89.18172
+mean_BC <- mean(entomo_BC$ab.colsxcom) ; mean_BC # 132.7
+sd_BC <- sd(entomo_BC$ab.colsxcom) ; sd_BC # 78.80696
+#
+model_ABCOMDEPE_1 <- glmmTMB(
+  ab.colsxcom ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = tweedie(link = "sqrt"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABCOMDEPE_1) 
+#
+model_ABCOMDEPE_2 <- glmmTMB(
+  ab.colsxcom ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = truncated_nbinom1(link = "identity"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABCOMDEPE_2)
+#
+model_ABCOMDEPE_3 <- glmmTMB(
+  ab.colsxcom ~ strate + note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = truncated_nbinom2(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABCOMDEPE_3)
+#
+model_ABCOMDEPE_4 <- glmmTMB(
+  ab.colsxcom ~ strate * note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = truncated_compois(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABCOMDEPE_4)
+#
+AICc(model_ABCOMDEPE_1) # 942.452
+AICc(model_ABCOMDEPE_2) # 974.2258
+AICc(model_ABCOMDEPE_3) # 945.006
+AICc(model_ABCOMDEPE_4) # 944.976
+#
+anova(model_ABCOMDEPE_1, model_ABCOMDEPE_2) # 1.579e-08 ***
+anova(model_ABCOMDEPE_1, model_ABCOMDEPE_3) # 1.579e-08 ***
+anova(model_ABCOMDEPE_1, model_ABCOMDEPE_4) # 1.579e-08 ***
+anova(model_ABCOMDEPE_2, model_ABCOMDEPE_3) # 1.579e-08 ***
+anova(model_ABCOMDEPE_2, model_ABCOMDEPE_4) # 1.579e-08 ***
+anova(model_ABCOMDEPE_3, model_ABCOMDEPE_4) # 1.579e-08 ***
+#
+sim<-simulateResiduals(model_ABCOMDEPE_1)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.5.6. sr.colsxcom
+
+```{r}
+descdist(entomo$sr.colsxcom,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$sr.colsxcom,"norm")) #
+#
+fitnb<-fitdist(entomo$sr.colsxcom,"nbinom")
+plot(fitdist(entomo$sr.colsxcom,"nbinom")) # oui
+# 
+fitp<-fitdist(entomo$sr.colsxcom,"pois")
+plot(fitp) # 
+#
+fitn<-fitdist(entomo$sr.colsxcom,"norm")
+plot(fitn) # oui
+#
+fitlnorm<-fitdist(entomo$sr.colsxcom,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo$sr.colsxcom,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$sr.colsxcom,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo$sr.colsxcom,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$sr.colsxcom,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$sr.colsxcom,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1ère
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 4
+gofstat(fitlnorm)$chisqpvalue # 2
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 3
+#
+mean_AC <- mean(entomo_AC$sr.colsxcom) ; mean_AC # 48.15
+sd_AC <- sd(entomo_AC$sr.colsxcom) ; sd_AC # 9.178206
+mean_UC <- mean(entomo_UC$sr.colsxcom) ; mean_UC # 55.4
+sd_UC <- sd(entomo_UC$sr.colsxcom) ; sd_UC # 11.66371
+mean_LC <- mean(entomo_LC$sr.colsxcom) ; mean_LC # 46.45
+sd_LC <- sd(entomo_LC$sr.colsxcom) ; sd_LC # 11.96695
+mean_BC <- mean(entomo_BC$sr.colsxcom) ; mean_BC # 45.65
+sd_BC <- sd(entomo_BC$sr.colsxcom) ; sd_BC # 9.488359
+#
+model_SRCOMDEPE_1 <- glmmTMB(
+  sr.colsxcom ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = tweedie(link = "sqrt"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRCOMDEPE_1) 
+#
+model_SRCOMDEPE_2 <- glmmTMB(
+  sr.colsxcom ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = tweedie(link = "sqrt"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRCOMDEPE_2)
+#
+model_SRCOMDEPE_3 <- glmmTMB(
+  sr.colsxcom ~ strate + note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = tweedie(link = "sqrt"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRCOMDEPE_3)
+#
+model_SRCOMDEPE_4 <- glmmTMB(
+  sr.colsxcom ~ strate * note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = tweedie(link = "sqrt"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRCOMDEPE_4)
+#
+AICc(model_SRCOMDEPE_1) # 942.452
+AICc(model_SRCOMDEPE_2) # 974.2258
+AICc(model_SRCOMDEPE_3) # 945.006
+AICc(model_SRCOMDEPE_4) # 944.976
+#
+anova(model_SRCOMDEPE_1, model_SRCOMDEPE_2) # 1.579e-08 ***
+#
+sim<-simulateResiduals(model_SRCOMDEPE_1)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.5.7. ab.fon
+
+```{r}
+descdist(entomo$ab.fon,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$ab.fon,"norm")) #
+#
+fitnb<-fitdist(entomo$ab.fon,"nbinom")
+plot(fitdist(entomo$ab.fon,"nbinom")) # 
+# 
+fitp<-fitdist(entomo$ab.fon,"pois")
+plot(fitp) # 
+#
+fitn<-fitdist(entomo$ab.fon,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$ab.fon,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(entomo$ab.fon,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$ab.fon,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo$ab.fon,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$ab.fon,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$ab.fon,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 2ème
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 4
+gofstat(fitlnorm)$chisqpvalue # 1ère
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 3
+#
+mean_AC <- mean(entomo_AC$ab.fon) ; mean_AC # 131.75
+sd_AC <- sd(entomo_AC$ab.fon) ; sd_AC # 92.65549
+mean_UC <- mean(entomo_UC$ab.fon) ; mean_UC # 132.75
+sd_UC <- sd(entomo_UC$ab.fon) ; sd_UC # 78.77007
+mean_LC <- mean(entomo_LC$ab.fon) ; mean_LC # 124.6
+sd_LC <- sd(entomo_LC$ab.fon) ; sd_LC # 92.84078
+mean_BC <- mean(entomo_BC$ab.fon) ; mean_BC # 114.8
+sd_BC <- sd(entomo_BC$ab.fon) ; sd_BC # 74.63286
+#
+model_ABFONDEPE_1 <- glmmTMB(
+  ab.fon ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = tweedie(link = "sqrt"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABFONDEPE_1) 
+#
+model_ABFONDEPE_2 <- glmmTMB(
+  ab.fon ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = tweedie(link = "sqrt"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABFONDEPE_2)
+#
+model_ABFONDEPE_3 <- glmmTMB(
+  ab.fon ~ strate + note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = truncated_nbinom1(link = "sqrt"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABFONDEPE_3)
+#
+model_ABFONDEPE_4 <- glmmTMB(
+  ab.fon ~ strate * note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = nbinom2(link = "identity"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABFONDEPE_4)
+#
+AICc(model_ABFONDEPE_1) # 942.452
+AICc(model_ABFONDEPE_2) # 974.2258
+AICc(model_ABFONDEPE_3) # 945.006
+AICc(model_ABFONDEPE_4) # 944.976
+#
+anova(model_ABFONDEPE_1, model_ABFONDEPE_2) # 1.579e-08 ***
+#
+sim<-simulateResiduals(model_ABFONDEPE_1)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.5.8. sr.fon
+
+```{r}
+descdist(entomo$sr.fon,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$sr.fon,"norm")) #
+#
+fitnb<-fitdist(entomo$sr.fon,"nbinom")
+plot(fitdist(entomo$sr.fon,"nbinom")) # 
+# 
+fitp<-fitdist(entomo$sr.fon,"pois")
+plot(fitp) # oui
+#
+fitn<-fitdist(entomo$sr.fon,"norm")
+plot(fitn) # oui
+#
+fitlnorm<-fitdist(entomo$sr.fon,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo$sr.fon,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$sr.fon,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(entomo$sr.fon,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$sr.fon,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$sr.fon,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 4
+gofstat(fitp)$chisqpvalue # 1ère
+gofstat(fitn)$chisqpvalue # 5
+gofstat(fitlnorm)$chisqpvalue # 2ème
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 3
+#
+mean_AC <- mean(entomo_AC$sr.fon) ; mean_AC # 19.3
+sd_AC <- sd(entomo_AC$sr.fon) ; sd_AC # 3.419757
+mean_UC <- mean(entomo_UC$sr.fon) ; mean_UC # 22.05
+sd_UC <- sd(entomo_UC$sr.fon) ; sd_UC # 4.639362
+mean_LC <- mean(entomo_LC$sr.fon) ; mean_LC # 22.45
+sd_LC <- sd(entomo_LC$sr.fon) ; sd_LC # 4.639362
+mean_BC <- mean(entomo_BC$sr.fon) ; mean_BC # 21.85
+sd_BC <- sd(entomo_BC$sr.fon) ; sd_BC # 5.203996
+#
+model_SRFONDEPE_1 <- glmmTMB(
+  sr.fon ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = gaussian(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRFONDEPE_1) 
+#
+model_SRFONDEPE_2 <- glmmTMB(
+  sr.fon ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = truncated_nbinom2(link = "sqrt"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRFONDEPE_2)
+#
+model_SRFONDEPE_3 <- glmmTMB(
+  sr.fon ~ strate + note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = tweedie(link = "sqrt"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRFONDEPE_3)
+#
+model_SRFONDEPE_4 <- glmmTMB(
+  sr.fon ~ strate * note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = gaussian(link = "log"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRFONDEPE_4)
+#
+AICc(model_SRFONDEPE_1) # 942.452
+AICc(model_SRFONDEPE_2) # 974.2258
+AICc(model_SRFONDEPE_3) # 945.006
+AICc(model_SRFONDEPE_4) # 944.976
+#
+anova(model_SRFONDEPE_1, model_SRFONDEPE_2) # 1.579e-08 ***
+#
+sim<-simulateResiduals(model_SRFONDEPE_1)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.5.9. ab.lig
+
+```{r}
+descdist(entomo$ab.lig,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$ab.lig,"norm")) #
+#
+fitnb<-fitdist(entomo$ab.lig,"nbinom")
+plot(fitdist(entomo$ab.lig,"nbinom")) # 
+# 
+fitp<-fitdist(entomo$ab.lig,"pois")
+plot(fitp) # 
+#
+fitn<-fitdist(entomo$ab.lig,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$ab.lig,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(entomo$ab.lig,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$ab.lig,"geom")
+plot(fitgeom) # 
+#
+fitbeta<-fitdist(entomo$ab.lig,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$ab.lig,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$ab.lig,"gamma",method="mme")
+plot(fitg) #
+#
+gofstat(fitnb)$chisqpvalue # 2ème
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue # 4
+gofstat(fitlnorm)$chisqpvalue # 1ère
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 3
+#
+mean_AC <- mean(entomo_AC$ab.lig) ; mean_AC # 256.85
+sd_AC <- sd(entomo_AC$ab.lig) ; sd_AC # 126.2984
+mean_UC <- mean(entomo_UC$ab.lig) ; mean_UC # 312.25
+sd_UC <- sd(entomo_UC$ab.lig) ; sd_UC # 158.9601
+mean_LC <- mean(entomo_LC$ab.lig) ; mean_LC # 190.5
+sd_LC <- sd(entomo_LC$ab.lig) ; sd_LC # 106.1198
+mean_BC <- mean(entomo_BC$ab.lig) ; mean_BC # 167.4
+sd_BC <- sd(entomo_BC$ab.lig) ; sd_BC # 83.29428
+#
+model_ABLIGDEPE_1 <- glmmTMB(
+  ab.lig ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = nbinom1(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABLIGDEPE_1) 
+#
+model_ABLIGDEPE_2 <- glmmTMB(
+  ab.lig ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = nbinom1(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABLIGDEPE_2)
+#
+model_ABLIGDEPE_3 <- glmmTMB(
+  ab.lig ~ strate + note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = nbinom1(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABLIGDEPE_3)
+#
+model_ABLIGDEPE_4 <- glmmTMB(
+  ab.lig ~ strate * note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = nbinom1(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABLIGDEPE_4)
+#
+AICc(model_ABLIGDEPE_1) # 944.7495
+AICc(model_ABLIGDEPE_2) # 973.3119
+AICc(model_ABLIGDEPE_3) # 947.1381
+AICc(model_ABLIGDEPE_4) # 949.6311
+#
+anova(model_ABLIGDEPE_1, model_ABLIGDEPE_2) # 7.55e-08 ***
+anova(model_ABLIGDEPE_1, model_ABLIGDEPE_3) # 0.6327
+anova(model_ABLIGDEPE_1, model_ABLIGDEPE_4) # 0.1946
+anova(model_ABLIGDEPE_2, model_ABLIGDEPE_3) # 2.618e-07 ***
+anova(model_ABLIGDEPE_2, model_ABLIGDEPE_4) # 5.097e-07 ***
+anova(model_ABLIGDEPE_3, model_ABLIGDEPE_4) # 0.12
+#
+sim<-simulateResiduals(model_ABLIGDEPE_1)
+testUniformity(sim)
+testOutliers(sim)
+# 
+RES<-glht(model_ABLIGDEPE_1, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***
+#
+# Graph de Tukey
+png("Tukey_ablig_depe.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : ab.lig")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
+```
+
+## 10.5.10. sr.lig
+
+```{r}
+
+descdist(entomo$sr.lig,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$sr.lig,"norm")) #
+#
+fitnb<-fitdist(entomo$sr.lig,"nbinom")
+plot(fitdist(entomo$sr.lig,"nbinom")) # 
+# 
+fitp<-fitdist(entomo$sr.lig,"pois")
+plot(fitp) # 
+#
+fitn<-fitdist(entomo$sr.lig,"norm")
+plot(fitn) # oui
+#
+fitlnorm<-fitdist(entomo$sr.lig,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(entomo$sr.lig,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$sr.lig,"geom")
+plot(fitgeom) # 
+#
+fitbeta<-fitdist(entomo$sr.lig,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$sr.lig,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$sr.lig,"gamma",method="mme")
+plot(fitg) # oui
+#
+gofstat(fitnb)$chisqpvalue # 2ème
+gofstat(fitp)$chisqpvalue # 5
+gofstat(fitn)$chisqpvalue # 1ère
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 4ème
+#
+mean_AC <- mean(entomo_AC$sr.lig) ; mean_AC # 53.4
+sd_AC <- sd(entomo_AC$sr.lig) ; sd_AC # 10.22072
+mean_UC <- mean(entomo_UC$sr.lig) ; mean_UC # 61.65
+sd_UC <- sd(entomo_UC$sr.lig) ; sd_UC # 12.41932
+mean_LC <- mean(entomo_LC$sr.lig) ; mean_LC # 49.05
+sd_LC <- sd(entomo_LC$sr.lig) ; sd_LC # 12.19351
+mean_BC <- mean(entomo_BC$sr.lig) ; mean_BC # 47.25
+sd_BC <- sd(entomo_BC$sr.lig) ; sd_BC # 9.295585
+#
+model_SRLIGDEPE_1 <- glmmTMB(
+  sr.lig ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = tweedie(link = "sqrt"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRLIGDEPE_1) 
+###
+model_SRLIGDEPE_1_2 <- glmmTMB(
+  sr.lig ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = truncated_compois(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRLIGDEPE_1_2)
+#
+model_SRLIGDEPE_1_3 <- glmmTMB(
+  sr.lig ~ strate + note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = gaussian(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRLIGDEPE_1_3)
+#
+model_SRLIGDEPE_1_4 <- glmmTMB(
+  sr.lig ~ strate * note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = truncated_nbinom2(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRLIGDEPE_1_4)
+#
+AICc(model_SRLIGDEPE_1_1) # 942.452
+AICc(model_SRLIGDEPE_1_2) # 974.2258
+AICc(model_SRLIGDEPE_1_3) # 945.006
+AICc(model_SRLIGDEPE_1_4) # 944.976
+#
+anova(model_SRLIGDEPE_1_1, model_SRLIGDEPE_1_2) # 1.579e-08 ***
+anova(model_ABXDEPE_1, model_ABXDEPE_3) # 0.8018
+anova(model_ABXDEPE_1, model_ABXDEPE_4) # 0.07736 .
+anova(model_ABXDEPE_2, model_ABXDEPE_3) # 6.163e-08 ***
+anova(model_ABXDEPE_2, model_ABXDEPE_4) # 6.163e-08 ***
+anova(model_ABXDEPE_3, model_ABXDEPE_4) # 0.03919 *
+#
+sim<-simulateResiduals(model_SRLIGDEPE_1_1)
+testUniformity(sim)
+testOutliers(sim)
+```
+
+## 10.5.11. ab.xyl
+
+```{r}
+descdist(entomo$ab.xyl,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$ab.xyl,"norm")) #
+#
+fitnb<-fitdist(entomo$ab.xyl,"nbinom")
+plot(fitdist(entomo$ab.xyl,"nbinom")) #  
+# 
+fitp<-fitdist(entomo$ab.xyl,"pois")
+plot(fitp) # 
+#
+fitn<-fitdist(entomo$ab.xyl,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$ab.xyl,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(entomo$ab.xyl,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$ab.xyl,"geom")
+plot(fitgeom) # oui
+#
+fitbeta<-fitdist(entomo$ab.xyl,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$ab.xyl,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$ab.xyl,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 
+gofstat(fitn)$chisqpvalue #  4
+gofstat(fitlnorm)$chisqpvalue # 1
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 3
+#
+mean_AC <- mean(entomo_AC$ab.xyl) ; mean_AC # 88.7
+sd_AC <- sd(entomo_AC$ab.xyl) ; sd_AC # 96.13538
+mean_UC <- mean(entomo_UC$ab.xyl) ; mean_UC # 102.65
+sd_UC <- sd(entomo_UC$ab.xyl) ; sd_UC # 84.11726
+mean_LC <- mean(entomo_LC$ab.xyl) ; mean_LC # 61.7
+sd_LC <- sd(entomo_LC$ab.xyl) ; sd_LC # 76.15849
+mean_BC <- mean(entomo_BC$ab.xyl) ; mean_BC # 64.7
+sd_BC <- sd(entomo_BC$ab.xyl) ; sd_BC # 72.76863
+#
+model_ABXYLDEPE_1 <- glmmTMB(
+  ab.xyl ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = Gamma(link = "log"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABXYLDEPE_1) 
+#
+model_ABXYLDEPE_1_2 <- glmmTMB(
+  ab.xyl ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = Gamma(link = "log"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABXYLDEPE_1_2)
+#
+model_ABXYLDEPE_1_3 <- glmmTMB(
+  ab.xyl ~ strate + note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = Gamma(link = "log"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABXYLDEPE_1_3)
+#
+model_ABXYLDEPE_1_4 <- glmmTMB(
+  ab.xyl ~ strate * note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = Gamma(link = "log"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABXYLDEPE_1_4)
+#
+AICc(model_ABXYLDEPE_1) # 942.452
+AICc(model_ABXYLDEPE_1_2) # 974.2258
+AICc(model_ABXYLDEPE_1_3) # 945.006
+AICc(model_ABXYLDEPE_1_4) # 944.976
+#
+anova(model_ABXYLDEPE_1, model_ABXYLDEPE_1_2) # 2.108e-05 ***
+anova(model_ABXYLDEPE_1, model_ABXYLDEPE_1_3) # 0.4549
+anova(model_ABXYLDEPE_1, model_ABXYLDEPE_1_4) # 0.4459
+anova(model_ABXYLDEPE_1_2, model_ABXYLDEPE_1_3) # 5.241e-05 ***
+anova(model_ABXYLDEPE_1_2, model_ABXYLDEPE_1_4) # 0.0002137 ***
+anova(model_ABXYLDEPE_1_3, model_ABXYLDEPE_1_4) # 0.3681
+#
+sim<-simulateResiduals(model_ABXYLDEPE_1)
+testUniformity(sim)
+testOutliers(sim)
+# 
+RES<-glht(model_ABXYLDEPE_1, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 *** 0.00679 ** 0.00570 **
+#
+# Graph de Tukey
+png("Tukey_abxyl_depe.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : ab.xyl")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
+```
+
+## 10.5.12. sr.xyl
+
+```{r}
+descdist(entomo$sr.xyl,discrete=TRUE,boot=1001)
+plot(fitdist(entomo$sr.xyl,"norm")) #
+#
+fitnb<-fitdist(entomo$sr.xyl,"nbinom")
+plot(fitdist(entomo$sr.xyl,"nbinom")) #  oui
+# 
+fitp<-fitdist(entomo$sr.xyl,"pois")
+plot(fitp) # oui
+#
+fitn<-fitdist(entomo$sr.xyl,"norm")
+plot(fitn) # 
+#
+fitlnorm<-fitdist(entomo$sr.xyl,"lnorm")
+plot(fitlnorm) # 
+#
+fitexp<-fitdist(entomo$sr.xyl,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(entomo$sr.xyl,"geom")
+plot(fitgeom) # 
+#
+fitbeta<-fitdist(entomo$sr.xyl,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(entomo$sr.xyl,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(entomo$sr.xyl,"gamma",method="mme")
+plot(fitg) # 
+#
+gofstat(fitnb)$chisqpvalue # 1
+gofstat(fitp)$chisqpvalue # 5
+gofstat(fitn)$chisqpvalue # 4
+gofstat(fitlnorm)$chisqpvalue # 2
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue # 
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue
+gofstat(fitg)$chisqpvalue # 3
+#
+mean_AC <- mean(entomo_AC$sr.xyl) ; mean_AC # 18.7
+sd_AC <- sd(entomo_AC$sr.xyl) ; sd_AC # 3.570346
+mean_UC <- mean(entomo_UC$sr.xyl) ; mean_UC # 17
+sd_UC <- sd(entomo_UC$sr.xyl) ; sd_UC # 4.779342
+mean_LC <- mean(entomo_LC$sr.xyl) ; mean_LC # 11.8
+sd_LC <- sd(entomo_LC$sr.xyl) ; sd_LC # 3.458019
+mean_BC <- mean(entomo_BC$sr.xyl) ; mean_BC # 11.75
+sd_BC <- sd(entomo_BC$sr.xyl) ; sd_BC # 2.425197
+#
+model_SRXYLDEPE_1 <- glmmTMB(
+  sr.xyl ~ strate + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = gaussian(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRXYLDEPE_1) 
+#
+model_SRXYLDEPE_2 <- glmmTMB(
+  sr.xyl ~ 1 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)), 
+  family = gaussian(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRXYLDEPE_2)
+#
+model_SRXYLDEPE_3 <- glmmTMB(
+  sr.xyl ~ strate + note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = gaussian(link = "inverse"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRXYLDEPE_3)
+#
+model_SRXYLDEPE_4 <- glmmTMB(
+  sr.xyl ~ strate * note2 + (1 | LOCA / placette) + exp(pos + 0 | ID) + offset(log(prop.trap.season)),
+  family = truncated_nbinom2(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRXYLDEPE_4)
+#
+AICc(model_SRXYLDEPE_1) # 942.452
+AICc(model_SRXYLDEPE_2) # 974.2258
+AICc(model_SRXYLDEPE_3) # 945.006
+AICc(model_SRXYLDEPE_4) # 944.976
+#
+anova(model_SRXYLDEPE_1, model_SRXYLDEPE_2) # 1.579e-08 ***
+anova(model_ABXDEPE_1, model_ABXDEPE_3) # 0.8018
+anova(model_ABXDEPE_1, model_ABXDEPE_4) # 0.07736 .
+anova(model_ABXDEPE_2, model_ABXDEPE_3) # 6.163e-08 ***
+anova(model_ABXDEPE_2, model_ABXDEPE_4) # 6.163e-08 ***
+anova(model_ABXDEPE_3, model_ABXDEPE_4) # 0.03919 *
+#
+sim<-simulateResiduals(model_SRXYLDEPE_1)
+testUniformity(sim)
+testOutliers(sim)
+# 
+RES<-glht(model_SRXYLDEPE_1, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***
+#
+# Graph de Tukey
+png("Tukey_srxyl_depe.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : sr.xyl")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
 ```
 
 
