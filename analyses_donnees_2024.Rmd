@@ -16240,6 +16240,90 @@ anova(model_ABRARDEPE_3, model_ABRARDEPE_4) # 1.579e-08 ***
 sim<-simulateResiduals(model_ABRARDEPE_1)
 testUniformity(sim)
 testOutliers(sim)
+
+### Test sans l'auto-corrélation spatiale ###
+
+#
+model_ABRARDEPE_1 <- glmmTMB(
+  ab.colsxrar ~ strate + (1 | LOCA / placette)  + offset(log(prop.trap.season)),
+  family = nbinom1(link = "sqrt"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABRARDEPE_1) 
+#
+model_ABRARDEPE_2 <- glmmTMB(
+  ab.colsxrar ~ 1 + (1 | LOCA / placette)  + offset(log(prop.trap.season)), 
+  family = nbinom1(link = "sqrt"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABRARDEPE_2)
+#
+model_ABRARDEPE_3 <- glmmTMB(
+  ab.colsxrar ~ strate + note2 + (1 | LOCA / placette)  + offset(log(prop.trap.season)),
+  family = nbinom1(link = "sqrt"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABRARDEPE_3)
+#
+model_ABRARDEPE_4 <- glmmTMB(
+  ab.colsxrar ~ strate * note2 + (1 | LOCA / placette)  + offset(log(prop.trap.season)),
+  family = nbinom1(link = "sqrt"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABRARDEPE_4)
+#
+AICc(model_ABRARDEPE_1) # 585.6445
+AICc(model_ABRARDEPE_2) # 632.3928
+AICc(model_ABRARDEPE_3) # 651.7437
+AICc(model_ABRARDEPE_4) # 605.0703
+#
+anova(model_ABRARDEPE_1, model_ABRARDEPE_2) # 1.256e-11 ***
+anova(model_ABRARDEPE_1, model_ABRARDEPE_3) # 1
+anova(model_ABRARDEPE_1, model_ABRARDEPE_4) # 1
+anova(model_ABRARDEPE_2, model_ABRARDEPE_3) # 1
+anova(model_ABRARDEPE_2, model_ABRARDEPE_4) # 1.584e-07 ***
+anova(model_ABRARDEPE_3, model_ABRARDEPE_4) # 8.66e-12 ***
+#
+sim<-simulateResiduals(model_ABRARDEPE_1)
+testUniformity(sim)
+testOutliers(sim)
+# 
+RES<-glht(model_ABRARDEPE_1, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 *** < 1e-04 ***
+#
+# Graph de Tukey
+png("Tukey_abcolsxrar_depe_reduit.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : ab.colsxrar")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
 ```
 
 ## 10.5.4. sr.colsxrar
@@ -16328,12 +16412,55 @@ anova(model_SRRARDEPE_1, model_SRRARDEPE_2) # 1.579e-08 ***
 sim<-simulateResiduals(model_SRRARDEPE_1)
 testUniformity(sim)
 testOutliers(sim)
+
+### SANS ###
+
+#
+model_SRRARDEPE_1 <- glmmTMB(
+  sr.colsxrar ~ strate + (1 | LOCA / placette)  + offset(log(prop.trap.season)),
+  family = compois(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRRARDEPE_1) 
+#
+model_SRRARDEPE_2 <- glmmTMB(
+  sr.colsxrar ~ 1 + (1 | LOCA / placette)  + offset(log(prop.trap.season)), 
+  family = compois(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRRARDEPE_2)
+#
+model_SRRARDEPE_3 <- glmmTMB(
+  sr.colsxrar ~ strate + note2 + (1 | LOCA / placette)  + offset(log(prop.trap.season)),
+  family = compois(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRRARDEPE_3)
+#
+model_SRRARDEPE_4 <- glmmTMB(
+  sr.colsxrar ~ strate * note2 + (1 | LOCA / placette)  + offset(log(prop.trap.season)),
+  family = compois(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRRARDEPE_4)
+#
+AICc(model_SRRARDEPE_1) # 332.6012
+AICc(model_SRRARDEPE_2) # 374.7193
+AICc(model_SRRARDEPE_3) # 334.887
+AICc(model_SRRARDEPE_4) # 342.5762
+#
+anova(model_SRRARDEPE_1, model_SRRARDEPE_2) # 1.218e-10 ***
+anova(model_SRRARDEPE_1, model_SRRARDEPE_3) # 0.6656
+anova(model_SRRARDEPE_1, model_SRRARDEPE_4) # 0.9862
+anova(model_SRRARDEPE_2, model_SRRARDEPE_3) # 4.989e-10 ***
+anova(model_SRRARDEPE_2, model_SRRARDEPE_4) # 1.817e-08 ***
+anova(model_SRRARDEPE_3, model_SRRARDEPE_4) # 0.983
+#
+sim<-simulateResiduals(model_SRRARDEPE_1)
+testUniformity(sim)
+testOutliers(sim)
 # 
 RES<-glht(model_SRRARDEPE_1, linfct = mcp(strate = "Tukey"))
-summary(RES) # < 0.001 ***
+summary(RES) # < 0.001 *** 0.00157 ** 0.00473 **
 #
 # Graph de Tukey
-png("Tukey_srcolsxrar_depe.png", width = 900, height = 500)
+png("Tukey_srcolsxrar_depe_reduit.png", width = 900, height = 500)
 par(mar = c(5, 8, 4, 2))
 pvalues <- adjusted()(RES)$pvalues
 ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
@@ -16462,6 +16589,89 @@ anova(model_ABCOMDEPE_3, model_ABCOMDEPE_4) # 1.579e-08 ***
 sim<-simulateResiduals(model_ABCOMDEPE_1)
 testUniformity(sim)
 testOutliers(sim)
+
+### sans
+
+model_ABCOMDEPE_1 <- glmmTMB(
+  ab.colsxcom ~ strate + (1 | LOCA / placette)  + offset(log(prop.trap.season)),
+  family = nbinom1(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABCOMDEPE_1) 
+#
+model_ABCOMDEPE_2 <- glmmTMB(
+  ab.colsxcom ~ 1 + (1 | LOCA / placette)  + offset(log(prop.trap.season)), 
+  family = nbinom1(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABCOMDEPE_2)
+#
+model_ABCOMDEPE_3 <- glmmTMB(
+  ab.colsxcom ~ strate + note2 + (1 | LOCA / placette) + offset(log(prop.trap.season)),
+  family = nbinom1(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABCOMDEPE_3)
+#
+model_ABCOMDEPE_4 <- glmmTMB(
+  ab.colsxcom ~ strate * note2 + (1 | LOCA / placette) + offset(log(prop.trap.season)),
+  family = nbinom1(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABCOMDEPE_4)
+#
+AICc(model_ABCOMDEPE_1) # 920.8082
+AICc(model_ABCOMDEPE_2) # 949.0211
+AICc(model_ABCOMDEPE_3) # 923.0449
+AICc(model_ABCOMDEPE_4) # 926.4042
+#
+anova(model_ABCOMDEPE_1, model_ABCOMDEPE_2) # 1.087e-07 ***
+anova(model_ABCOMDEPE_1, model_ABCOMDEPE_3) # 0.6272
+anova(model_ABCOMDEPE_1, model_ABCOMDEPE_4) # 0.3161
+anova(model_ABCOMDEPE_2, model_ABCOMDEPE_3) # 3.717e-07 ***
+anova(model_ABCOMDEPE_2, model_ABCOMDEPE_4) # 1.278e-06 ***
+anova(model_ABCOMDEPE_3, model_ABCOMDEPE_4) # 0.2127
+#
+sim<-simulateResiduals(model_ABCOMDEPE_1)
+testUniformity(sim)
+testOutliers(sim)
+#
+RES<-glht(model_ABCOMDEPE_1, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 *** 0.00191 **
+
+# Graph de Tukey
+png("Tukey_abcolsxcom_depe_reduit.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : ab.colsxcom")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
 ```
 
 ## 10.5.6. sr.colsxcom
@@ -16550,6 +16760,94 @@ anova(model_SRCOMDEPE_1, model_SRCOMDEPE_2) # 1.579e-08 ***
 sim<-simulateResiduals(model_SRCOMDEPE_1)
 testUniformity(sim)
 testOutliers(sim)
+
+### sans ###
+
+model_SRCOMDEPE_1 <- glmmTMB(
+  sr.colsxcom ~ strate + (1 | LOCA / placette)  + offset(log(prop.trap.season)),
+  family = nbinom1(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRCOMDEPE_1) 
+#
+model_SRCOMDEPE_2 <- glmmTMB(
+  sr.colsxcom ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = nbinom1(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRCOMDEPE_2)
+#
+model_SRCOMDEPE_3 <- glmmTMB(
+  sr.colsxcom ~ strate + note2 + (1 | LOCA / placette) + offset(log(prop.trap.season)),
+  family = nbinom1(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRCOMDEPE_3)
+#
+model_SRCOMDEPE_4 <- glmmTMB(
+  sr.colsxcom ~ strate * note2 + (1 | LOCA / placette) + offset(log(prop.trap.season)),
+  family = nbinom1(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRCOMDEPE_4)
+#
+AICc(model_SRCOMDEPE_1) # 591.7188
+AICc(model_SRCOMDEPE_2) # 600.9851
+AICc(model_SRCOMDEPE_3) # 591.1507
+AICc(model_SRCOMDEPE_4) # 588.4197
+#
+anova(model_SRCOMDEPE_1, model_SRCOMDEPE_2) # 0.0009895 ***
+anova(model_SRCOMDEPE_1, model_SRCOMDEPE_3) # 0.0812 .
+anova(model_SRCOMDEPE_1, model_SRCOMDEPE_4) # 0.00859 **
+anova(model_SRCOMDEPE_2, model_SRCOMDEPE_3) # 0.0006771 ***
+anova(model_SRCOMDEPE_2, model_SRCOMDEPE_4) # 9.845e-05 ***
+anova(model_SRCOMDEPE_3, model_SRCOMDEPE_4) # 0.01419 *
+#
+sim<-simulateResiduals(model_SRCOMDEPE_4)
+testUniformity(sim)
+testOutliers(sim)
+#
+library(emmeans)
+comp <- emmeans(model_SRCOMDEPE_4, ~ strate * note2, data = Final)
+pairwise_comp <- contrast(comp, method = "pairwise", adjust = "tukey") ; summary(pairwise_comp)
+RES <- as.glht(pairwise_comp)
+summary_res <- summary(RES)
+names(summary_res$test$coefficients) <- gsub("note2[0-9\\.]+", "note2", names(summary_res$test$coefficients))
+print(summary_res)
+#
+# Graph de Tukey
+png("Tukey_srcolsxcom_depe_reduit.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : sr.colsxcom")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
 ```
 
 ## 10.5.7. ab.fon
@@ -16638,6 +16936,56 @@ anova(model_ABFONDEPE_1, model_ABFONDEPE_2) # 1.579e-08 ***
 sim<-simulateResiduals(model_ABFONDEPE_1)
 testUniformity(sim)
 testOutliers(sim)
+
+### sans ###
+
+model_ABFONDEPE_1 <- glmmTMB(
+  ab.fon ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)),
+  family = lognormal(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABFONDEPE_1) 
+#
+model_ABFONDEPE_2 <- glmmTMB(
+  ab.fon ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = lognormal(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABFONDEPE_2)
+#
+model_ABFONDEPE_3 <- glmmTMB(
+  ab.fon ~ strate + note2 + (1 | LOCA / placette) + offset(log(prop.trap.season)),
+  family = lognormal(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABFONDEPE_3)
+#
+model_ABFONDEPE_4 <- glmmTMB(
+  ab.fon ~ strate * note2 + (1 | LOCA / placette) + offset(log(prop.trap.season)),
+  family = lognormal(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_ABFONDEPE_4)
+#
+AICc(model_ABFONDEPE_1) # 861.6836
+AICc(model_ABFONDEPE_2) # 863.6748
+AICc(model_ABFONDEPE_3) # 863.9797
+AICc(model_ABFONDEPE_4) # 853.5362
+#
+anova(model_ABFONDEPE_1, model_ABFONDEPE_2) # 0.02911 *
+anova(model_ABFONDEPE_1, model_ABFONDEPE_3) # 0.6744
+anova(model_ABFONDEPE_1, model_ABFONDEPE_4) # 0.0009967 ***
+anova(model_ABFONDEPE_2, model_ABFONDEPE_3) # 0.05652 .
+anova(model_ABFONDEPE_2, model_ABFONDEPE_4) # 0.0002722 ***
+anova(model_ABFONDEPE_3, model_ABFONDEPE_4) # 0.0003818 ***
+#
+sim<-simulateResiduals(model_ABFONDEPE_4)
+testUniformity(sim)
+testOutliers(sim)
+#
+comp <- emmeans(model_ABFONDEPE_4, ~ strate * note2, data = Final)
+pairwise_comp <- contrast(comp, method = "pairwise", adjust = "tukey") ; summary(pairwise_comp)
+RES <- as.glht(pairwise_comp) 
+summary_res <- summary(RES)
+names(summary_res$test$coefficients) <- gsub("note2[0-9\\.]+", "note2", names(summary_res$test$coefficients))
+print(summary_res)
+#
 ```
 
 ## 10.5.8. sr.fon
@@ -16724,6 +17072,48 @@ AICc(model_SRFONDEPE_4) # 944.976
 anova(model_SRFONDEPE_1, model_SRFONDEPE_2) # 1.579e-08 ***
 #
 sim<-simulateResiduals(model_SRFONDEPE_1)
+testUniformity(sim)
+testOutliers(sim)
+
+### sans ###
+
+model_SRFONDEPE_1 <- glmmTMB(
+  sr.fon ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)),
+  family = compois(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRFONDEPE_1) 
+#
+model_SRFONDEPE_2 <- glmmTMB(
+  sr.fon ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = compois(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRFONDEPE_2)
+#
+model_SRFONDEPE_3 <- glmmTMB(
+  sr.fon ~ strate + note2 + (1 | LOCA / placette) + offset(log(prop.trap.season)),
+  family = compois(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRFONDEPE_3)
+#
+model_SRFONDEPE_4 <- glmmTMB(
+  sr.fon ~ strate * note2 + (1 | LOCA / placette) + offset(log(prop.trap.season)),
+  family = compois(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRFONDEPE_4)
+#
+AICc(model_SRFONDEPE_1) # 470.3431
+AICc(model_SRFONDEPE_2) # 478.323
+AICc(model_SRFONDEPE_3) # 470.664
+AICc(model_SRFONDEPE_4) # 467.9995
+#
+anova(model_SRFONDEPE_1, model_SRFONDEPE_2) # 0.001815 **
+anova(model_SRFONDEPE_1, model_SRFONDEPE_3) # 0.1424
+anova(model_SRFONDEPE_1, model_SRFONDEPE_4) # 0.013 *
+anova(model_SRFONDEPE_2, model_SRFONDEPE_3) # 0.001804 **
+anova(model_SRFONDEPE_2, model_SRFONDEPE_4) # 0.000252 ***
+anova(model_SRFONDEPE_3, model_SRFONDEPE_4) # 0.01463 *
+#
+sim<-simulateResiduals(model_SRFONDEPE_4)
 testUniformity(sim)
 testOutliers(sim)
 ```
@@ -16954,6 +17344,89 @@ anova(model_ABXDEPE_3, model_ABXDEPE_4) # 0.03919 *
 sim<-simulateResiduals(model_SRLIGDEPE_1_1)
 testUniformity(sim)
 testOutliers(sim)
+
+### sans ###
+
+model_SRLIGDEPE_1 <- glmmTMB(
+  sr.lig ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)),
+  family = gaussian(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRLIGDEPE_1) 
+###
+model_SRLIGDEPE_1_2 <- glmmTMB(
+  sr.lig ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = gaussian(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRLIGDEPE_1_2)
+#
+model_SRLIGDEPE_1_3 <- glmmTMB(
+  sr.lig ~ strate + note2 + (1 | LOCA / placette) + offset(log(prop.trap.season)),
+  family = gaussian(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRLIGDEPE_1_3)
+#
+model_SRLIGDEPE_1_4 <- glmmTMB(
+  sr.lig ~ strate * note2 + (1 | LOCA / placette) + offset(log(prop.trap.season)),
+  family = gaussian(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRLIGDEPE_1_4)
+#
+AICc(model_SRLIGDEPE_1) # 620.5829
+AICc(model_SRLIGDEPE_1_2) # 634.0627
+AICc(model_SRLIGDEPE_1_3) # 622.6098
+AICc(model_SRLIGDEPE_1_4) # 626.3415
+#
+anova(model_SRLIGDEPE_1, model_SRLIGDEPE_1_2) # 0.0001336 ***
+anova(model_SRLIGDEPE_1, model_SRLIGDEPE_1_3) # 0.5044
+anova(model_SRLIGDEPE_1, model_SRLIGDEPE_1_4) # 0.3345
+anova(model_SRLIGDEPE_1_2, model_SRLIGDEPE_1_3) # 0.0003243 ***
+anova(model_SRLIGDEPE_1_2, model_SRLIGDEPE_1_4) # 0.0007374 ***
+anova(model_SRLIGDEPE_1_3, model_SRLIGDEPE_1_4) # 0.2485
+#
+sim<-simulateResiduals(model_SRLIGDEPE_1)
+testUniformity(sim)
+testOutliers(sim)
+# 
+RES<-glht(model_SRLIGDEPE_1, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***
+#
+# Graph de Tukey
+png("Tukey_srlig_depe_reduit.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+pvalues <- adjusted()(RES)$pvalues
+ci.glht <- confint(RES) # confint(RES, level = 0.9) pour changer le seuil de significativité
+plot(ci.glht, col = ifelse(pvalues < 0.008, "red", "black"),
+     xlab = "difference in mean levels : sr.lig")
+#
+res_sum <- summary(RES)
+pvals <- res_sum$test$pvalues
+# Fonction pour étoiles de significativité
+stars_signif <- function(p) {
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+# Calculer les étoiles
+stars <- sapply(pvals, stars_signif)
+pvals_text <- format(pvals, digits = 5)
+# Nombre de comparaisons
+n_comp <- length(pvals)
+# Position y (de haut en bas)
+y_pos <- seq(n_comp, 1)
+# Extraction des bornes supérieures des intervalles
+conf_int <- confint(RES)$confint[, "upr"]
+# Position x un peu au-dessus des bornes supérieures
+x_pos <- conf_int + 0.05 * diff(range(conf_int))
+# Texte p-values non arrondies + étoiles, collés ensemble
+labels <- ifelse(pvals < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", pvals), " ", stars))
+# Ajouter le texte au-dessus des intervalles
+text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+#
+dev.off()
 ```
 
 ## 10.5.11. ab.xyl
@@ -17181,6 +17654,48 @@ anova(model_ABXDEPE_3, model_ABXDEPE_4) # 0.03919 *
 sim<-simulateResiduals(model_SRXYLDEPE_1)
 testUniformity(sim)
 testOutliers(sim)
+
+### sans ###
+
+model_SRXYLDEPE_1 <- glmmTMB(
+  sr.xyl ~ strate + (1 | LOCA / placette) + offset(log(prop.trap.season)),
+  family = gaussian(link = "log"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRXYLDEPE_1) 
+#
+model_SRXYLDEPE_2 <- glmmTMB(
+  sr.xyl ~ 1 + (1 | LOCA / placette) + offset(log(prop.trap.season)), 
+  family = tweedie(link = "sqrt"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRXYLDEPE_2)
+#
+model_SRXYLDEPE_3 <- glmmTMB(
+  sr.xyl ~ strate + note2 + (1 | LOCA / placette) + offset(log(prop.trap.season)),
+  family = gaussian(link = "inverse"), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRXYLDEPE_3)
+#
+model_SRXYLDEPE_4 <- glmmTMB(
+  sr.xyl ~ strate * note2 + (1 | LOCA / placette) + offset(log(prop.trap.season)),
+  family = truncated_nbinom2(), 
+  data = Final, 
+  na.action = na.fail) ; summary(model_SRXYLDEPE_4)
+#
+AICc(model_SRXYLDEPE_1) # 942.452
+AICc(model_SRXYLDEPE_2) # 974.2258
+AICc(model_SRXYLDEPE_3) # 945.006
+AICc(model_SRXYLDEPE_4) # 944.976
+#
+anova(model_SRXYLDEPE_1, model_SRXYLDEPE_2) # 1.579e-08 ***
+anova(model_SRXYLDEPE_1, model_SRXYLDEPE_3) # 0.8018
+anova(model_SRXYLDEPE_1, model_SRXYLDEPE_4) # 0.07736 .
+anova(model_SRXYLDEPE_2, model_SRXYLDEPE_3) # 6.163e-08 ***
+anova(model_SRXYLDEPE_2, model_SRXYLDEPE_4) # 6.163e-08 ***
+anova(model_SRXYLDEPE_3, model_SRXYLDEPE_4) # 0.03919 *
+#
+sim<-simulateResiduals(model_SRXYLDEPE_1)
+testUniformity(sim)
+testOutliers(sim)
 # 
 RES<-glht(model_SRXYLDEPE_1, linfct = mcp(strate = "Tukey"))
 summary(RES) # < 0.001 ***
@@ -17284,7 +17799,7 @@ ggsave("strate_effects_chisqvalue.png", plot = strate_effects_chisqvalue, width 
 
 ```{r}
 library(purrr)
-c("here", "readxl", "dplyr", "tidyverse", "stringr", "ggplot2", "gridExtra", "fitdistrplus", "glmmTMB", "AICcmodavg", "DHARMa", "multcomp", "vegan", "tidyr", "pairwiseAdonis", "RVAideMemoire", "dendextend", "permute", "indicspecies", "pheatmap") %>%
+c("here", "readxl", "dplyr", "tidyverse", "stringr", "ggplot2", "gridExtra", "fitdistrplus", "glmmTMB", "AICcmodavg", "DHARMa", "multcomp", "vegan", "tidyr", "pairwiseAdonis", "RVAideMemoire", "dendextend", "permute", "indicspecies", "pheatmap", "emmeans") %>%
   map(citation) %>%
   print(style = "text")
 
@@ -17398,6 +17913,9 @@ c("here", "readxl", "dplyr", "tidyverse", "stringr", "ggplot2", "gridExtra", "fi
 # [[20]]
 # Kolde R (2025). _pheatmap: Pretty Heatmaps_. R package version 1.0.13,
 # <https://CRAN.R-project.org/package=pheatmap>.
-
+#
+# [[21]]
+# Lenth R (2025). _emmeans: Estimated Marginal Means, aka Least-Squares Means_.
+# R package version 1.11.1, <https://CRAN.R-project.org/package=emmeans>.
 ```
 
