@@ -1,0 +1,57 @@
+Y;Effect;Releve;Groupe,var;County;chisq,value;pval (originale);pval
+ab,colsx;Stratum effect;R1;General;Centre Val-de-Loire;7,4425;N.S;N.S
+sr,colsx;Stratum effect;R1;General;Centre Val-de-Loire;0,5588;N.S;N.S
+ab,colsxrar;Stratum effect;R1;General;Centre Val-de-Loire;;;
+sr,colsxrar;Stratum effect;R1;General;Centre Val-de-Loire;6,2742;N.S;N.S
+ab,colsxcom;Stratum effect;R1;General;Centre Val-de-Loire;10,945;P < 0,05;N.S
+sr,colsxcom;Stratum effect;R1;General;Centre Val-de-Loire;;;
+ab,fon;Stratum effect;R1;Microhabitat Guilds;Centre Val-de-Loire;3,7424;N.S;N.S
+sr,fon;Stratum effect;R1;Microhabitat Guilds;Centre Val-de-Loire;5,3261;N.S;N.S
+ab,lig;Stratum effect;R1;Microhabitat Guilds;Centre Val-de-Loire;6,2254;N.S;N.S
+sr,lig;Stratum effect;R1;Microhabitat Guilds;Centre Val-de-Loire;0,6478;N.S;N.S
+ab,xyl;Stratum effect;R1;Trophic Guilds;Centre Val-de-Loire;4,9945;N.S;N.S
+sr,xyl;Stratum effect;R1;Trophic Guilds;Centre Val-de-Loire;5,333;N.S;N.S
+ab,colsxrsx;Stratum effect;R1;Microhabitat Guilds;Centre Val-de-Loire;;;
+sr,colsxsrx;Stratum effect;R1;Microhabitat Guilds;Centre Val-de-Loire;;;
+ab,colsx;Stratum effect;R2;General;Centre Val-de-Loire;32,083;P < 0,001;P < 0,001
+sr,colsx;Stratum effect;R2;General;Centre Val-de-Loire;29,578;P < 0,001;P < 0,001
+ab,colsxrar;Stratum effect;R2;General;Centre Val-de-Loire;29,227;P < 0,001;P < 0,001
+sr,colsxrar;Stratum effect;R2;General;Centre Val-de-Loire;36,283;P < 0,001;P < 0,001
+ab,colsxcom;Stratum effect;R2;General;Centre Val-de-Loire;48,412;P < 0,001;P < 0,001
+sr,colsxcom;Stratum effect;R2;General;Centre Val-de-Loire;24,983;P < 0,001;P < 0,001
+ab,fon;Stratum effect;R2;Microhabitat Guilds;Centre Val-de-Loire;;;
+sr,fon;Stratum effect;R2;Microhabitat Guilds;Centre Val-de-Loire;;;
+ab,lig;Stratum effect;R2;Microhabitat Guilds;Centre Val-de-Loire;34,673;P < 0,001;P < 0,001
+sr,lig;Stratum effect;R2;Microhabitat Guilds;Centre Val-de-Loire;29,068;P < 0,001;P < 0,001
+ab,xyl;Stratum effect;R2;Trophic Guilds;Centre Val-de-Loire;26,741;P < 0,001;P < 0,001
+sr,xyl;Stratum effect;R2;Trophic Guilds;Centre Val-de-Loire;29,258;P < 0,001;P < 0,001
+ab,colsxrsx;Stratum effect;R2;Microhabitat Guilds;Centre Val-de-Loire;;;
+sr,colsxsrx;Stratum effect;R2;Microhabitat Guilds;Centre Val-de-Loire;;;
+ab,colsx;Stratum effect;R3;General;Centre Val-de-Loire;19,419;P < 0,001;P < 0,001
+sr,colsx;Stratum effect;R3;General;Centre Val-de-Loire;31,938;P < 0,001;P < 0,001
+ab,colsxrar;Stratum effect;R3;General;Centre Val-de-Loire;;;
+sr,colsxrar;Stratum effect;R3;General;Centre Val-de-Loire;42,06;P < 0,001;P < 0,001
+ab,colsxcom;Stratum effect;R3;General;Centre Val-de-Loire;26,017;P < 0,001;P < 0,001
+sr,colsxcom;Stratum effect;R3;General;Centre Val-de-Loire;25,519;P < 0,001;P < 0,001
+ab,fon;Stratum effect;R3;Microhabitat Guilds;Centre Val-de-Loire;7,9107;P < 0,05;N.S
+sr,fon;Stratum effect;R3;Microhabitat Guilds;Centre Val-de-Loire;7,2233;N.S;N.S
+ab,lig;Stratum effect;R3;Microhabitat Guilds;Centre Val-de-Loire;;;
+sr,lig;Stratum effect;R3;Microhabitat Guilds;Centre Val-de-Loire;31,402;P < 0,001;P < 0,001
+ab,xyl;Stratum effect;R3;Trophic Guilds;Centre Val-de-Loire;;;
+sr,xyl;Stratum effect;R3;Trophic Guilds;Centre Val-de-Loire;;;
+ab,colsxrsx;Stratum effect;R3;Microhabitat Guilds;Centre Val-de-Loire;;;
+sr,colsxsrx;Stratum effect;R3;Microhabitat Guilds;Centre Val-de-Loire;;;
+ab,colsx;Stratum effect;R4-5;General;Centre Val-de-Loire;;;
+sr,colsx;Stratum effect;R4-5;General;Centre Val-de-Loire;12,803;P < 0,01;N.S
+ab,colsxrar;Stratum effect;R4-5;General;Centre Val-de-Loire;;;
+sr,colsxrar;Stratum effect;R4-5;General;Centre Val-de-Loire;15,512;P < 0,01;N.S
+ab,colsxcom;Stratum effect;R4-5;General;Centre Val-de-Loire;25,476;P < 0,001;P < 0,001
+sr,colsxcom;Stratum effect;R4-5;General;Centre Val-de-Loire;11,762;P < 0,01;N.S
+ab,fon;Stratum effect;R4-5;Microhabitat Guilds;Centre Val-de-Loire;1,7068;N.S;N.S
+sr,fon;Stratum effect;R4-5;Microhabitat Guilds;Centre Val-de-Loire;0,3079;N.S;N.S
+ab,lig;Stratum effect;R4-5;Microhabitat Guilds;Centre Val-de-Loire;24,453;P < 0,001;P < 0,001
+sr,lig;Stratum effect;R4-5;Microhabitat Guilds;Centre Val-de-Loire;16,039;P < 0,01;N.S
+ab,xyl;Stratum effect;R4-5;Trophic Guilds;Centre Val-de-Loire;18,897;P < 0,001;P < 0,001
+sr,xyl;Stratum effect;R4-5;Trophic Guilds;Centre Val-de-Loire;20,751;P < 0,001;P < 0,001
+ab,colsxrsx;Stratum effect;R4-5;Microhabitat Guilds;Centre Val-de-Loire;;;
+sr,colsxsrx;Stratum effect;R4-5;Microhabitat Guilds;Centre Val-de-Loire;;;

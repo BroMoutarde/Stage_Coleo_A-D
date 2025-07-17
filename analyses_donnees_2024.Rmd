@@ -14871,10 +14871,10 @@ modelABCOLSXR4_R5_2 <- glmmTMB(
   data = entomo_R4_R5, 
   na.action = na.fail) ; summary(modelABCOLSXR4_R5_2)
 #
-AICc(modelABCOLSXR4_R5) # 493.7308
-AICc(modelABCOLSXR4_R5_2) # 517.6467
+AICc(modelABCOLSXR4_R5) # 
+AICc(modelABCOLSXR4_R5_2) #
 #
-anova(modelABCOLSXR4_R5,modelABCOLSXR4_R5_2) # 6.993e-07 ***
+anova(modelABCOLSXR4_R5,modelABCOLSXR4_R5_2) # 
 #
 sim<-simulateResiduals(modelABCOLSXR4_R5)
 testUniformity(sim)
@@ -17739,12 +17739,477 @@ text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col 
 dev.off()
 ```
 
+## 10.5.13. ab.colsxrsx
 
-# 11. Graphs GLMM all samples
+## 10.5.14. sr.colsxrsx
+
+# 10.6. NMDS depe
+
+```{r}
+  # pente de l’effet dépérissement est différente selon les modalités du facteur strate :
+library(emmeans)
+emtrends(mod_int, ~ strate, var = "depe")
+emtrends(mod_int, ~ strate, var = " depe ") %>% pairs()
+
+
+```
+
+
+# 11. Dissim inter-strates : temporatité des relevés
+
+```{r}
+  # Data matrices pieges releves CB
+matrices_releves <- read.table(here::here("Data", "Data placettes", "DATA_placette_CANOPIX", "metriques_CB", "matrix_spcolsx_pieges_releves.txt"), sep = "\t", dec = ".", quote = "\"", stringsAsFactors = F, header = T)
+  # Filtrer par relevé
+matrices_releve_R1 <- matrices_releves %>%
+  filter(num.releve == "R1") %>%
+  mutate(strate = as.factor(strate))
+matrices_releve_R2 <- matrices_releves %>%
+  filter(num.releve == "R2") %>%
+  mutate(strate = as.factor(strate))
+matrices_releve_R3 <- matrices_releves %>%
+  filter(num.releve == "R3") %>%
+  mutate(strate = as.factor(strate))
+matrices_releve_R4 <- matrices_releves %>%
+  filter(num.releve == "R4") %>%
+  mutate(strate = as.factor(strate))
+matrices_releve_R5 <- matrices_releves %>%
+  filter(num.releve == "R5") %>%
+  mutate(strate = as.factor(strate))
+
+  # NMDS ordination :
+nmds_R1<-metaMDS(matrices_releve_R1[,8 : 382], distance = "bray", k = 3, autotransform = T, trymax = 200)
+nmds_R2<-metaMDS(matrices_releve_R2[,8 : 382], distance = "bray", k = 3, autotransform = T, trymax = 200)
+nmds_R3<-metaMDS(matrices_releve_R3[,8 : 382], distance = "bray", k = 3, autotransform = T, trymax = 200)
+nmds_R4<-metaMDS(matrices_releve_R4[,8 : 382], distance = "bray", k = 3, autotransform = T, trymax = 200)
+nmds_R5<-metaMDS(matrices_releve_R5[,8 : 382], distance = "bray", k = 3, autotransform = T, trymax = 200)
+#
+nmds_R1$stress # 0.208383, < 0.25 
+nmds_R2$stress # 0.2046406, < 0.25 
+nmds_R3$stress # 0.2001765, < 0.25 
+nmds_R4$stress # 0.1857929, < 0.25 
+nmds_R5$stress # 0.2236167, < 0.25 
+#
+pdf("nmds_species_ellipse_R1.pdf", width = 15, height = 12)
+ordiplot(nmds_R1, type = "n") # Traçage des axes
+orditorp (nmds_R1, display = "sites", cex = 0.6) # Visu des sites
+ordiellipse(nmds_R1, 
+            matrices_releve_R1$strate,
+            kind = "sd", 
+            label = T, 
+            cex = 1,
+            col = c("darkorchid1", "darkslategray1", "bisque1", "brown1"),
+            draw = "polygon", 
+            alpha = 120) # Ellipses des 4 strates
+stress_value <- round(nmds_R1$stress, 6)
+mtext(paste("Stress :", stress_value), 
+      side = 1, 
+      line = 3, 
+      adj = 1, 
+      cex = 1)
+dev.off()
+pdf("nmds_species_ellipse_R2.pdf", width = 15, height = 12)
+ordiplot(nmds_R2, type = "n") # Traçage des axes
+orditorp (nmds_R2, display = "sites", cex = 0.6) # Visu des sites
+ordiellipse(nmds_R2, 
+            matrices_releve_R2$strate,
+            kind = "sd", 
+            label = T, 
+            cex = 1,
+            col = c("darkorchid1", "darkslategray1", "bisque1", "brown1"),
+            draw = "polygon", 
+            alpha = 120) # Ellipses des 4 strates
+stress_value <- round(nmds_R2$stress, 6)
+mtext(paste("Stress :", stress_value), 
+      side = 1, 
+      line = 3, 
+      adj = 1, 
+      cex = 1)
+dev.off()
+pdf("nmds_species_ellipse_R3.pdf", width = 15, height = 12)
+ordiplot(nmds_R3, type = "n") # Traçage des axes
+orditorp (nmds_R3, display = "sites", cex = 0.6) # Visu des sites
+ordiellipse(nmds_R3, 
+            matrices_releve_R3$strate,
+            kind = "sd", 
+            label = T, 
+            cex = 1,
+            col = c("darkorchid1", "darkslategray1", "bisque1", "brown1"),
+            draw = "polygon", 
+            alpha = 120) # Ellipses des 4 strates
+stress_value <- round(nmds_R3$stress, 6)
+mtext(paste("Stress :", stress_value), 
+      side = 1, 
+      line = 3, 
+      adj = 1, 
+      cex = 1)
+dev.off()
+pdf("nmds_species_ellipse_R4.pdf", width = 15, height = 12)
+ordiplot(nmds_R4, type = "n") # Traçage des axes
+orditorp (nmds_R4, display = "sites", cex = 0.6) # Visu des sites
+ordiellipse(nmds_R4, 
+            matrices_releve_R4$strate,
+            kind = "sd", 
+            label = T, 
+            cex = 1,
+            col = c("darkorchid1", "darkslategray1", "bisque1", "brown1"),
+            draw = "polygon", 
+            alpha = 120) # Ellipses des 4 strates
+stress_value <- round(nmds_R4$stress, 6)
+mtext(paste("Stress :", stress_value), 
+      side = 1, 
+      line = 3, 
+      adj = 1, 
+      cex = 1)
+dev.off()
+pdf("nmds_species_ellipse_R5.pdf", width = 15, height = 12)
+ordiplot(nmds_R5, type = "n") # Traçage des axes
+orditorp (nmds_R5, display = "sites", cex = 0.6) # Visu des sites
+ordiellipse(nmds_R5, 
+            matrices_releve_R5$strate,
+            kind = "sd", 
+            label = T, 
+            cex = 1,
+            col = c("darkorchid1", "darkslategray1", "bisque1", "brown1"),
+            draw = "polygon", 
+            alpha = 120) # Ellipses des 4 strates
+stress_value <- round(nmds_R5$stress, 6)
+mtext(paste("Stress :", stress_value), 
+      side = 1, 
+      line = 3, 
+      adj = 1, 
+      cex = 1)
+dev.off()
+
+  # Matrice de distance
+dist_strates_R1 <- vegdist(matrices_releve_R1[,8 : 382], method = "bray", na.rm = TRUE)
+dist_strates_R2 <- vegdist(matrices_releve_R2[,8 : 382], method = "bray", na.rm = TRUE)
+dist_strates_R3 <- vegdist(matrices_releve_R3[,8 : 382], method = "bray", na.rm = TRUE)
+dist_strates_R4 <- vegdist(matrices_releve_R4[,8 : 382], method = "bray", na.rm = TRUE)
+dist_strates_R5 <- vegdist(matrices_releve_R5[,8 : 382], method = "bray", na.rm = TRUE)
+# Test d'appliquer une correction pour régler le problème de variance des variables avec decostand(data, "hellinger") ou "chi.square" ou log1p mais résultat aggravé #
+
+  # Test Adonis2
+adonis2(dist_strates_R1 ~ strate, matrices_releve_R1, permutations = 999, method = "bray", strata = matrices_releve_R1$LOCA) # p-value = 0.001 ***
+adonis2(dist_strates_R2 ~ strate, matrices_releve_R2, permutations = 999, method = "bray", strata = matrices_releve_R2$LOCA) # p-value = 0.001 ***
+adonis2(dist_strates_R3 ~ strate, matrices_releve_R3, permutations = 999, method = "bray", strata = matrices_releve_R3$LOCA) # p-value = 0.001 ***
+adonis2(dist_strates_R4 ~ strate, matrices_releve_R4, permutations = 999, method = "bray", strata = matrices_releve_R4$LOCA) # p-value = 0.001 ***
+adonis2(dist_strates_R5 ~ strate, matrices_releve_R5, permutations = 999, method = "bray", strata = matrices_releve_R5$LOCA) # p-value = 0.001 ***
+
+###
+
+  # Moyenne de dissim inter-strates (fonc : C.B) : R1
+inter_group_dissim <- function(dist_strates_R1, strate) {
+  dist_strates_R1 <- as.matrix(dist_strates_R1)
+  groups <- unique(strate)
+  n_groups <- length(groups)
+  result <- matrix(0, n_groups, n_groups)
+  rownames(result) <- colnames(result) <- groups
+  
+  for (i in 1:(n_groups-1)) {
+    for (j in (i+1):n_groups) {
+      group1 <- which(strate == groups[i])
+      group2 <- which(strate == groups[j])
+      result[i,j] <- result[j,i] <- mean(dist_strates_R1[group1, group2], na.rm= T)
+    }
+  }
+  return(result)
+}
+#Apply the function to get the inter-group dissimilarities:
+inter_group_dissimilarities <- inter_group_dissim(dist_strates_R1, matrices_releve_R1$strate)
+#View the results:
+print(inter_group_dissimilarities)
+
+  # heatmap des moyennes des dissimilaritées inter-strates
+pheatmap(inter_group_dissimilarities,
+         cluster_rows = FALSE, # Pas de clustering automatique
+         cluster_cols = FALSE,
+         color = colorRampPalette(c("darkgreen", "white", "darkblue"))(500),
+         main = "Dissimilaritées moyennes inter-strates au relevé 1",
+         display_numbers = TRUE,
+         number_format = "%.4f",
+         number_color = "white"
+         )
+  # R2
+inter_group_dissim <- function(dist_strates_R2, strate) {
+  dist_strates_R2 <- as.matrix(dist_strates_R2)
+  groups <- unique(strate)
+  n_groups <- length(groups)
+  result <- matrix(0, n_groups, n_groups)
+  rownames(result) <- colnames(result) <- groups
+  
+  for (i in 1:(n_groups-1)) {
+    for (j in (i+1):n_groups) {
+      group1 <- which(strate == groups[i])
+      group2 <- which(strate == groups[j])
+      result[i,j] <- result[j,i] <- mean(dist_strates_R2[group1, group2], na.rm= T)
+    }
+  }
+  return(result)
+}
+#Apply the function to get the inter-group dissimilarities:
+inter_group_dissimilarities <- inter_group_dissim(dist_strates_R2, matrices_releve_R2$strate)
+#View the results:
+print(inter_group_dissimilarities)
+
+  # heatmap des moyennes des dissimilaritées inter-strates
+pheatmap(inter_group_dissimilarities,
+         cluster_rows = FALSE, # Pas de clustering automatique
+         cluster_cols = FALSE,
+         color = colorRampPalette(c("darkgreen", "white", "darkblue"))(500),
+         main = "Dissimilaritées moyennes inter-strates au relevé 2",
+         display_numbers = TRUE,
+         number_format = "%.4f",
+         number_color = "white"
+         )
+  # R3
+inter_group_dissim <- function(dist_strates_R3, strate) {
+  dist_strates_R3 <- as.matrix(dist_strates_R3)
+  groups <- unique(strate)
+  n_groups <- length(groups)
+  result <- matrix(0, n_groups, n_groups)
+  rownames(result) <- colnames(result) <- groups
+  
+  for (i in 1:(n_groups-1)) {
+    for (j in (i+1):n_groups) {
+      group1 <- which(strate == groups[i])
+      group2 <- which(strate == groups[j])
+      result[i,j] <- result[j,i] <- mean(dist_strates_R3[group1, group2], na.rm= T)
+    }
+  }
+  return(result)
+}
+#Apply the function to get the inter-group dissimilarities:
+inter_group_dissimilarities <- inter_group_dissim(dist_strates_R3, matrices_releve_R3$strate)
+#View the results:
+print(inter_group_dissimilarities)
+
+  # heatmap des moyennes des dissimilaritées inter-strates
+pheatmap(inter_group_dissimilarities,
+         cluster_rows = FALSE, # Pas de clustering automatique
+         cluster_cols = FALSE,
+         color = colorRampPalette(c("darkgreen", "white", "darkblue"))(500),
+         main = "Dissimilaritées moyennes inter-strates au relevé 3",
+         display_numbers = TRUE,
+         number_format = "%.4f",
+         number_color = "white"
+         )
+  # R4
+inter_group_dissim <- function(dist_strates_R4, strate) {
+  dist_strates_R4 <- as.matrix(dist_strates_R4)
+  groups <- unique(strate)
+  n_groups <- length(groups)
+  result <- matrix(0, n_groups, n_groups)
+  rownames(result) <- colnames(result) <- groups
+  
+  for (i in 1:(n_groups-1)) {
+    for (j in (i+1):n_groups) {
+      group1 <- which(strate == groups[i])
+      group2 <- which(strate == groups[j])
+      result[i,j] <- result[j,i] <- mean(dist_strates_R4[group1, group2], na.rm= T)
+    }
+  }
+  return(result)
+}
+#Apply the function to get the inter-group dissimilarities:
+inter_group_dissimilarities <- inter_group_dissim(dist_strates_R4, matrices_releve_R4$strate)
+#View the results:
+print(inter_group_dissimilarities)
+
+  # heatmap des moyennes des dissimilaritées inter-strates
+pheatmap(inter_group_dissimilarities,
+         cluster_rows = FALSE, # Pas de clustering automatique
+         cluster_cols = FALSE,
+         color = colorRampPalette(c("darkgreen", "white", "darkblue"))(500),
+         main = "Dissimilaritées moyennes inter-strates au relevé 4",
+         display_numbers = TRUE,
+         number_format = "%.4f",
+         number_color = "white"
+         )
+  # R5
+inter_group_dissim <- function(dist_strates_R5, strate) {
+  dist_strates_R5 <- as.matrix(dist_strates_R5)
+  groups <- unique(strate)
+  n_groups <- length(groups)
+  result <- matrix(0, n_groups, n_groups)
+  rownames(result) <- colnames(result) <- groups
+  
+  for (i in 1:(n_groups-1)) {
+    for (j in (i+1):n_groups) {
+      group1 <- which(strate == groups[i])
+      group2 <- which(strate == groups[j])
+      result[i,j] <- result[j,i] <- mean(dist_strates_R5[group1, group2], na.rm= T)
+    }
+  }
+  return(result)
+}
+#Apply the function to get the inter-group dissimilarities:
+inter_group_dissimilarities <- inter_group_dissim(dist_strates_R5, matrices_releve_R5$strate)
+#View the results:
+print(inter_group_dissimilarities)
+
+  # heatmap des moyennes des dissimilaritées inter-strates
+pheatmap(inter_group_dissimilarities,
+         cluster_rows = FALSE, # Pas de clustering automatique
+         cluster_cols = FALSE,
+         color = colorRampPalette(c("darkgreen", "white", "darkblue"))(500),
+         main = "Dissimilaritées moyennes inter-strates au relevé 5",
+         display_numbers = TRUE,
+         number_format = "%.4f",
+         number_color = "white"
+         )
+
+# Comparaison 2 à 2 avec pairwiseadonis
+res_R1 <- pairwise.adonis2(dist_strates_R1 ~ strate,
+                        data = matrices_releve_R1,
+                        sim.method = "bray",
+                        perm = 999,
+                        strata = LOCA,
+                        p.adjust.m = "bonferroni") ; print(res_R1)
+res_R2 <- pairwise.adonis2(dist_strates_R2 ~ strate,
+                        data = matrices_releve_R2,
+                        sim.method = "bray",
+                        perm = 999,
+                        strata = LOCA,
+                        p.adjust.m = "bonferroni") ; print(res_R2)
+res_R3 <- pairwise.adonis2(dist_strates_R3 ~ strate,
+                        data = matrices_releve_R3,
+                        sim.method = "bray",
+                        perm = 999,
+                        strata = LOCA,
+                        p.adjust.m = "bonferroni") ; print(res_R3)
+res_R4 <- pairwise.adonis2(dist_strates_R4 ~ strate,
+                        data = matrices_releve_R4,
+                        sim.method = "bray",
+                        perm = 999,
+                        strata = LOCA,
+                        p.adjust.m = "bonferroni") ; print(res_R4)
+res_R5 <- pairwise.adonis2(dist_strates_R5 ~ strate,
+                        data = matrices_releve_R5,
+                        sim.method = "bray",
+                        perm = 999,
+                        strata = LOCA,
+                        p.adjust.m = "bonferroni") ; print(res_R5)
+  # Vérification de la comparaison
+pairwise.perm.manova(dist_strates_R1, matrices_releve_R1$strate, nperm = 999)
+pairwise.perm.manova(dist_strates_R2, matrices_releve_R2$strate, nperm = 999)
+pairwise.perm.manova(dist_strates_R3, matrices_releve_R3$strate, nperm = 999)
+pairwise.perm.manova(dist_strates_R4, matrices_releve_R4$strate, nperm = 999)
+pairwise.perm.manova(dist_strates_R5, matrices_releve_R5$strate, nperm = 999)
+
+### on filtre cette fois par strate pour avoir 5 releves/strate
+
+# Data matrices pieges releves CB
+matrices_releves <- read.table(here::here("Data", "Data placettes", "DATA_placette_CANOPIX", "metriques_CB", "matrix_spcolsx_pieges_releves.txt"), sep = "\t", dec = ".", quote = "\"", stringsAsFactors = F, header = T)
+  # Filtrer par relevé
+matrices_AC <- matrices_releves %>%
+  filter(strate == "supra") %>%
+  mutate(num.releve = as.factor(num.releve))
+matrices_UC <- matrices_releves %>%
+  filter(strate == "intra.sup") %>%
+  mutate(num.releve = as.factor(num.releve))
+matrices_LC <- matrices_releves %>%
+  filter(strate == "intra.inf") %>%
+  mutate(num.releve = as.factor(num.releve))
+matrices_BC <- matrices_releves %>%
+  filter(strate == "infra") %>%
+  mutate(num.releve = as.factor(num.releve))
+  # NMDS ordination :
+nmds_AC<-metaMDS(matrices_AC[,8 : 382], distance = "bray", k = 3, autotransform = T, trymax = 200)
+nmds_UC<-metaMDS(matrices_UC[,8 : 382], distance = "bray", k = 3, autotransform = T, trymax = 200)
+nmds_LC<-metaMDS(matrices_LC[,8 : 382], distance = "bray", k = 3, autotransform = T, trymax = 200)
+nmds_BC<-metaMDS(matrices_BC[,8 : 382], distance = "bray", k = 3, autotransform = T, trymax = 200)
+#
+nmds_AC$stress # 0.1648888, < 0.25 
+nmds_UC$stress # 0.1479696, < 0.25 
+nmds_LC$stress # 0.1918022, < 0.25 
+nmds_BC$stress # 0.207708, < 0.25 
+#
+pdf("nmds_species_ellipse_AC.pdf", width = 15, height = 12)
+ordiplot(nmds_AC, type = "n") # Traçage des axes
+orditorp (nmds_AC, display = "sites", cex = 0.6) # Visu des sites
+ordiellipse(nmds_AC, 
+            matrices_AC$num.releve,
+            kind = "sd", 
+            label = T, 
+            cex = 1,
+            col = c("darkorchid1", "darkslategray1", "bisque1", "brown1", "darkgreen"),
+            draw = "polygon", 
+            alpha = 120,
+            title(main = "Strate supra canopée (ICA)")) # Ellipses des 4 strates
+stress_value <- round(nmds_AC$stress, 6)
+mtext(paste("Stress :", stress_value), 
+      side = 1, 
+      line = 3, 
+      adj = 1, 
+      cex = 1)
+dev.off()
+pdf("nmds_species_ellipse_UC.pdf", width = 15, height = 12)
+ordiplot(nmds_UC, type = "n") # Traçage des axes
+orditorp (nmds_UC, display = "sites", cex = 0.6) # Visu des sites
+ordiellipse(nmds_UC, 
+            matrices_UC$num.releve,
+            kind = "sd", 
+            label = T, 
+            cex = 1,
+            col = c("darkorchid1", "darkslategray1", "bisque1", "brown1", "darkgreen"),
+            draw = "polygon", 
+            alpha = 120,
+            title(main = "Strate intra supérieure au houppier")) # Ellipses des 4 strates
+stress_value <- round(nmds_UC$stress, 6)
+mtext(paste("Stress :", stress_value), 
+      side = 1, 
+      line = 3, 
+      adj = 1, 
+      cex = 1)
+dev.off()
+pdf("nmds_species_ellipse_LC.pdf", width = 15, height = 12)
+ordiplot(nmds_LC, type = "n") # Traçage des axes
+orditorp (nmds_LC, display = "sites", cex = 0.6) # Visu des sites
+ordiellipse(nmds_LC, 
+            matrices_LC$num.releve,
+            kind = "sd", 
+            label = T, 
+            cex = 1,
+            col = c("darkorchid1", "darkslategray1", "bisque1", "brown1", "darkgreen"),
+            draw = "polygon", 
+            alpha = 120,
+            title(main = "Strate intra inférieure au houppier")) # Ellipses des 4 strates
+stress_value <- round(nmds_LC$stress, 6)
+mtext(paste("Stress :", stress_value), 
+      side = 1, 
+      line = 3, 
+      adj = 1, 
+      cex = 1)
+dev.off()
+pdf("nmds_species_ellipse_BC.pdf", width = 15, height = 12)
+ordiplot(nmds_BC, type = "n") # Traçage des axes
+orditorp (nmds_BC, display = "sites", cex = 0.6) # Visu des sites
+ordiellipse(nmds_BC, 
+            matrices_BC$num.releve,
+            kind = "sd", 
+            label = T, 
+            cex = 1,
+            col = c("darkorchid1", "darkslategray1", "bisque1", "brown1", "darkgreen"),
+            draw = "polygon", 
+            alpha = 120,
+            title(main = "Strate infra canopée")) # Ellipses des 4 strates
+stress_value <- round(nmds_BC$stress, 6)
+mtext(paste("Stress :", stress_value), 
+      side = 1, 
+      line = 3, 
+      adj = 1, 
+      cex = 1)
+dev.off()
+
+```
+
+
+# 12. Graphs GLMM all samples
 
 ```{r}
   # Chargement des infos
-strate_effects = read.csv("Donnees_graphique_glmmTMB.csv", sep = ";", dec = ",", header = T)
+strate_effects = read.csv(here::here("Donnees_graphique_glmmTMB.csv"), sep = ";", dec = ",", header = T)
   # p-values en facteur
 strate_effects$pval = factor(strate_effects$pval, 
                         levels = c("N.S", 
@@ -17786,16 +18251,82 @@ strate_effects_chisqvalue =
         strip.text.x = element_text(size = 8.5, face = "bold"),
         strip.text.y = element_text(size = 8.5, face = "bold")) +
   scale_color_manual(values = c("grey20")) +
-  scale_size_manual(values = c(1.5,5,7)) + 
+  scale_size_manual(values = c(2,6)) + 
   labs(y = "chisq.value", 
        size = "p.value", 
        color = "Region") ; strate_effects_chisqvalue
   # Save en image la sortie du graphique
-ggsave("strate_effects_chisqvalue.png", plot = strate_effects_chisqvalue, width = 20, height = 25, units = "cm")
+ggsave("strate_effects_chisqvalue_GLMMALL.png", plot = strate_effects_chisqvalue, width = 20, height = 25, units = "cm")
+
+### graph releves ###
+
+strate_effects_releves <- read.csv(here::here("Donnees_graphique_glmmTMB_releves.csv"),
+                                   sep = ";", 
+                                   dec = ",", 
+                                   header = TRUE, 
+                                   na.strings = c("", "NA"))
+
+strate_effects_releves$pval <- factor(
+  strate_effects_releves$pval, 
+  levels = c("N.S", 
+             "P < 0,05", 
+             "P < 0,01", 
+             "P < 0,001"))
+
+# Ordre des groupes de variables
+ordre_var <- c("General", "Trophic Guilds", "Microhabitat Guilds")
+strate_effects_releves$Groupe.var <- factor(strate_effects_releves$Groupe.var, levels = ordre_var)
+
+# Ordre des relevés (facultatif mais recommandé)
+strate_effects_releves$Releve <- factor(
+  strate_effects_releves$Releve, 
+  levels = c("R1", 
+             "R2", 
+             "R3", 
+             "R4-5"))
+# Valeur critique
+critical_value <- qchisq(0.95, df = 3)
+
+graph_releves <- ggplot(strate_effects_releves,
+                        aes(x = Y,
+                            y = chisq.value)) + 
+  coord_flip() + 
+  annotate("rect", 
+           xmin = -Inf, 
+           xmax = +Inf, 
+           ymin = 0, 
+           ymax = critical_value, 
+           alpha = 0.2, 
+           fill = "grey40") +
+  geom_hline(yintercept = critical_value, 
+             linetype = "dashed", 
+             color = "red", 
+             linewidth = 0.5) + 
+  geom_point(aes(color = County, 
+                 size = pval)) +
+  facet_grid(Groupe.var ~ Effect + Releve, 
+             scales = "free", 
+             space = "free") + 
+  theme_bw() + 
+  theme(axis.title.y = element_blank(), 
+        axis.text.y = element_text(face = "bold"),
+        strip.text.x = element_text(size = 8.5, 
+                                    face = "bold"),
+        strip.text.y = element_text(size = 8.5, 
+                                    face = "bold")) +
+  scale_color_manual(values = c("grey20")) +
+  scale_size_manual(values = c("N.S" = 2,
+                               "P < 0,001" = 6),
+                    drop = TRUE,
+                    na.translate = FALSE) + 
+  labs(y = "Chisq value", 
+       size = "p.value", 
+       color = "Region")
+  # Save en image la sortie du graphique
+ggsave("strate_effects_chisqvalue_GLMMreleves.png", plot = graph_releves, width = 42, height = 20, units = "cm")
 ```
 
-
-# 12. Citations packages
+# 13. Citations packages
 
 ```{r}
 library(purrr)

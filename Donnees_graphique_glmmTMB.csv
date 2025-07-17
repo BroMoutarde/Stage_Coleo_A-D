@@ -9,7 +9,7 @@ ab.cav;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;21,645;P < 0,001;P
 sr.cav;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;21,315;P < 0,001;P < 0,001
 ab.fon;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;3,3334;N.S;N.S
 sr.fon;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;7,911;P < 0,05;N.S
-ab.fonspe;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;15,398;P < 0,01;P < 0,01
+ab.fonspe;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;15,398;P < 0,01;N.S
 sr.fonspe;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;8,2103;P < 0,05;N.S
 ab.suc;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;18,145;P < 0,001;P < 0,001
 sr.suc;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;6,3876;N.S;N.S
@@ -17,9 +17,9 @@ ab.lig;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;39,026;P < 0,001;P
 sr.lig;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;20,502;P < 0,001;P < 0,001
 ab.flo;Stratum effect;Trophic Guilds;Centre Val-de-Loire;72,476;P < 0,001;P < 0,001
 sr.flo;Stratum effect;Trophic Guilds;Centre Val-de-Loire;34,509;P < 0,001;P < 0,001
-ab.pho;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;14,701;P < 0,01;P < 0,01
-sr.pho;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;13,08;P < 0,01;P < 0,01
-ab.myc;Stratum effect;Trophic Guilds;Centre Val-de-Loire;14,457;P < 0,01;P < 0,01
+ab.pho;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;14,701;P < 0,01;N.S
+sr.pho;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;13,08;P < 0,01;N.S
+ab.myc;Stratum effect;Trophic Guilds;Centre Val-de-Loire;14,457;P < 0,01;N.S
 sr.myc;Stratum effect;Trophic Guilds;Centre Val-de-Loire;1,7305;N.S;N.S
 ab.xyl;Stratum effect;Trophic Guilds;Centre Val-de-Loire;16,808;P < 0,001;P < 0,001
 sr.xyl;Stratum effect;Trophic Guilds;Centre Val-de-Loire;41,703;P < 0,001;P < 0,001
@@ -27,15 +27,15 @@ ab.sxy;Stratum effect;Trophic Guilds;Centre Val-de-Loire;45,406;P < 0,001;P < 0,
 sr.sxy;Stratum effect;Trophic Guilds;Centre Val-de-Loire;31,322;P < 0,001;P < 0,001
 ab.zoo;Stratum effect;Trophic Guilds;Centre Val-de-Loire;44,929;P < 0,001;P < 0,001
 sr.zoo;Stratum effect;Trophic Guilds;Centre Val-de-Loire;25,718;P < 0,001;P < 0,001
-ab.cavspe;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;13,843;P < 0,01;P < 0,01
+ab.cavspe;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;13,843;P < 0,01;N.S
 sr.cavspe;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;10,049;P < 0,05;N.S
 CWM_diam;Stratum effect;Ecological niches Traits;Centre Val-de-Loire;8,9814;P < 0,05;N.S
 CWM_canop;Stratum effect;Ecological niches Traits;Centre Val-de-Loire;19,836;P < 0,001;P < 0,001
 CWM_decay;Stratum effect;Ecological niches Traits;Centre Val-de-Loire;11,073;P < 0,05;N.S
 CWM_size;Stratum effect;Ecological niches Traits;Centre Val-de-Loire;38,97;P < 0,001;P < 0,001
 FD_diam;Stratum effect;Ecological niches Traits;Centre Val-de-Loire;2,1781;N.S;N.S
-FD_canop;Stratum effect;Ecological niches Traits;Centre Val-de-Loire;11,6;P < 0,01;P < 0,01
-FD_decay;Stratum effect;Ecological niches Traits;Centre Val-de-Loire;11,938;P < 0,01;P < 0,01
+FD_canop;Stratum effect;Ecological niches Traits;Centre Val-de-Loire;11,6;P < 0,01;N.S
+FD_decay;Stratum effect;Ecological niches Traits;Centre Val-de-Loire;11,938;P < 0,01;N.S
 FD_size;Stratum effect;Ecological niches Traits;Centre Val-de-Loire;34,212;P < 0,001;P < 0,001
 ab.colsxrsx;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;46,974;P < 0,001;P < 0,001
 sr.colsxsrx;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;38,9;P < 0,001;P < 0,001
