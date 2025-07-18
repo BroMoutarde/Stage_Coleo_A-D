@@ -16810,6 +16810,11 @@ RES <- as.glht(pairwise_comp)
 summary_res <- summary(RES)
 names(summary_res$test$coefficients) <- gsub("note2[0-9\\.]+", "note2", names(summary_res$test$coefficients))
 print(summary_res)
+
+## code C.b ##
+
+trends <- emtrends(model_SRCOMDEPE_4, ~ strate, var = "note2") ; pairs(trends)
+
 #
 # Graph de Tukey
 png("Tukey_srcolsxcom_depe_reduit.png", width = 900, height = 500)
@@ -16978,6 +16983,69 @@ anova(model_ABFONDEPE_3, model_ABFONDEPE_4) # 0.0003818 ***
 sim<-simulateResiduals(model_ABFONDEPE_4)
 testUniformity(sim)
 testOutliers(sim)
+  # test de la pente de depe dans l'effet strate
+trends <- emtrends(model_ABFONDEPE_4, ~ strate, var = "note2") ; pairs(trends)
+  # début du graph :
+format_pvalue <- function(p) {
+  if (is.character(p)) {
+    return(p)
+  } else if (is.na(p)) {
+    return(NA)
+  } else if (p < 0.001) {
+    return("< 0.001")
+  } else {
+    return(sprintf("%.5f", p))
+  }
+}
+res_sum <- summary(pairs(trends), infer = c(TRUE, TRUE))
+formatted_pvals <- sapply(res_sum$p.value, format_pvalue)
+# Extraire les p-values ajustées et les intervalles de confiance
+xlim_range <- range(c(res_sum$asymp.LCL, res_sum$asymp.UCL), na.rm = TRUE)
+n_comp <- nrow(res_sum)
+y_pos <- seq(n_comp, 1)
+colors <- ifelse(res_sum$p.value < 0.008, "red", "black")
+# graph
+png("Tukey_abfon_depe_reduit.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+plot(NA, xlim = xlim_range, ylim = c(0.5, n_comp + 1),
+     xlab = "Différence de tendance (pente) : ab.fon", ylab = "",
+     yaxt = "n", main = "Comparaison des pentes par strate ~ deperissement")
+axis(2, at = y_pos, labels = res_sum$contrast, las = 2)
+  # Grilles horizontales 
+abline(h = y_pos, col = "lightgray", lty = 1)
+  # Ligne verticale x = 0
+abline(v = 0, col = "red", lty = "dashed", lwd = 2)
+  # Intervalles de confiance
+# Barres d’erreur avec caps aux extrémités (Tukey-style)
+cap_length <- 0.1  # longueur verticale des caps
+# Tracer les segments principaux (intervalles)
+segments(x0 = res_sum$asymp.LCL, x1 = res_sum$asymp.UCL, y0 = y_pos, y1 = y_pos, col = colors, lwd = 2)
+# Caps gauche
+segments(x0 = res_sum$asymp.LCL, x1 = res_sum$asymp.LCL, y0 = y_pos - cap_length, y1 = y_pos + cap_length, col = colors, lwd = 2)
+# Caps droite
+segments(x0 = res_sum$asymp.UCL, x1 = res_sum$asymp.UCL, y0 = y_pos - cap_length, y1 = y_pos + cap_length, col = colors, lwd = 2)
+  # Points (estimations)
+points(res_sum$estimate, y_pos, pch = 16, col = colors)
+  # P-values
+stars_signif <- function(p) {
+  if (is.character(p)) p <- 0.0001  # for "< 0.001"
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+stars <- sapply(res_sum$p.value, stars_signif)
+labels <- ifelse(res_sum$p.value < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", res_sum$p.value), " ", stars))
+  # text
+x_text <- res_sum$asymp.UCL + 0.05 * diff(xlim_range)
+text(x = x_text - 0.01, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+  # fin
+dev.off()
+
+
 #
 comp <- emmeans(model_ABFONDEPE_4, ~ strate * note2, data = Final)
 pairwise_comp <- contrast(comp, method = "pairwise", adjust = "tukey") ; summary(pairwise_comp)
@@ -17116,6 +17184,69 @@ anova(model_SRFONDEPE_3, model_SRFONDEPE_4) # 0.01463 *
 sim<-simulateResiduals(model_SRFONDEPE_4)
 testUniformity(sim)
 testOutliers(sim)
+
+  # test de la pente de depe dans l'effet strate
+trends <- emtrends(model_SRFONDEPE_4, ~ strate, var = "note2") ; pairs(trends)
+  # début du graph :
+format_pvalue <- function(p) {
+  if (is.character(p)) {
+    return(p)
+  } else if (is.na(p)) {
+    return(NA)
+  } else if (p < 0.001) {
+    return("< 0.001")
+  } else {
+    return(sprintf("%.5f", p))
+  }
+}
+res_sum <- summary(pairs(trends), infer = c(TRUE, TRUE))
+formatted_pvals <- sapply(res_sum$p.value, format_pvalue)
+# Extraire les p-values ajustées et les intervalles de confiance
+xlim_range <- range(c(res_sum$asymp.LCL, res_sum$asymp.UCL), na.rm = TRUE)
+n_comp <- nrow(res_sum)
+y_pos <- seq(n_comp, 1)
+colors <- ifelse(res_sum$p.value < 0.008, "red", "black")
+# graph
+png("Tukey_srfon_depe_reduit.png", width = 900, height = 500)
+par(mar = c(5, 8, 4, 2))
+plot(NA, xlim = xlim_range, ylim = c(0.5, n_comp + 1),
+     xlab = "Différence de tendance (pente) : sr.fon", ylab = "",
+     yaxt = "n", main = "Comparaison des pentes par strate ~ deperissement")
+axis(2, at = y_pos, labels = res_sum$contrast, las = 2)
+  # Grilles horizontales 
+abline(h = y_pos, col = "lightgray", lty = 1)
+  # Ligne verticale x = 0
+abline(v = 0, col = "red", lty = "dashed", lwd = 2)
+  # Intervalles de confiance
+# Barres d’erreur avec caps aux extrémités (Tukey-style)
+cap_length <- 0.1  # longueur verticale des caps
+# Tracer les segments principaux (intervalles)
+segments(x0 = res_sum$asymp.LCL, x1 = res_sum$asymp.UCL, y0 = y_pos, y1 = y_pos, col = colors, lwd = 2)
+# Caps gauche
+segments(x0 = res_sum$asymp.LCL, x1 = res_sum$asymp.LCL, y0 = y_pos - cap_length, y1 = y_pos + cap_length, col = colors, lwd = 2)
+# Caps droite
+segments(x0 = res_sum$asymp.UCL, x1 = res_sum$asymp.UCL, y0 = y_pos - cap_length, y1 = y_pos + cap_length, col = colors, lwd = 2)
+  # Points (estimations)
+points(res_sum$estimate, y_pos, pch = 16, col = colors)
+  # P-values
+stars_signif <- function(p) {
+  if (is.character(p)) p <- 0.0001  # for "< 0.001"
+  if (p < 0.001) return("***")
+  else if (p < 0.01) return("**")
+  else if (p < 0.05) return("*")
+  else if (p < 0.1) return(".")
+  else return("")
+}
+stars <- sapply(res_sum$p.value, stars_signif)
+labels <- ifelse(res_sum$p.value < 0.001,
+                 "< 0.001 ***",
+                 paste0(sprintf("%.5f", res_sum$p.value), " ", stars))
+  # text
+x_text <- res_sum$asymp.UCL + 0.05 * diff(xlim_range)
+text(x = x_text - 0.01, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
+  # fin
+dev.off()
+
 ```
 
 ## 10.5.9. ab.lig
@@ -17746,10 +17877,130 @@ dev.off()
 # 10.6. NMDS depe
 
 ```{r}
-  # pente de l’effet dépérissement est différente selon les modalités du facteur strate :
-library(emmeans)
-emtrends(mod_int, ~ strate, var = "depe")
-emtrends(mod_int, ~ strate, var = " depe ") %>% pairs()
+matrice_depe <- matrices_AVEC %>%
+  mutate(placette = paste0(str_sub(LOCA, 1, 1), "_", parcelle), .before = "LOCA") %>%
+  arrange(placette) %>%
+  left_join(deperissement, by = "placette") %>%
+  select(placette, note2, everything()) %>%
+  rename(note_depe = note2)
+
+### Bray ###
+
+  # matrice distances
+dist_depe <- vegdist(matrice_depe[,9 : 355], method = "bray", na.rm = TRUE)
+  # capscale : analyse de distance par contraintes
+depe.cap<-capscale(dist_depe ~ as.numeric(note_depe) + as.factor(strate), data = matrice_depe)
+anova(depe.cap, by="margin")
+  # Plot capscale en ellipses
+pdf("capscale_species_ellipse.pdf", width = 15, height = 12)
+ordiplot(depe.cap, type = "n") # Traçage des axes
+orditorp (depe.cap, display = "sites", cex = 0.6) # Visu des sites
+ordiellipse(depe.cap, 
+            matrice_depe$strate,
+            kind = "sd", 
+            label = T, 
+            cex = 1,
+            col = c("darkorchid1", "darkslategray1", "bisque1", "brown1"),
+            draw = "polygon", 
+            alpha = 120) # Ellipses des 4 strates
+# prop d'inertie expliquée
+eig_vals <- depe.cap$CCA$eig
+total_var <- sum(eig_vals)
+var_explained <- round(100 * eig_vals / total_var, 6)
+mtext(paste0("Variance expliquée (PC1): ", var_explained[1], "%"), side = 1, line = 3, adj = 1, cex = 1)
+dev.off() # PDF et dev.off pour mieux visualiser
+
+### Jaccard ###
+
+  # matrice distances
+dist_depe <- vegdist(matrice_depe[,9 : 355], method = "jaccard", na.rm = TRUE)
+  # capscale : analyse de distance par contraintes
+depe.cap<-capscale(dist_depe ~ as.numeric(note_depe) + as.factor(strate), data = matrice_depe)
+anova(depe.cap, by="margin")
+  # Plot capscale en ellipses
+pdf("capscale_species_ellipse_jaccard.pdf", width = 15, height = 12)
+ordiplot(depe.cap, type = "n") # Traçage des axes
+orditorp (depe.cap, display = "sites", cex = 0.6) # Visu des sites
+ordiellipse(depe.cap, 
+            matrice_depe$strate,
+            kind = "sd", 
+            label = T, 
+            cex = 1,
+            col = c("darkorchid1", "darkslategray1", "bisque1", "brown1"),
+            draw = "polygon", 
+            alpha = 120) # Ellipses des 4 strates
+# prop d'inertie expliquée
+eig_vals <- depe.cap$CCA$eig
+total_var <- sum(eig_vals)
+var_explained <- round(100 * eig_vals / total_var, 6)
+mtext(paste0("Variance expliquée (PC1): ", var_explained[1], "%"), side = 1, line = 3, adj = 1, cex = 1)
+dev.off() # PDF et dev.off pour mieux visualiser
+
+
+
+
+
+adonis2(dist_depe ~ strate * note_depe, matrice_depe, permutations = 999, method = "bray", strata = LOCA) # p-value = 0.001 *** R2 : 0.21588 
+adonis2(dist_depe ~ strate + note_depe, matrice_depe, permutations = 999, method = "bray", strata = LOCA) # p-value = 0.001 *** R2 : 0.18804 
+adonis2(dist_depe ~ strate, matrice_depe, permutations = 999, method = "bray", strata = LOCA) # p-value = 0.001 *** R2 : 0.16461 
+res <- pairwise.adonis2(dist_depe ~ strate,
+                        data = matrice_depe,
+                        sim.method = "bray",
+                        perm = 999,
+                        strata = LOCA,
+                        p.adjust.m = "bonferroni") ; print(res)
+res <- pairwise.adonis2(dist_depe ~ strate + note_depe,
+                        data = matrice_depe,
+                        sim.method = "bray",
+                        perm = 999,
+                        strata = LOCA,
+                        p.adjust.m = "bonferroni") ; print(res) 
+  # Vérification de la comparaison 2 à 2
+?pairwise.perm.manova
+pairwise.perm.manova(dist_depe, matrice_depe$strate, nperm = 999)
+
+
+# Pour le calcul de la valeur moyenne de dissimilarité inter-strates, adapter la fonction de C.B ci-dessous pour des dissmilarités inter-groupes (code original : dissimilaritées microhabitats) #
+
+inter_group_dissim <- function(distsupraavec, strate) {
+  distsupraavec <- as.matrix(distsupraavec)
+  groups <- unique(strate)
+  n_groups <- length(groups)
+  result <- matrix(0, n_groups, n_groups)
+  rownames(result) <- colnames(result) <- groups
+  
+  for (i in 1:(n_groups-1)) {
+    for (j in (i+1):n_groups) {
+      group1 <- which(strate == groups[i])
+      group2 <- which(strate == groups[j])
+      result[i,j] <- result[j,i] <- mean(distsupraavec[group1, group2], na.rm= T)
+    }
+  }
+  return(result)
+}
+#Apply the function to get the inter-group dissimilarities:
+inter_group_dissimilarities <- inter_group_dissim(distsupraavec, matrices_AVEC$strate)
+#View the results:
+print(inter_group_dissimilarities)
+
+  # heatmap des moyennes des dissimilaritées inter-strates
+library(pheatmap)
+pheatmap(inter_group_dissimilarities,
+         cluster_rows = FALSE, # Pas de clustering automatique
+         cluster_cols = FALSE,
+         color = colorRampPalette(c("darkgreen", "white", "darkblue"))(500),
+         main = "Dissimilaritées moyennes inter-strates",
+         display_numbers = TRUE,
+         number_format = "%.4f",
+         number_color = "white"
+         )
+
+
+perm_control <- how(
+  nperm = 9999,
+  blocks = with(matrice_depe, LOCA))  # permutations seulement à l'intérieur de chaque LOCA
+  # IndVal
+indval_depe <- multipatt(matrice_depe[,9 : 355], matrice_depe$strate, func = "IndVal.g", duleg = T, control = perm_control) ; summary(indval_depe, indvalcomp = TRUE) #
 
 
 ```
@@ -18097,6 +18348,18 @@ pairwise.perm.manova(dist_strates_R3, matrices_releve_R3$strate, nperm = 999)
 pairwise.perm.manova(dist_strates_R4, matrices_releve_R4$strate, nperm = 999)
 pairwise.perm.manova(dist_strates_R5, matrices_releve_R5$strate, nperm = 999)
 
+  # Dispersion
+coleo_dispersion <- betadisper(dist_strates_R1, group = matrices_releve_R1$strate)
+permutest(coleo_dispersion) # p-value = 0.853
+coleo_dispersion <- betadisper(dist_strates_R2, group = matrices_releve_R2$strate)
+permutest(coleo_dispersion) # p-value = 0.001 ***
+coleo_dispersion <- betadisper(dist_strates_R3, group = matrices_releve_R3$strate)
+permutest(coleo_dispersion) # p-value = 0.029 *
+coleo_dispersion <- betadisper(dist_strates_R4, group = matrices_releve_R4$strate)
+permutest(coleo_dispersion) # p-value = 0.004 **
+coleo_dispersion <- betadisper(dist_strates_R5, group = matrices_releve_R5$strate)
+permutest(coleo_dispersion) # p-value = 0.001 ***
+
 ### on filtre cette fois par strate pour avoir 5 releves/strate
 
 # Data matrices pieges releves CB
@@ -18201,7 +18464,6 @@ mtext(paste("Stress :", stress_value),
       adj = 1, 
       cex = 1)
 dev.off()
-
 ```
 
 
