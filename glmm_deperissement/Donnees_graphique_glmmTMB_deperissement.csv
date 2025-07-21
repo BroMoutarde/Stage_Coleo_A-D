@@ -1,0 +1,29 @@
+Y;Effect;Groupe,var;County;chisq,value;pval (originale);pval;Remarque
+ab,colsx;Stratum effect;General;Centre Val-de-Loire;39,194;P < 0,001;P < 0,001;Remarque : les dfs sont différents (2, 3, 7) comment faire pour l'intervalle de confiance du graphique ?
+ab,colsx;Dieback effect;General;Centre Val-de-Loire;;;;
+sr,colsx;Stratum effect;General;Centre Val-de-Loire;16,779;P < 0,001;P < 0,001;
+sr,colsx;Dieback effect;General;Centre Val-de-Loire;;;;
+ab,colsxrar;Stratum effect;General;Centre Val-de-Loire;53,77;P < 0,001;P < 0,001;
+ab,colsxrar;Dieback effect;General;Centre Val-de-Loire;;;;
+sr,colsxrar;Stratum effect;General;Centre Val-de-Loire;49,14;P < 0,001;P < 0,001;
+sr,colsxrar;Dieback effect;General;Centre Val-de-Loire;;;;
+ab,colsxcom;Stratum effect;General;Centre Val-de-Loire;35,235;P < 0,001;P < 0,001;
+ab,colsxcom;Dieback effect;General;Centre Val-de-Loire;;;;
+sr,colsxcom;Stratum effect;General;Centre Val-de-Loire;16,289;P < 0,001;P < 0,001;
+sr,colsxcom;Dieback effect;General;Centre Val-de-Loire;29,915;P < 0,001;P < 0,001;
+ab,fon;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;9,0135;P < 0,05;N.S;
+ab,fon;Dieback effect;Microhabitat Guilds;Centre Val-de-Loire;27,488;P < 0,001;P < 0,001;
+sr,fon;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;15,002;P < 0,01;N.S;
+sr,fon;Dieback effect;Microhabitat Guilds;Centre Val-de-Loire;27,673;P < 0,001;P < 0,001;
+ab,lig;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;35,983;P < 0,001;P < 0,001;
+ab,lig;Dieback effect;Microhabitat Guilds;Centre Val-de-Loire;;;;
+sr,lig;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;20,502;P < 0,001;P < 0,001;
+sr,lig;Dieback effect;Microhabitat Guilds;Centre Val-de-Loire;;;;
+ab,xyl;Stratum effect;Trophic Guilds;Centre Val-de-Loire;24,353;P < 0,001;P < 0,001;
+ab,xyl;Dieback effect;Trophic Guilds;Centre Val-de-Loire;;;;
+sr,xyl;Stratum effect;Trophic Guilds;Centre Val-de-Loire;48,852;P < 0,001;P < 0,001;
+sr,xyl;Dieback effect;Trophic Guilds;Centre Val-de-Loire;;;;
+ab,colsxrsx;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;;;;
+ab,colsxrsx;Dieback effect;Microhabitat Guilds;Centre Val-de-Loire;;;;
+sr,colsxsrx;Stratum effect;Microhabitat Guilds;Centre Val-de-Loire;;;;
+sr,colsxsrx;Dieback effect;Microhabitat Guilds;Centre Val-de-Loire;;;;

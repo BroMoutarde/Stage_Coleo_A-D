@@ -5215,13 +5215,14 @@ matrices_AVEC$strate <- as.factor(matrices_AVEC$strate)
   # Ordination
 # Jaccard ou sorensen (qualitatif)(quantitatif :  bray-curtis)
 nmds<-metaMDS(matrices_AVEC[,7 : 355], distance = "bray", k = 3, autotransform = T, trymax = 200) 
+nmds_jacccard<-metaMDS(matrices_AVEC[,7 : 355], distance = "jaccard", k = 3, autotransform = T, trymax = 200) 
 # dimensions 2 ou 3 sont celles généralement utilisés en écologie, plus et l'interprétation devient compliquée, choix sur 3 pour réduire le stress et permettre un meilleur fit de notre NMDS #
 #
 nmds$stress # 0.164507, > 0.25 les données sont dangereuses à interpréter, mauvais fit dans la NMDS
 stressplot(nmds) # Shepard plot
 plot(nmds) # Plot pour visualiser les sites (ronds) et espèces (croix rouges)
 #
-pdf("nmds_species_plot_ellipse.pdf", width = 15, height = 12)
+pdf("nmds_species_plot_ellipse_jaccard.pdf", width = 15, height = 12)
 ordiplot(nmds, type = "n") # Traçage des axes
 orditorp (nmds, display = "sites", cex = 0.6) # Visu des sites
 ordiellipse(nmds, 
@@ -5240,7 +5241,7 @@ mtext(paste("Stress :", stress_value),
       cex = 1)
 dev.off() # PDF et dev.off pour mieux visualiser
   # 2e représentation graphique type Spider
-pdf("nmds_species_plot_spider.pdf", width = 15, height = 12)
+pdf("nmds_species_plot_spider_bray.pdf", width = 15, height = 12)
 ordiplot(nmds, cex = 0.5)
 ordispider(nmds, groups = matrices_AVEC$strate,label = T, cex = 1)
 dev.off()
@@ -6423,9 +6424,14 @@ mat <- as.matrix(matrices_AVEC[, 7 :355])
 mat[mat > 0] <- 1
 nested <- nestedbetasor(mat)
 plot(nested)
-barplot(nested, main = "Décomposition de la bêta-diversité (vegan)",
+bp <- barplot(nested, main = "Décomposition de la bêta-diversité (vegan)",
         names.arg = c("Turnover (Simpson)", "Nestedness", "Total (Sørensen)"),
-        col = c("skyblue", "orange", "grey"))
+        col = c("skyblue", "orange", "grey"),
+        ylim = c(0,1)) ; text(x = bp, 
+                                    y = nested, 
+                                    labels = round(nested, 8),
+                                    pos = 3,  
+                                    cex = 0.8)
 
 
 
@@ -17996,13 +18002,56 @@ pheatmap(inter_group_dissimilarities,
          )
 
 
-perm_control <- how(
-  nperm = 9999,
-  blocks = with(matrice_depe, LOCA))  # permutations seulement à l'intérieur de chaque LOCA
-  # IndVal
-indval_depe <- multipatt(matrice_depe[,9 : 355], matrice_depe$strate, func = "IndVal.g", duleg = T, control = perm_control) ; summary(indval_depe, indvalcomp = TRUE) #
+# perm_control <- how(
+#   nperm = 9999,
+#   blocks = with(matrice_depe, LOCA))  # permutations seulement à l'intérieur de chaque LOCA
+#   # IndVal
+# indval_depe <- multipatt(matrice_depe[,9 : 355], matrice_depe$strate, func = "IndVal.g", duleg = T, control = perm_control) ; summary(indval_depe, indvalcomp = TRUE) #
 
+### PARTIE NESTEDNESS DEPE ###
 
+library(vegan)
+?nestedbetasor
+library(betapart)
+library(bipartite)
+nested <- beta.pair(mat, index.family = "sorensen")
+print(nested)
+boxplot(as.vector(nested$beta.sor), 
+        as.vector(nested$beta.sim), 
+        as.vector(nested$beta.sne),
+        names = c("Total Sørensen", "Turnover (Simpson)", "Nestedness"),
+        main = "Décomposition de la bêta-diversité")
+mat <- as.matrix(matrice_depe[, 9:357])
+mat[mat > 0] <- 1
+nested <- nestedbetasor(mat)
+plot(nested)
+bp <- barplot(nested, 
+              main = "Décomposition de la bêta-diversité (vegan)",
+              names.arg = c("Turnover (Simpson)", "Nestedness", "Total (Sørensen)"),
+              col = c("skyblue", "orange", "grey"),
+              ylim = c(0,1)) ; text(x = bp, 
+                                    y = nested, 
+                                    labels = round(nested, 8),
+                                    pos = 3,  
+                                    cex = 0.8)
+
+mat <- as.matrix(dist_depe)
+unique(as.vector(mat)) # Verif
+nodf_obs <- nestednodf(mat)$statistic["NODF"]
+#
+set.seed(123)
+result <- swap.web(100, mat, verbose=FALSE)
+nodf_nulls <- numeric(length(result))
+for (i in seq_along(result)) {
+  null_mat <- result[[i]]$web
+  nodf_nulls[i] <- nestednodf(null_mat)$statistic["NODF"]
+}
+# Test t : comparaison NODF observé vs NODF nul
+t_test_result <- t.test(nodf_nulls, mu = nodf_obs)
+# Affichage des résultats
+cat("NODF observé :", round(nodf_obs, 2), "\n")
+cat("Moyenne NODF nulle :", round(mean(nodf_nulls), 2), "\n")
+print(t_test_result)
 ```
 
 
@@ -18586,6 +18635,64 @@ graph_releves <- ggplot(strate_effects_releves,
        color = "Region")
   # Save en image la sortie du graphique
 ggsave("strate_effects_chisqvalue_GLMMreleves.png", plot = graph_releves, width = 42, height = 20, units = "cm")
+
+### graph DEPERISSEMENT ###
+
+strate_effects_deperissement <- read.csv(here::here("glmm_deperissement", "Donnees_graphique_glmmTMB_deperissement.csv"),
+                                   sep = ";", 
+                                   dec = ",", 
+                                   header = TRUE, 
+                                   na.strings = c("", "NA"))
+strate_effects_deperissement$pval = factor(strate_effects_deperissement$pval, 
+                        levels = c("N.S", 
+                                   "P < 0,05", 
+                                   "P < 0,01", 
+                                   "P < 0,001"))
+# Ordre des groupes de variables
+ordre_var <- c("General", "Trophic Guilds", "Microhabitat Guilds")
+strate_effects_deperissement$Groupe.var <- factor(
+  strate_effects_deperissement$Groupe.var,
+  levels = ordre_var)
+  # plage de signif chisq.value
+critical_value <- qchisq(0.95, df = 3)
+  # Graph
+graph_depe <- ggplot(strate_effects_deperissement,
+                        aes(x = Y,
+                            y = chisq.value)) + 
+  coord_flip() + 
+  annotate("rect", 
+           xmin = -Inf, 
+           xmax = +Inf, 
+           ymin = 0, 
+           ymax = critical_value, 
+           alpha = 0.2, 
+           fill = "grey40") +
+  geom_hline(yintercept = critical_value, 
+             linetype = "dashed", 
+             color = "red", 
+             linewidth = 0.5) + 
+  geom_point(aes(color = County, 
+                 size = pval)) +
+  facet_grid(Groupe.var ~ Effect, 
+             scales = "free", 
+             space = "free") + 
+  theme_bw() + 
+  theme(axis.title.y = element_blank(), 
+        axis.text.y = element_text(face = "bold"),
+        strip.text.x = element_text(size = 8.5, 
+                                    face = "bold"),
+        strip.text.y = element_text(size = 8.5, 
+                                    face = "bold")) +
+  scale_color_manual(values = c("grey20")) +
+  scale_size_manual(values = c("N.S" = 2,
+                               "P < 0,001" = 6),
+                    drop = TRUE,
+                    na.translate = FALSE) + 
+  labs(y = "Chisq value", 
+       size = "p.value", 
+       color = "Region") ; graph_depe
+  # Save en image la sortie du graphique
+ggsave("strate_effects_depe.png", plot = graph_depe, width = 25, height = 20, units = "cm")
 ```
 
 # 13. Citations packages
