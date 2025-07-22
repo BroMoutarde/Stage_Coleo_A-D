@@ -188,7 +188,7 @@ ggplot(Coleo2, aes(x = code_sp, y = AB)) +
 ```
 
 
-# 4. Data loader (+ essais emmeans et Varpar)
+# 4. Data loader 
 
 ```{r}
 ### Chargement des fichiers ###
@@ -198,7 +198,7 @@ BMP_Strates <- read.csv("//no-datafile.inra.local/Biodiversite/projets/Bois_mort
   # Data entomo
 entomo <- read.table(here::here("Data", "Data placettes", "DATA_placette_CANOPIX", "metriques_CB", "metric_entomo2024.txt"), sep = "\t", dec = ".", quote = "\"", stringsAsFactors = F, header = T)
   # Data matrices avec singletons et doubletons CB
-matrices_AVEC <- read.table(here::here("Data", "Data placettes", "DATA_placette_CANOPIX", "metriques_CB", "matrix_spcolsx_pieges_inclsingdoub.txt"), sep = "\t", dec = ".", quote = "\"", stringsAsFactors = F, header = T)
+matrices_AVEC <- read.table(here::here("Data", "Data entomo", "metriques_CB", "matrix_spcolsx_pieges_inclsingdoub.txt"), sep = "\t", dec = ".", quote = "\"", stringsAsFactors = F, header = T)
   # Data matrices sans singletons et doubletons CB
 matrices_SANS <- read.table(here::here("Data", "Data placettes", "DATA_placette_CANOPIX", "metriques_CB", "matrix_spcolsx_pieges_exclsingdoub.txt"), sep = "\t", dec = ".", quote = "\"", stringsAsFactors = F, header = T)
 dimnames(matrices_AVEC)
@@ -6343,67 +6343,83 @@ test <- rich(matrix = matrices_AVEC[, 7:355], nrandom = 499, verbose = T)
 test$cr # 349 : observed cumulative species richness
 test$mr # 58.3375 : observed mean value of species richness over the n samples
 
-
-matrices_list <- matrices_AVEC %>%
-  group_split(strate) %>%  # sépare en liste de 4 data frames
-  lapply(function(df) df[, 7:355])
-accum_list <- lapply(matrices_list, function(mat) {
-  specaccum(mat, method = "random", permutations = 100)
-})
-colors <- c("red", "blue", "green", "orange")
-
-plot(accum_list[[1]], col = colors[1], lwd = 2, ci.type = "polygon", ci.lty = 0,
-     ci.col = adjustcolor(colors[1], alpha.f = 0.2), 
-     xlab = "Number of sites", ylab = "Species richness",
-     main = "Species accumulation curves by strata")
-
-for (i in 2:length(accum_list)) {
-  plot(accum_list[[i]], add = TRUE, col = colors[i], lwd = 2,
-       ci.type = "polygon", ci.lty = 0,
-       ci.col = adjustcolor(colors[i], alpha.f = 0.2))
-}
-names(matrices_list) <- c("infra", "intra.inf", "intra.sup", "supra")
-legend("bottomright", legend = names(matrices_list), col = colors, lwd = 2)
-
+# # Création des matrices par strate
+# matrices_list <- matrices_AVEC %>%
+#   group_split(strate) %>%  # sépare en liste de 4 data frames
+#   setNames(unique(matrices_AVEC$strate)) %>%
+#   lapply(function(df) df[, 7:355])
+# # Courbes d'accumulation
+# accum_list <- lapply(matrices_list, function(mat) {
+#   specaccum(mat, method = "random", permutations = 100)
+# })
+# # Couleurs
+# colors <- c("red", "blue", "green", "orange")
+# # Tracé de la première courbe
+# plot(accum_list[[1]], col = colors[1], lwd = 2, ci.type = "polygon", ci.lty = 0,
+#      ci.col = adjustcolor(colors[1], alpha.f = 0.2), 
+#      xlab = "Number of sites", ylab = "Species richness",
+#      main = "Species accumulation curves by strata")
+# # Ajout des autres courbes
+# for (i in 2:length(accum_list)) {
+#   plot(accum_list[[i]], add = TRUE, col = colors[i], lwd = 2,
+#        ci.type = "polygon", ci.lty = 0,
+#        ci.col = adjustcolor(colors[i], alpha.f = 0.2))
+# }
+# 
+# # Affichage de la légende avec les bons noms
+# legend("bottomright", legend = names(matrices_list), col = colors, lwd = 2)
 
 
 # 1. Extraire les strates dans l’ordre unique d’apparition
 strates_order <- matrices_AVEC %>% 
+  mutate(strate = as.factor(strate)) %>%
   distinct(strate) %>% 
-  pull(strate)
-# 2. Séparer la table par strate en liste
-matrices_list <- matrices_AVEC %>%
-  group_split(strate) %>%
-  lapply(function(df) df[, 7:355])
-# 3. Affecter les noms automatiquement selon l'ordre des strates dans le dataframe
-names(matrices_list) <- strates_order
+  pull(strate) %>%
+  as.character()
+# 2. Créer une liste de matrices par strate (présence/absence)
+matrices_list <- split(matrices_AVEC[, 7:355], matrices_AVEC$strate)
+# 3. Réordonner les strates dans le bon ordre
+matrices_list <- matrices_list[strates_order]
 # 4. Calculer specaccum pour chaque strate
-accum_list <- lapply(matrices_list, function(mat) {
-  specaccum(mat, method = "random", permutations = 100)
+matrices_list_pa <- lapply(matrices_list, function(mat) {
+  (mat > 0) * 1
 })
-# 5. Transformer les résultats en un data frame ggplot-compatible
-accum_df <- do.call(rbind, lapply(seq_along(accum_list), function(i) {
-  acc <- accum_list[[i]]
+# 5. Calculer les courbes de richesse cumulative avec specaccum
+accum_list_pa <- lapply(matrices_list_pa, function(mat_pa) {
+  specaccum(mat_pa, method = "random", permutations = 100)
+})
+# 6. Construire un data.frame pour ggplot
+accum_df <- do.call(rbind, lapply(seq_along(accum_list_pa), function(i) {
+  acc <- accum_list_pa[[i]]
   data.frame(
     Sites = acc$sites,
     Richness = acc$richness,
     SD = acc$sd,
-    Strate = names(accum_list)[i]
+    Strate = names(accum_list_pa)[i]
   )
 }))
-# 6. Représentation graphique ggplot
+summary(accum_df)
+# 8. Plot ggplot
 ggplot(accum_df, aes(x = Sites, y = Richness, color = Strate, fill = Strate)) +
-  geom_line(size = 1.2) +
+  geom_line(linewidth = 1.2) +
   geom_ribbon(aes(ymin = Richness - SD, ymax = Richness + SD), alpha = 0.2, color = NA) +
   labs(title = "Courbes de richesse spécifique cumulée par strate",
-       x = "Sites",
-       y = "RS cumulée") +
+       x = "Nombre de pièges",
+       y = "Richesse spécifique cumulée") +
   theme_minimal(base_size = 14) +
   theme(legend.position = "bottom") +
-  scale_color_manual(values = c("infra" = "red", "intra.inf" = "blue",
-                                "intra.sup" = "green", "supra" = "orange")) +
-  scale_fill_manual(values = c("infra" = "red", "intra.inf" = "blue",
-                               "intra.sup" = "green", "supra" = "orange"))
+  scale_color_manual(values = c(
+    "infra" = "red",
+    "intra.inf" = "blue",
+    "intra.sup" = "green",
+    "supra" = "orange"
+  )) +
+  scale_fill_manual(values = c(
+    "infra" = "red",
+    "intra.inf" = "blue",
+    "intra.sup" = "green",
+    "supra" = "orange"
+  ))
 ```
 
 # 9. nestedness
@@ -18817,5 +18833,300 @@ c("here", "readxl", "dplyr", "tidyverse", "stringr", "ggplot2", "gridExtra", "fi
 # [[21]]
 # Lenth R (2025). _emmeans: Estimated Marginal Means, aka Least-Squares Means_.
 # R package version 1.11.1, <https://CRAN.R-project.org/package=emmeans>.
+```
+
+# 14. Test
+
+```{r}
+library(UpSetR)
+
+test <- matrices_AVEC %>%
+  mutate(strate = as.factor(strate)) %>%
+  select(6:355) %>%        # inclure la colonne 'strate' ici
+  group_by(strate) %>%
+  summarise(across(where(is.numeric), sum), .groups = "drop") %>%  # somme par strate
+  mutate(across(where(is.numeric), ~ ifelse(. > 0, 1, 0))) %>%    # présence/absence
+  rowwise() %>%
+  mutate(nb_especes = sum(c_across(where(is.numeric)))) %>%
+  ungroup() %>%
+  select(strate, nb_especes)
+
+test <- matrices %>%
+  mutate(strate = as.factor(strate)) %>%
+  select(6:355) %>%        # inclure la colonne 'strate' ici
+  group_by(strate) %>%
+  summarise(across(where(is.numeric), sum), .groups = "drop") %>%  # somme par strate
+  mutate(across(where(is.numeric), ~ ifelse(. > 0, 1, 0))) %>%    # présence/absence
+  rowwise() %>%
+  mutate(nb_especes = sum(c_across(where(is.numeric)))) %>%
+  ungroup() %>%
+  select(strate, nb_especes)
+
+
+### UPSET ALL ###
+
+#liste correcte des combinaisons de pièges
+combinaisons_cible <- c(
+  "infra", 
+  "intra.inf", 
+  "intra.sup", 
+  "supra")
+  # matrice d'espèces en présence/absence
+presence_df <- matrices_AVEC %>%
+  mutate(placette = paste0(str_sub(LOCA, 1, 1),"_", parcelle)) %>%
+  select(strate, 7:355) %>%
+  group_by (strate) %>%                 
+  reframe(across(where(is.numeric), sum)) %>%
+  mutate(across(where(is.numeric), ~ ifelse(. > 1, 1, .)))
+  # format long
+presence_long <- presence_df %>%
+  pivot_longer(
+    cols = -strate,
+    names_to = "espece",
+    values_to = "presence")
+  # format gros
+presence_wide <- presence_long %>%
+  pivot_wider(
+    names_from = strate,
+    values_from = presence)
+  # supression noms des espèces 
+presence_upset_df <- presence_wide %>%
+  select(-espece) %>%
+  select(all_of(combinaisons_cible)) %>%
+  as.data.frame()
+  # tracer le diagramme UpSet
+UpSetR::upset(
+  presence_upset_df,
+  sets = combinaisons_cible,
+  nsets = length(combinaisons_cible),
+  order.by = "freq",
+  keep.order = T,
+  main.bar.color = "#56B4E9",
+  sets.bar.color = "#56B4E9",
+  mainbar.y.label = "Espèces partagées",
+  sets.x.label = "Espèces par combinaison")
+
+### UPSET Tronçais ###
+
+#liste correcte des combinaisons de pièges
+combinaisons_cible <- c(
+  "infra", 
+  "intra.inf", 
+  "intra.sup", 
+  "supra")
+  # matrice d'espèces en présence/absence
+presence_df <- matrices_AVEC %>%
+  mutate(placette = paste0(str_sub(LOCA, 1, 1), "_", parcelle)) %>%
+  filter(LOCA == "Troncais") %>%
+  select(strate, 7:355) %>%
+  group_by (strate) %>%                 
+  reframe(across(where(is.numeric), sum)) 
+presence_df[, 2 : 350][presence_df[, 2 : 350] > 1] <- 1
+  # format long
+presence_long <- presence_df %>%
+  pivot_longer(
+    cols = -strate,
+    names_to = "espece",
+    values_to = "presence") %>%
+  mutate(strate = factor(strate, levels = c("supra", "intra.sup", "intra.inf", "infra")))
+  # format gros
+presence_wide <- presence_long %>%
+  pivot_wider(
+    names_from = strate,
+    values_from = presence)
+  # supression noms des espèces 
+presence_upset_df <- presence_wide %>%
+  select(-espece) %>%
+  select(all_of(combinaisons_cible)) %>%
+  as.data.frame()
+  # tracer le diagramme UpSet
+UpSetR::upset(
+  presence_upset_df,
+  sets = combinaisons_cible,
+  nsets = length(combinaisons_cible),
+  order.by = "freq",
+  keep.order = T,
+  main.bar.color = "#56B4E9",
+  sets.bar.color = "#56B4E9",
+  mainbar.y.label = "Espèces partagées",
+  sets.x.label = "Espèces par combinaison")
+
+### UPSET Vierzon ###
+
+#liste correcte des combinaisons de pièges
+combinaisons_cible <- c(
+  "infra", 
+  "intra.inf", 
+  "intra.sup", 
+  "supra")
+  # matrice d'espèces en présence/absence
+presence_df <- matrices_AVEC %>%
+  mutate(placette = paste0(str_sub(LOCA, 1, 1), "_", parcelle)) %>%
+  filter(LOCA == "Vierzon") %>%
+  select(strate, 7:355) %>%
+  group_by (strate) %>%                 
+  reframe(across(where(is.numeric), sum)) 
+presence_df[, 2 : 350][presence_df[, 2 : 350] > 1] <- 1
+  # format long
+presence_long <- presence_df %>%
+  pivot_longer(
+    cols = -strate,
+    names_to = "espece",
+    values_to = "presence") %>%
+  mutate(strate = factor(strate, levels = c("supra", "intra.sup", "intra.inf", "infra")))
+  # format gros
+presence_wide <- presence_long %>%
+  pivot_wider(
+    names_from = strate,
+    values_from = presence)
+  # supression noms des espèces 
+presence_upset_df <- presence_wide %>%
+  select(-espece) %>%
+  select(all_of(combinaisons_cible)) %>%
+  as.data.frame()
+  # tracer le diagramme UpSet
+UpSetR::upset(
+  presence_upset_df,
+  sets = combinaisons_cible,
+  nsets = length(combinaisons_cible),
+  order.by = "freq",
+  keep.order = T,
+  main.bar.color = "#56B4E9",
+  sets.bar.color = "#56B4E9",
+  mainbar.y.label = "Espèces partagées",
+  sets.x.label = "Espèces par combinaison")
+
+### degree au lieu de freq ###
+
+#liste correcte des combinaisons de pièges
+combinaisons_cible <- c(
+  "infra", 
+  "intra.inf", 
+  "intra.sup", 
+  "supra")
+  # matrice d'espèces en présence/absence
+presence_df <- matrices_AVEC %>%
+  mutate(placette = paste0(str_sub(LOCA, 1, 1),"_", parcelle)) %>%
+  select(strate, 7:355) %>%
+  group_by (strate) %>%                 
+  reframe(across(where(is.numeric), sum)) %>%
+  mutate(across(where(is.numeric), ~ ifelse(. > 1, 1, .)))
+  # format long
+presence_long <- presence_df %>%
+  pivot_longer(
+    cols = -strate,
+    names_to = "espece",
+    values_to = "presence")
+  # format gros
+presence_wide <- presence_long %>%
+  pivot_wider(
+    names_from = strate,
+    values_from = presence)
+  # supression noms des espèces 
+presence_upset_df <- presence_wide %>%
+  select(-espece) %>%
+  select(all_of(combinaisons_cible)) %>%
+  as.data.frame()
+  # tracer le diagramme UpSet
+UpSetR::upset(
+  presence_upset_df,
+  sets = combinaisons_cible,
+  nsets = length(combinaisons_cible),
+  order.by = "degree",
+  keep.order = T,
+  main.bar.color = "#56B4E9",
+  sets.bar.color = "#56B4E9",
+  mainbar.y.label = "Espèces partagées",
+  sets.x.label = "Espèces par combinaison")
+
+### UPSET Tronçais ###
+
+#liste correcte des combinaisons de pièges
+combinaisons_cible <- c(
+  "infra", 
+  "intra.inf", 
+  "intra.sup", 
+  "supra")
+  # matrice d'espèces en présence/absence
+presence_df <- matrices_AVEC %>%
+  mutate(placette = paste0(str_sub(LOCA, 1, 1), "_", parcelle)) %>%
+  filter(LOCA == "Troncais") %>%
+  select(strate, 7:355) %>%
+  group_by (strate) %>%                 
+  reframe(across(where(is.numeric), sum)) 
+presence_df[, 2 : 350][presence_df[, 2 : 350] > 1] <- 1
+  # format long
+presence_long <- presence_df %>%
+  pivot_longer(
+    cols = -strate,
+    names_to = "espece",
+    values_to = "presence") %>%
+  mutate(strate = factor(strate, levels = c("supra", "intra.sup", "intra.inf", "infra")))
+  # format gros
+presence_wide <- presence_long %>%
+  pivot_wider(
+    names_from = strate,
+    values_from = presence)
+  # supression noms des espèces 
+presence_upset_df <- presence_wide %>%
+  select(-espece) %>%
+  select(all_of(combinaisons_cible)) %>%
+  as.data.frame()
+  # tracer le diagramme UpSet
+UpSetR::upset(
+  presence_upset_df,
+  sets = combinaisons_cible,
+  nsets = length(combinaisons_cible),
+  order.by = "degree",
+  keep.order = T,
+  main.bar.color = "#56B4E9",
+  sets.bar.color = "#56B4E9",
+  mainbar.y.label = "Espèces partagées",
+  sets.x.label = "Espèces par combinaison")
+
+### UPSET Vierzon ###
+
+#liste correcte des combinaisons de pièges
+combinaisons_cible <- c(
+  "infra", 
+  "intra.inf", 
+  "intra.sup", 
+  "supra")
+  # matrice d'espèces en présence/absence
+presence_df <- matrices_AVEC %>%
+  mutate(placette = paste0(str_sub(LOCA, 1, 1), "_", parcelle)) %>%
+  filter(LOCA == "Vierzon") %>%
+  select(strate, 7:355) %>%
+  group_by (strate) %>%                 
+  reframe(across(where(is.numeric), sum)) 
+presence_df[, 2 : 350][presence_df[, 2 : 350] > 1] <- 1
+  # format long
+presence_long <- presence_df %>%
+  pivot_longer(
+    cols = -strate,
+    names_to = "espece",
+    values_to = "presence") %>%
+  mutate(strate = factor(strate, levels = c("supra", "intra.sup", "intra.inf", "infra")))
+  # format gros
+presence_wide <- presence_long %>%
+  pivot_wider(
+    names_from = strate,
+    values_from = presence)
+  # supression noms des espèces 
+presence_upset_df <- presence_wide %>%
+  select(-espece) %>%
+  select(all_of(combinaisons_cible)) %>%
+  as.data.frame()
+  # tracer le diagramme UpSet
+UpSetR::upset(
+  presence_upset_df,
+  sets = combinaisons_cible,
+  nsets = length(combinaisons_cible),
+  order.by = "degree",
+  keep.order = T,
+  main.bar.color = "#56B4E9",
+  sets.bar.color = "#56B4E9",
+  mainbar.y.label = "Espèces partagées",
+  sets.x.label = "Espèces par combinaison")
 ```
 

@@ -1,0 +1,817 @@
+"ORIG"	"DAT1"	"DAT2"	"cond_memo"	"stat_memo"	"LOCA"	"TOPO"	"REC"	"DET"	"Ordre"	"Famille"	"Sous-Famille"	"Espece"	"Espèce"	"GEN"	"SP"	"spec_memo"	"Abondance"	"Parcelle"	"Numéro de piège"	"Type piège"	"CPI"	"Numéro de projet"	"Numéro d'arbre"	"COND_ID"	"STAT_ID"
+Null	20240415	20240430	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				2					57		192166	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				9					57		192172	139502
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				1					57		192180	139502
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				1					57		192183	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				5					57		192169	139502
+Null	20240415	20240430	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				1					57		192167	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				2					57		192186	139507
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				1					57		192189	139502
+Null	20240415	20240430	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				1					57		192164	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				1					57		192181	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				4					57		192187	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				3					57		192176	139507
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				1					57		192179	139502
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				1					57		192191	139502
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				1					57		192192	139502
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				2					57		192195	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				2					57		192175	139507
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				1					57		192184	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				4					57		192173	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				3					57		192174	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				1					57		192196	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				5					57		192177	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				2					57		192193	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				6					57		192168	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOCRITA	APOCRITA Gerstäcker, 1867				9					57		192171	139502
+Null	20240415	20240430	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				5					57		192165	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				24					57		192169	139502
+Null	20240415	20240430	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				23					57		192166	139507
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				8					57		192194	139507
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				1					57		192187	139507
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				8					57		192189	139502
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				11					57		192190	139502
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				5					57		192180	139502
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				5					57		192178	139502
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				3					57		192179	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				9					57		192193	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				37					57		192191	139502
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				17					57		192184	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				11					57		192173	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				30					57		192186	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				5					57		192175	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				1					57		192192	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				24					57		192168	139502
+Null	20240415	20240430	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				3					57		192167	139507
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				4					57		192182	139502
+Null	20240415	20240430	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				15					57		192164	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				13					57		192196	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				13					57		192174	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				6					57		192183	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				16					57		192176	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				14					57		192172	139502
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				2					57		192185	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				32					57		192188	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				3					57		192177	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				3					57		192170	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				9					57		192181	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				60					57		192171	139502
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			APOIDEA	APOIDEA Latreille, 1802				3					57		192197	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				266					57		192193	139507
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				63					57		192182	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				115					57		192175	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				40					57		192178	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				402					57		192168	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				140					57		192188	139502
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				54					57		192191	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				39					57		192187	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				55					57		192197	139507
+Null	20240415	20240430	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				14					57		192167	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				33					57		192186	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				50					57		192196	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				57					57		192169	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				100					57		192174	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				151					57		192171	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				113					57		192172	139502
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				38					57		192195	139507
+Null	20240415	20240430	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				21					57		192165	139507
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				97					57		192189	139502
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				87					57		192192	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				15					57		192170	139502
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				37					57		192185	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				35					57		192177	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				95					57		192181	139502
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				1					57		192179	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				202					57		192176	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				120					57		192173	139507
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				34					57		192180	139502
+Null	20240415	20240430	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				58					57		192166	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				51					57		192183	139507
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				87					57		192184	139507
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				64					57		192194	139507
+Null	20240415	20240430	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				15					57		192164	139507
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	DIPTERA			DIPTERA	DIPTERA Linnaeus, 1758				73					57		192190	139502
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	LEPIDOPTERA			HETEROCERA	HETEROCERA .				1					57		192179	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	LEPIDOPTERA			HETEROCERA	HETEROCERA .				3					57		192175	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	LEPIDOPTERA			HETEROCERA	HETEROCERA .				2					57		192188	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	LEPIDOPTERA			HETEROCERA	HETEROCERA .				2					57		192181	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	LEPIDOPTERA			HETEROCERA	HETEROCERA .				6					57		192186	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	LEPIDOPTERA			HETEROCERA	HETEROCERA .				9					57		192191	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	LEPIDOPTERA			HETEROCERA	HETEROCERA .				5					57		192168	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	LEPIDOPTERA			HETEROCERA	HETEROCERA .				1					57		192174	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	LEPIDOPTERA			HETEROCERA	HETEROCERA .				2					57		192169	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	LEPIDOPTERA			HETEROCERA	HETEROCERA .				15					57		192187	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	LEPIDOPTERA			HETEROCERA	HETEROCERA .				6					57		192183	139507
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	LEPIDOPTERA			HETEROCERA	HETEROCERA .				5					57		192182	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	LEPIDOPTERA			HETEROCERA	HETEROCERA .				6					57		192171	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	LEPIDOPTERA			HETEROCERA	HETEROCERA .				4					57		192176	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	LEPIDOPTERA			HETEROCERA	HETEROCERA .				9					57		192177	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	LEPIDOPTERA			HETEROCERA	HETEROCERA .				2					57		192173	139507
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	LEPIDOPTERA			HETEROCERA	HETEROCERA .				3					57		192195	139507
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	LEPIDOPTERA			HETEROCERA	HETEROCERA .				11					57		192184	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	LEPIDOPTERA			HETEROCERA	HETEROCERA .				5					57		192193	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	LEPIDOPTERA			HETEROCERA	HETEROCERA .				4					57		192197	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	LEPIDOPTERA			HETEROCERA	HETEROCERA .				5					57		192172	139502
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				1					57		192183	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				10					57		192177	139507
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				10					57		192190	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				17					57		192194	139507
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				5					57		192184	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				6					57		192169	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				9					57		192187	139507
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				10					57		192189	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				15					57		192176	139507
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				1					57		192180	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				2					57		192170	139502
+Null	20240415	20240430	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				15					57		192165	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				8					57		192181	139502
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				9					57		192196	139507
+Null	20240415	20240430	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				2					57		192164	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				11					57		192174	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				11					57		192173	139507
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				4					57		192182	139502
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				8					57		192185	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				13					57		192188	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				14					57		192171	139502
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				13					57		192197	139507
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				15					57		192195	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				8					57		192192	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				2					57		192193	139507
+Null	20240415	20240430	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				1					57		192167	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				22					57		192175	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				5					57		192172	139502
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				1					57		192179	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				3					57		192186	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				5					57		192168	139502
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	HETEROPTERA			HETEROPTERA	HETEROPTERA Latreille, 1810				4					57		192178	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				13					57		192188	139502
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				17					57		192192	139502
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				10					57		192191	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				9					57		192189	139502
+Null	20240415	20240430	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				3					57		192164	139507
+Null	20240415	20240430	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				3					57		192165	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				16					57		192181	139502
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				8					57		192195	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				3					57		192170	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				20					57		192175	139507
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				10					57		192182	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				6					57		192177	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				13					57		192174	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				8					57		192183	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				10					57		192196	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				20					57		192176	139507
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				16					57		192185	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				7					57		192172	139502
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				1					57		192180	139502
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				5					57		192184	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				3					57		192186	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				15					57		192197	139507
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				14					57		192190	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				15					57		192171	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				10					57		192194	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				10					57		192173	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				10					57		192178	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				2					57		192169	139502
+Null	20240415	20240430	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				3					57		192166	139507
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				1					57		192179	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				3					57		192187	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				21					57		192168	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	HYMENOPTERA			HYMENOPTERA	HYMENOPTERA Linnaeus, 1758				14					57		192193	139507
+Null	20240415	20240430	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain				INSECTA	INSECTA .				0					57		192158	139502
+Null	20240415	20240430	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain				INSECTA	INSECTA .				0					57		192163	139507
+Null	20240415	20240430	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain				INSECTA	INSECTA .				0					57		192160	139502
+Null	20240415	20240430	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain				INSECTA	INSECTA .				0					57		192159	139502
+Null	20240415	20240430	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain				INSECTA	INSECTA .				0					57		192161	139502
+Null	20240415	20240430	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain				INSECTA	INSECTA .				0					57		192162	139502
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	ODONATA			ODONATA	ODONATA Fabricius, 1793				1					57		192196	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	ORTHOPTERA			ORTHOPTERA	ORTHOPTERA Latreille, 1802				1					57		192191	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	ORTHOPTERA			ORTHOPTERA	ORTHOPTERA Latreille, 1802				1					57		192188	139502
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Aderidae		Gompelia neglecta	Gompelia neglecta (Jacquelin du Val, 1863)	Gompelia	neglecta	coll	1					57		192197	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Anthicidae		ANTHICIDAE	ANTHICIDAE Latreille, 1819				1					57		192178	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Anthribidae	Anthribinae	Anthribus nebulosus	Anthribus nebulosus Förster, 1771	Anthribus	nebulosus		1					57		192173	139507
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Anthribidae	Anthribinae	Dissoleucas niveirostris	Dissoleucas niveirostris (Fabricius, 1798)	Dissoleucas	niveirostris		1					57		192187	139507
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Anthribidae	Anthribinae	Platystomos albinus	Platystomos albinus (Linnaeus, 1758)	Platystomos	albinus		1					57		192187	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Anthribidae	Anthribinae	Tropideres albirostris	Tropideres albirostris (Schaller, 1783)	Tropideres	albirostris		1					57		192168	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Anthribidae	Anthribinae	Tropideres albirostris	Tropideres albirostris (Schaller, 1783)	Tropideres	albirostris		2					57		192173	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Anthribidae	Anthribinae	Tropideres albirostris	Tropideres albirostris (Schaller, 1783)	Tropideres	albirostris		1					57		192177	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Buprestidae	Agrilinae	Agrilus sp.	Agrilus sp. Curtis, 1825	Agrilus	sp.		1					57		192197	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Buprestidae	Agrilinae	Agrilus sp.	Agrilus sp. Curtis, 1825	Agrilus	sp.		1					57		192175	139507
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Buprestidae	Agrilinae	Agrilus sp.	Agrilus sp. Curtis, 1825	Agrilus	sp.		1					57		192190	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Buprestidae	Agrilinae	Meliboeus sp.	Meliboeus sp. Deyrolle, 1864	Meliboeus	sp.		1					57		192181	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Buprestidae	Buprestinae	Anthaxia sp.	Anthaxia sp. Eschscholtz, 1829	Anthaxia	sp.		3					57		192174	139507
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Buprestidae	Buprestinae	Anthaxia sp.	Anthaxia sp. Eschscholtz, 1829	Anthaxia	sp.		1					57		192179	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Buprestidae	Buprestinae	Anthaxia sp.	Anthaxia sp. Eschscholtz, 1829	Anthaxia	sp.		2					57		192173	139507
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Buprestidae	Buprestinae	Anthaxia sp.	Anthaxia sp. Eschscholtz, 1829	Anthaxia	sp.		4					57		192185	139507
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Buprestidae	Buprestinae	Anthaxia sp.	Anthaxia sp. Eschscholtz, 1829	Anthaxia	sp.		1					57		192194	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Buprestidae	Buprestinae	Anthaxia sp.	Anthaxia sp. Eschscholtz, 1829	Anthaxia	sp.		1					57		192170	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Buprestidae	Buprestinae	Anthaxia sp.	Anthaxia sp. Eschscholtz, 1829	Anthaxia	sp.		2					57		192186	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Buprestidae	Buprestinae	Anthaxia sp.	Anthaxia sp. Eschscholtz, 1829	Anthaxia	sp.		1					57		192192	139502
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Buprestidae	Buprestinae	Anthaxia sp.	Anthaxia sp. Eschscholtz, 1829	Anthaxia	sp.		6					57		192190	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Buprestidae	Buprestinae	Anthaxia sp.	Anthaxia sp. Eschscholtz, 1829	Anthaxia	sp.		1					57		192182	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Buprestidae	Buprestinae	Anthaxia sp.	Anthaxia sp. Eschscholtz, 1829	Anthaxia	sp.		2					57		192188	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Buprestidae	Buprestinae	Anthaxia sp.	Anthaxia sp. Eschscholtz, 1829	Anthaxia	sp.		2					57		192189	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Buprestidae	Buprestinae	Anthaxia sp.	Anthaxia sp. Eschscholtz, 1829	Anthaxia	sp.		4					57		192175	139507
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Buprestidae	Buprestinae	Chrysobothris solieri	Chrysobothris solieri Laporte de Castelnau & Gory, 1836	Chrysobothris	solieri		4					57		192190	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Buprestidae	Buprestinae	Chrysobothris solieri	Chrysobothris solieri Laporte de Castelnau & Gory, 1836	Chrysobothris	solieri	2coll	4					57		192189	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cantharidae		CANTHARIDAE	CANTHARIDAE Imhoff, 1856				2					57		192194	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cantharidae		CANTHARIDAE	CANTHARIDAE Imhoff, 1856				1					57		192176	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cantharidae		CANTHARIDAE	CANTHARIDAE Imhoff, 1856				1					57		192171	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cantharidae		CANTHARIDAE	CANTHARIDAE Imhoff, 1856				6					57		192175	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cantharidae		CANTHARIDAE	CANTHARIDAE Imhoff, 1856				6					57		192168	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cantharidae		CANTHARIDAE	CANTHARIDAE Imhoff, 1856				5					57		192174	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cantharidae	Malthininae	Malthininae	Malthininae Kiesenwetter, 1852				1					57		192174	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cantharidae	Malthininae	Malthininae	Malthininae Kiesenwetter, 1852				2					57		192168	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Carabidae		CARABIDAE	CARABIDAE Latreille, 1802				2					57		192172	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Carabidae		CARABIDAE	CARABIDAE Latreille, 1802				3					57		192188	139502
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Carabidae		CARABIDAE	CARABIDAE Latreille, 1802				2					57		192184	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Carabidae		CARABIDAE	CARABIDAE Latreille, 1802				2					57		192174	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Carabidae		CARABIDAE	CARABIDAE Latreille, 1802				2					57		192193	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Carabidae		CARABIDAE	CARABIDAE Latreille, 1802				6					57		192181	139502
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Carabidae		CARABIDAE	CARABIDAE Latreille, 1802				2					57		192190	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Carabidae		CARABIDAE	CARABIDAE Latreille, 1802				2					57		192169	139502
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Carabidae		CARABIDAE	CARABIDAE Latreille, 1802				1					57		192191	139502
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Carabidae		CARABIDAE	CARABIDAE Latreille, 1802				1					57		192192	139502
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Carabidae		CARABIDAE	CARABIDAE Latreille, 1802				1					57		192178	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Carabidae		CARABIDAE	CARABIDAE Latreille, 1802				1					57		192176	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Carabidae		CARABIDAE	CARABIDAE Latreille, 1802				4					57		192168	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Carabidae		CARABIDAE	CARABIDAE Latreille, 1802				3					57		192182	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Carabidae		CARABIDAE	CARABIDAE Latreille, 1802				1					57		192175	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Carabidae		CARABIDAE	CARABIDAE Latreille, 1802				5					57		192171	139502
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Carabidae		CARABIDAE	CARABIDAE Latreille, 1802				3					57		192197	139507
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Carabidae		CARABIDAE	CARABIDAE Latreille, 1802				2					57		192194	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Carabidae		CARABIDAE	CARABIDAE Latreille, 1802				1					57		192177	139507
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Carabidae		CARABIDAE	CARABIDAE Latreille, 1802				3					57		192189	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cerambycidae	Cerambycinae	Anaglyptus mysticus	Anaglyptus mysticus (Linnaeus, 1758)	Anaglyptus	mysticus		1					57		192168	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cerambycidae	Cerambycinae	Clytus arietis	Clytus arietis (Linnaeus, 1758)	Clytus	arietis		1					57		192175	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cerambycidae	Cerambycinae	Phymatodes testaceus	Phymatodes testaceus (Linnaeus, 1758)	Phymatodes	testaceus		2					57		192177	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cerambycidae	Cerambycinae	Poecilium alni	Poecilium alni (Linnaeus, 1767)	Poecilium	alni		1					57		192171	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cerambycidae	Cerambycinae	Poecilium rufipes	Poecilium rufipes (Fabricius, 1776)	Poecilium	rufipes		1					57		192173	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cerambycidae	Cerambycinae	Rusticoclytus rusticus	Rusticoclytus rusticus (Linnaeus, 1758)	Rusticoclytus	rusticus		1					57		192192	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cerambycidae	Lamiinae	Leiopus femoratus	Leiopus femoratus Fairmaire, 1859	Leiopus	femoratus		1					57		192193	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cerambycidae	Lamiinae	Leiopus femoratus	Leiopus femoratus Fairmaire, 1859	Leiopus	femoratus		1					57		192188	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cerambycidae	Lamiinae	Mesosa nebulosa	Mesosa nebulosa (Fabricius, 1781)	Mesosa	nebulosa		1					57		192172	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cerambycidae	Lamiinae	Saperda scalaris	Saperda scalaris (Linnaeus, 1758)	Saperda	scalaris		1					57		192173	139507
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cerambycidae	Lamiinae	Saperda scalaris	Saperda scalaris (Linnaeus, 1758)	Saperda	scalaris		1					57		192194	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cerambycidae	Lamiinae	Tetrops praeustus	Tetrops praeustus (Linnaeus, 1758)	Tetrops	praeustus		1					57		192175	139507
+Null	20240415	20240430	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cerambycidae	Lamiinae	Tetrops praeustus	Tetrops praeustus (Linnaeus, 1758)	Tetrops	praeustus		1					57		192165	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cerambycidae	Lepturinae	Dinoptera collaris	Dinoptera collaris (Linnaeus, 1758)	Dinoptera	collaris		1					57		192175	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cerambycidae	Lepturinae	Grammoptera ruficornis	Grammoptera ruficornis (Fabricius, 1781)	Grammoptera	ruficornis		1					57		192176	139507
+Null	20240415	20240430	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cerambycidae	Lepturinae	Grammoptera ruficornis	Grammoptera ruficornis (Fabricius, 1781)	Grammoptera	ruficornis		4					57		192166	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cerambycidae	Lepturinae	Grammoptera ruficornis	Grammoptera ruficornis (Fabricius, 1781)	Grammoptera	ruficornis		1					57		192175	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cerambycidae	Lepturinae	Rutpela maculata	Rutpela maculata (Poda von Neuhaus, 1761)	Rutpela	maculata		1					57		192196	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cerambycidae	Lepturinae	Rutpela maculata	Rutpela maculata (Poda von Neuhaus, 1761)	Rutpela	maculata		1					57		192186	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cerambycidae	Lepturinae	Stenocorus meridianus	Stenocorus meridianus (Linnaeus, 1758)	Stenocorus	meridianus		3					57		192171	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cerambycidae	Lepturinae	Stenocorus meridianus	Stenocorus meridianus (Linnaeus, 1758)	Stenocorus	meridianus		2					57		192170	139502
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cerambycidae	Lepturinae	Stictoleptura fulva	Stictoleptura fulva (De Geer, 1775)	Stictoleptura	fulva	coll	1					57		192184	139507
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cerambycidae	Spondylidinae	Spondylis buprestoides	Spondylis buprestoides (Linnaeus, 1758)	Spondylis	buprestoides		1					57		192189	139502
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cerylonidae	Ceryloninae	Cerylon ferrugineum	Cerylon ferrugineum Stephens, 1830	Cerylon	ferrugineum		2					57		192184	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cerylonidae	Ceryloninae	Cerylon ferrugineum	Cerylon ferrugineum Stephens, 1830	Cerylon	ferrugineum		1					57		192176	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cerylonidae	Ceryloninae	Cerylon histeroides	Cerylon histeroides (Fabricius, 1792)	Cerylon	histeroides		1					57		192186	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Chrysomelidae		CHRYSOMELIDAE	CHRYSOMELIDAE Latreille, 1802				1					57		192173	139507
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Chrysomelidae		CHRYSOMELIDAE	CHRYSOMELIDAE Latreille, 1802				1					57		192185	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Chrysomelidae		CHRYSOMELIDAE	CHRYSOMELIDAE Latreille, 1802				1					57		192196	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Chrysomelidae		CHRYSOMELIDAE	CHRYSOMELIDAE Latreille, 1802				2					57		192175	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Chrysomelidae		CHRYSOMELIDAE	CHRYSOMELIDAE Latreille, 1802				1					57		192193	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Chrysomelidae		CHRYSOMELIDAE	CHRYSOMELIDAE Latreille, 1802				2					57		192191	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Chrysomelidae		CHRYSOMELIDAE	CHRYSOMELIDAE Latreille, 1802				2					57		192169	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Chrysomelidae		CHRYSOMELIDAE	CHRYSOMELIDAE Latreille, 1802				1					57		192181	139502
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Chrysomelidae		CHRYSOMELIDAE	CHRYSOMELIDAE Latreille, 1802				1					57		192190	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Chrysomelidae		CHRYSOMELIDAE	CHRYSOMELIDAE Latreille, 1802				1					57		192182	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Chrysomelidae		CHRYSOMELIDAE	CHRYSOMELIDAE Latreille, 1802				1					57		192189	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Chrysomelidae		CHRYSOMELIDAE	CHRYSOMELIDAE Latreille, 1802				11					57		192168	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Chrysomelidae	Bruchinae	Bruchinae	Bruchinae Latreille, 1802				1					57		192169	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Chrysomelidae	Bruchinae	Bruchinae	Bruchinae Latreille, 1802				1					57		192188	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Chrysomelidae	Bruchinae	Bruchinae	Bruchinae Latreille, 1802				1					57		192176	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Ciidae		CIIDAE	CIIDAE Leach, 1819				4					57		192177	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Ciidae		CIIDAE	CIIDAE Leach, 1819				2					57		192183	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Ciidae		CIIDAE	CIIDAE Leach, 1819				1					57		192174	139507
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Ciidae		CIIDAE	CIIDAE Leach, 1819				1					57		192187	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Ciidae		CIIDAE	CIIDAE Leach, 1819				4					57		192172	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Ciidae		CIIDAE	CIIDAE Leach, 1819				1					57		192193	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Ciidae		CIIDAE	CIIDAE Leach, 1819				1					57		192175	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Clambidae		Clambus sp.	Clambus sp. Fischer von Waldheim, 1821	Clambus	sp.		1					57		192196	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Clambidae		Clambus sp.	Clambus sp. Fischer von Waldheim, 1821	Clambus	sp.		1					57		192193	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Clambidae		Clambus sp.	Clambus sp. Fischer von Waldheim, 1821	Clambus	sp.		1					57		192171	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Clambidae		Clambus sp.	Clambus sp. Fischer von Waldheim, 1821	Clambus	sp.		1					57		192172	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Clambidae		Clambus sp.	Clambus sp. Fischer von Waldheim, 1821	Clambus	sp.		1					57		192174	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cleridae	Clerinae	Allonyx quadrimaculatus	Allonyx quadrimaculatus (Schaller, 1783)	Allonyx	quadrimaculatus		1					57		192172	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cleridae	Clerinae	Clerus mutillarius	Clerus mutillarius Fabricius, 1775	Clerus	mutillarius		1					57		192186	139507
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cleridae	Clerinae	Clerus mutillarius	Clerus mutillarius Fabricius, 1775	Clerus	mutillarius		2					57		192189	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cleridae	Clerinae	Clerus mutillarius	Clerus mutillarius Fabricius, 1775	Clerus	mutillarius		1					57		192194	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cleridae	Clerinae	Clerus mutillarius	Clerus mutillarius Fabricius, 1775	Clerus	mutillarius		1					57		192193	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cleridae	Clerinae	Clerus mutillarius	Clerus mutillarius Fabricius, 1775	Clerus	mutillarius		1					57		192171	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cleridae	Clerinae	Clerus mutillarius	Clerus mutillarius Fabricius, 1775	Clerus	mutillarius		1					57		192181	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cleridae	Clerinae	Clerus mutillarius	Clerus mutillarius Fabricius, 1775	Clerus	mutillarius		2					57		192188	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cleridae	Clerinae	Opilo mollis	Opilo mollis (Linnaeus, 1758)	Opilo	mollis		1					57		192189	139502
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cleridae	Clerinae	Opilo mollis	Opilo mollis (Linnaeus, 1758)	Opilo	mollis		1					57		192184	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cleridae	Clerinae	Opilo mollis	Opilo mollis (Linnaeus, 1758)	Opilo	mollis		1					57		192181	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cleridae	Clerinae	Thanasimus formicarius	Thanasimus formicarius (Linnaeus, 1758)	Thanasimus	formicarius		1					57		192177	139507
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cleridae	Clerinae	Trichodes alvearius	Trichodes alvearius (Fabricius, 1792)	Trichodes	alvearius		1					57		192185	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cleridae	Clerinae	Trichodes alvearius	Trichodes alvearius (Fabricius, 1792)	Trichodes	alvearius		4					57		192175	139507
+Null	20240415	20240430	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cleridae	Clerinae	Trichodes alvearius	Trichodes alvearius (Fabricius, 1792)	Trichodes	alvearius		1					57		192166	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Coccinellidae		COCCINELLIDAE	COCCINELLIDAE Latreille, 1817				1					57		192169	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Coccinellidae		COCCINELLIDAE	COCCINELLIDAE Latreille, 1817				1					57		192172	139502
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Coccinellidae		COCCINELLIDAE	COCCINELLIDAE Latreille, 1817				9					57		192190	139502
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Coccinellidae		COCCINELLIDAE	COCCINELLIDAE Latreille, 1817				4					57		192180	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Coccinellidae		COCCINELLIDAE	COCCINELLIDAE Latreille, 1817				2					57		192171	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Coccinellidae		COCCINELLIDAE	COCCINELLIDAE Latreille, 1817				4					57		192189	139502
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Coccinellidae		COCCINELLIDAE	COCCINELLIDAE Latreille, 1817				7					57		192178	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Coccinellidae		COCCINELLIDAE	COCCINELLIDAE Latreille, 1817				1					57		192194	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Coccinellidae		COCCINELLIDAE	COCCINELLIDAE Latreille, 1817				1					57		192188	139502
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Coccinellidae		COCCINELLIDAE	COCCINELLIDAE Latreille, 1817				1					57		192183	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Coccinellidae		COCCINELLIDAE	COCCINELLIDAE Latreille, 1817				1					57		192196	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Coccinellidae		COCCINELLIDAE	COCCINELLIDAE Latreille, 1817				1					57		192174	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Coccinellidae		COCCINELLIDAE	COCCINELLIDAE Latreille, 1817				3					57		192181	139502
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Coccinellidae		COCCINELLIDAE	COCCINELLIDAE Latreille, 1817				2					57		192185	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Corylophidae		CORYLOPHIDAE	CORYLOPHIDAE Le Conte, 1852				1					57		192183	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Corylophidae		CORYLOPHIDAE	CORYLOPHIDAE Le Conte, 1852				1					57		192178	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Corylophidae		CORYLOPHIDAE	CORYLOPHIDAE Le Conte, 1852				1					57		192189	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Corylophidae		CORYLOPHIDAE	CORYLOPHIDAE Le Conte, 1852				2					57		192188	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Corylophidae		CORYLOPHIDAE	CORYLOPHIDAE Le Conte, 1852				1					57		192194	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Corylophidae		CORYLOPHIDAE	CORYLOPHIDAE Le Conte, 1852				1					57		192191	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Corylophidae		CORYLOPHIDAE	CORYLOPHIDAE Le Conte, 1852				1					57		192172	139502
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Corylophidae		CORYLOPHIDAE	CORYLOPHIDAE Le Conte, 1852				1					57		192180	139502
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Corylophidae		CORYLOPHIDAE	CORYLOPHIDAE Le Conte, 1852				1					57		192196	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Corylophidae		CORYLOPHIDAE	CORYLOPHIDAE Le Conte, 1852				1					57		192197	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cryptophagidae		CRYPTOPHAGIDAE	CRYPTOPHAGIDAE Kirby, 1837				1					57		192181	139502
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cryptophagidae		CRYPTOPHAGIDAE	CRYPTOPHAGIDAE Kirby, 1837				1					57		192178	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cryptophagidae		CRYPTOPHAGIDAE	CRYPTOPHAGIDAE Kirby, 1837				4					57		192171	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cryptophagidae		CRYPTOPHAGIDAE	CRYPTOPHAGIDAE Kirby, 1837				2					57		192189	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cryptophagidae		CRYPTOPHAGIDAE	CRYPTOPHAGIDAE Kirby, 1837				4					57		192168	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cryptophagidae		CRYPTOPHAGIDAE	CRYPTOPHAGIDAE Kirby, 1837				2					57		192172	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Cryptophagidae	Cryptophaginae	Antherophagus sp.	Antherophagus sp. Dejean, 1821	Antherophagus	sp.		1					57		192186	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Cryptophagidae	Cryptophaginae	Antherophagus sp.	Antherophagus sp. Dejean, 1821	Antherophagus	sp.		1					57		192172	139502
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae		CURCULIONIDAE	CURCULIONIDAE Latreille, 1802				2					57		192180	139502
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae		CURCULIONIDAE	CURCULIONIDAE Latreille, 1802				1					57		192185	139507
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae		CURCULIONIDAE	CURCULIONIDAE Latreille, 1802				3					57		192182	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae		CURCULIONIDAE	CURCULIONIDAE Latreille, 1802				3					57		192181	139502
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae		CURCULIONIDAE	CURCULIONIDAE Latreille, 1802				9					57		192190	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae		CURCULIONIDAE	CURCULIONIDAE Latreille, 1802				1					57		192186	139507
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae		CURCULIONIDAE	CURCULIONIDAE Latreille, 1802				1					57		192189	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae		CURCULIONIDAE	CURCULIONIDAE Latreille, 1802				1					57		192170	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae		CURCULIONIDAE	CURCULIONIDAE Latreille, 1802				1					57		192169	139502
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae		CURCULIONIDAE	CURCULIONIDAE Latreille, 1802				4					57		192192	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae		CURCULIONIDAE	CURCULIONIDAE Latreille, 1802				4					57		192174	139507
+Null	20240415	20240430	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae		CURCULIONIDAE	CURCULIONIDAE Latreille, 1802				1					57		192164	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae		CURCULIONIDAE	CURCULIONIDAE Latreille, 1802				3					57		192171	139502
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae		CURCULIONIDAE	CURCULIONIDAE Latreille, 1802				2					57		192191	139502
+Null	20240415	20240430	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae		CURCULIONIDAE	CURCULIONIDAE Latreille, 1802				1					57		192165	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae		CURCULIONIDAE	CURCULIONIDAE Latreille, 1802				8					57		192168	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae		CURCULIONIDAE	CURCULIONIDAE Latreille, 1802				4					57		192188	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae		CURCULIONIDAE	CURCULIONIDAE Latreille, 1802				5					57		192172	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae		CURCULIONIDAE	CURCULIONIDAE Latreille, 1802				2					57		192173	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae		CURCULIONIDAE	CURCULIONIDAE Latreille, 1802				1					57		192178	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae		CURCULIONIDAE	CURCULIONIDAE Latreille, 1802				7					57		192175	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Cryptorhynchinae	Gasterocercus depressirostris	Gasterocercus depressirostris (Fabricius, 1792)	Gasterocercus	depressirostris		3					57		192188	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Platypodinae	Platypus cylindrus	Platypus cylindrus (Fabricius, 1792)	Platypus	cylindrus		1					57		192188	139502
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Anisandrus dispar	Anisandrus dispar (Fabricius, 1792)	Anisandrus	dispar		2					57		192192	139502
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Anisandrus dispar	Anisandrus dispar (Fabricius, 1792)	Anisandrus	dispar		1					57		192185	139507
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Anisandrus dispar	Anisandrus dispar (Fabricius, 1792)	Anisandrus	dispar		2					57		192190	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Anisandrus dispar	Anisandrus dispar (Fabricius, 1792)	Anisandrus	dispar		4					57		192188	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Cyclorhipidion bodoanum	Cyclorhipidion bodoanum (Reitter, 1913)	Cyclorhipidion	bodoanum		1					57		192189	139502
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Dryocoetes himalayensis	Dryocoetes himalayensis Strohmeyer, 1908	Dryocoetes	himalayensis	coll	1					57		192195	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Hylastes attenuatus	Hylastes attenuatus Erichson, 1836	Hylastes	attenuatus		1					57		192171	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Hylastes sp.	Hylastes sp. Erichson, 1836	Hylastes	sp.		1					57		192182	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Hylastes sp.	Hylastes sp. Erichson, 1836	Hylastes	sp.		1					57		192172	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Hylesinus crenatus	Hylesinus crenatus (Fabricius, 1787)	Hylesinus	crenatus		1					57		192175	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Hylesinus toranio	Hylesinus toranio (D'Anthoine, 1788)	Hylesinus	toranio		1					57		192191	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Hylesinus toranio	Hylesinus toranio (D'Anthoine, 1788)	Hylesinus	toranio		2					57		192181	139502
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Hylurgus ligniperda	Hylurgus ligniperda (Fabricius, 1787)	Hylurgus	ligniperda		1					57		192178	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Scolytinae	Scolytinae Latreille, 1804				2					57		192169	139502
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Scolytinae	Scolytinae Latreille, 1804				3					57		192190	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Scolytinae	Scolytinae Latreille, 1804				6					57		192189	139502
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Scolytinae	Scolytinae Latreille, 1804				1					57		192191	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Scolytinae	Scolytinae Latreille, 1804				7					57		192188	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Scolytinae	Scolytinae Latreille, 1804				4					57		192168	139502
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Scolytinae	Scolytinae Latreille, 1804				2					57		192192	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Scolytus carpini	Scolytus carpini (Ratzeburg, 1837)	Scolytus	carpini		1					57		192186	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Scolytus carpini	Scolytus carpini (Ratzeburg, 1837)	Scolytus	carpini		1					57		192197	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Scolytus carpini	Scolytus carpini (Ratzeburg, 1837)	Scolytus	carpini		1					57		192193	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Scolytus intricatus	Scolytus intricatus (Ratzeburg, 1837)	Scolytus	intricatus		1					57		192196	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Scolytus intricatus	Scolytus intricatus (Ratzeburg, 1837)	Scolytus	intricatus		1					57		192197	139507
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Scolytus intricatus	Scolytus intricatus (Ratzeburg, 1837)	Scolytus	intricatus		1					57		192185	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Scolytus rugulosus	Scolytus rugulosus (Müller, 1818)	Scolytus	rugulosus		1					57		192193	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Scolytus rugulosus	Scolytus rugulosus (Müller, 1818)	Scolytus	rugulosus		1					57		192197	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Scolytus sp.	Scolytus sp. Geoffroy, 1762	Scolytus	sp.		1					57		192175	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Scolytus sp.	Scolytus sp. Geoffroy, 1762	Scolytus	sp.		1					57		192193	139507
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Scolytus sp.	Scolytus sp. Geoffroy, 1762	Scolytus	sp.		1					57		192185	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Taphrorychus villifrons	Taphrorychus villifrons (Dufour, 1843)	Taphrorychus	villifrons		1					57		192172	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Taphrorychus villifrons	Taphrorychus villifrons (Dufour, 1843)	Taphrorychus	villifrons		1					57		192173	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Xyleborinus saxesenii	Xyleborinus saxesenii (Ratzeburg, 1837)	Xyleborinus	saxesenii		1					57		192177	139507
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Xyleborinus saxesenii	Xyleborinus saxesenii (Ratzeburg, 1837)	Xyleborinus	saxesenii		13					57		192190	139502
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Xyleborinus saxesenii	Xyleborinus saxesenii (Ratzeburg, 1837)	Xyleborinus	saxesenii		21					57		192192	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Xyleborinus saxesenii	Xyleborinus saxesenii (Ratzeburg, 1837)	Xyleborinus	saxesenii		40					57		192188	139502
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Xyleborinus saxesenii	Xyleborinus saxesenii (Ratzeburg, 1837)	Xyleborinus	saxesenii		1					57		192178	139502
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Xyleborinus saxesenii	Xyleborinus saxesenii (Ratzeburg, 1837)	Xyleborinus	saxesenii		3					57		192197	139507
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Xyleborinus saxesenii	Xyleborinus saxesenii (Ratzeburg, 1837)	Xyleborinus	saxesenii		1					57		192195	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Xyleborinus saxesenii	Xyleborinus saxesenii (Ratzeburg, 1837)	Xyleborinus	saxesenii		1					57		192196	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Xyleborinus saxesenii	Xyleborinus saxesenii (Ratzeburg, 1837)	Xyleborinus	saxesenii		1					57		192171	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Xyleborus dryographus	Xyleborus dryographus (Ratzeburg, 1837)	Xyleborus	dryographus		1					57		192187	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Xyleborus monographus	Xyleborus monographus (Fabricius, 1792)	Xyleborus	monographus		1					57		192175	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Xyleborus monographus	Xyleborus monographus (Fabricius, 1792)	Xyleborus	monographus		2					57		192178	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Xyleborus monographus	Xyleborus monographus (Fabricius, 1792)	Xyleborus	monographus		2					57		192174	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Xyleborus monographus	Xyleborus monographus (Fabricius, 1792)	Xyleborus	monographus		1					57		192176	139507
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Xyleborus monographus	Xyleborus monographus (Fabricius, 1792)	Xyleborus	monographus		1					57		192189	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Xyleborus monographus	Xyleborus monographus (Fabricius, 1792)	Xyleborus	monographus		1					57		192171	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Xyleborus monographus	Xyleborus monographus (Fabricius, 1792)	Xyleborus	monographus		1					57		192177	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Xyleborus monographus	Xyleborus monographus (Fabricius, 1792)	Xyleborus	monographus		1					57		192192	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Curculionidae	Scolytinae	Xyleborus monographus	Xyleborus monographus (Fabricius, 1792)	Xyleborus	monographus		2					57		192172	139502
+Null	20240415	20240430	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dasytidae	Dasytinae	Dasytes aeratus	Dasytes aeratus Stephens, 1829	Dasytes	aeratus		3					57		192164	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dasytidae	Dasytinae	Dasytes aeratus	Dasytes aeratus Stephens, 1829	Dasytes	aeratus		1					57		192175	139507
+Null	20240415	20240430	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dasytidae	Dasytinae	Dasytes aeratus	Dasytes aeratus Stephens, 1829	Dasytes	aeratus		1					57		192167	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Dasytidae	Dasytinae	Dasytes aeratus	Dasytes aeratus Stephens, 1829	Dasytes	aeratus		1					57		192168	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dasytidae	Dasytinae	Dasytes aeratus	Dasytes aeratus Stephens, 1829	Dasytes	aeratus		2					57		192174	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Dasytidae	Dasytinae	Dasytes nigrocyaneus	Dasytes nigrocyaneus Mulsant & Rey, 1868	Dasytes	nigrocyaneus		1					57		192172	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Dasytidae	Dasytinae	Dasytes pauperculus	Dasytes pauperculus Laporte de Castelnau, 1840	Dasytes	pauperculus		1					57		192168	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dasytidae	Dasytinae	Dasytes plumbeus	Dasytes plumbeus (Muller, 1776)	Dasytes	plumbeus		2					57		192186	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Dasytidae	Dasytinae	Dasytes plumbeus	Dasytes plumbeus (Muller, 1776)	Dasytes	plumbeus		1					57		192188	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dasytidae	Dasytinae	Dasytes plumbeus	Dasytes plumbeus (Muller, 1776)	Dasytes	plumbeus		1					57		192187	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dasytidae	Dasytinae	Dasytes plumbeus	Dasytes plumbeus (Muller, 1776)	Dasytes	plumbeus		3					57		192176	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Dasytidae	Dasytinae	Dasytes plumbeus	Dasytes plumbeus (Muller, 1776)	Dasytes	plumbeus		3					57		192181	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Dasytidae	Dasytinae	Dasytes plumbeus	Dasytes plumbeus (Muller, 1776)	Dasytes	plumbeus		1					57		192182	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dasytidae	Dasytinae	Dasytes plumbeus	Dasytes plumbeus (Muller, 1776)	Dasytes	plumbeus		1					57		192173	139507
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dasytidae	Dasytinae	Dasytes plumbeus	Dasytes plumbeus (Muller, 1776)	Dasytes	plumbeus		1					57		192194	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Dasytidae	Dasytinae	Dasytes plumbeus	Dasytes plumbeus (Muller, 1776)	Dasytes	plumbeus		1					57		192169	139502
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Dasytidae	Dasytinae	Dasytes plumbeus	Dasytes plumbeus (Muller, 1776)	Dasytes	plumbeus		2					57		192178	139502
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Dasytidae	Dasytinae	Dasytes plumbeus	Dasytes plumbeus (Muller, 1776)	Dasytes	plumbeus		2					57		192191	139502
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dasytidae	Dasytinae	Dasytes plumbeus	Dasytes plumbeus (Muller, 1776)	Dasytes	plumbeus		1					57		192196	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dasytidae	Dasytinae	Psilothrix viridicoerulea	Psilothrix viridicoerulea (Geoffroy, 1785)	Psilothrix	viridicoerulea	coll	1					57		192174	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dermestidae	Attageninae	Attagenus pellio	Attagenus pellio (Linnaeus, 1758)	Attagenus	pellio		2					57		192175	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dermestidae	Attageninae	Attagenus pellio	Attagenus pellio (Linnaeus, 1758)	Attagenus	pellio		3					57		192173	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dermestidae	Attageninae	Attagenus pellio	Attagenus pellio (Linnaeus, 1758)	Attagenus	pellio		4					57		192177	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dermestidae	Attageninae	Attagenus pellio	Attagenus pellio (Linnaeus, 1758)	Attagenus	pellio		1					57		192174	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dermestidae	Attageninae	Attagenus pellio	Attagenus pellio (Linnaeus, 1758)	Attagenus	pellio		7					57		192176	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dermestidae	Attageninae	Attagenus sp.	Attagenus sp. Latreille, 1802	Attagenus	sp.		1					57		192193	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dermestidae	Attageninae	Attagenus sp.	Attagenus sp. Latreille, 1802	Attagenus	sp.		1					57		192197	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Dermestidae	Dermestinae	Dermestes lardarius	Dermestes lardarius Linnaeus, 1758	Dermestes	lardarius		1					57		192192	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dermestidae	Dermestinae	Dermestes mustelinus	Dermestes mustelinus Erichson, 1846	Dermestes	mustelinus		1					57		192174	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Dermestidae	Megatominae	Anthrenus sp.	Anthrenus sp. Geoffroy, 1762	Anthrenus	sp.		1					57		192171	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dermestidae	Megatominae	Anthrenus verbasci	Anthrenus verbasci Linnaeus, 1767	Anthrenus	verbasci		2					57		192187	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dermestidae	Megatominae	Anthrenus verbasci	Anthrenus verbasci Linnaeus, 1767	Anthrenus	verbasci		1					57		192183	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dermestidae	Megatominae	Anthrenus verbasci	Anthrenus verbasci Linnaeus, 1767	Anthrenus	verbasci		1					57		192177	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dermestidae	Megatominae	Anthrenus verbasci	Anthrenus verbasci Linnaeus, 1767	Anthrenus	verbasci		7					57		192176	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Dermestidae	Megatominae	Ctesias serra	Ctesias serra (Fabricius, 1792)	Ctesias	serra		1					57		192178	139502
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Dermestidae	Megatominae	Ctesias serra	Ctesias serra (Fabricius, 1792)	Ctesias	serra		3					57		192180	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Dermestidae	Megatominae	Ctesias serra	Ctesias serra (Fabricius, 1792)	Ctesias	serra		1					57		192172	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Dermestidae	Megatominae	Ctesias serra	Ctesias serra (Fabricius, 1792)	Ctesias	serra		1					57		192188	139502
+Null	20240415	20240430	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dermestidae	Megatominae	Megatoma undata	Megatoma undata (Linnaeus, 1758)	Megatoma	undata		1					57		192166	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dermestidae	Megatominae	Megatoma undata	Megatoma undata (Linnaeus, 1758)	Megatoma	undata		2					57		192174	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dermestidae	Megatominae	Megatoma undata	Megatoma undata (Linnaeus, 1758)	Megatoma	undata		1					57		192173	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Dermestidae	Megatominae	Megatoma undata	Megatoma undata (Linnaeus, 1758)	Megatoma	undata		2					57		192172	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Dermestidae	Megatominae	Megatoma undata	Megatoma undata (Linnaeus, 1758)	Megatoma	undata		3					57		192177	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Dermestidae	Megatominae	Megatoma undata	Megatoma undata (Linnaeus, 1758)	Megatoma	undata		1					57		192168	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae		ELATERIDAE	ELATERIDAE Leach, 1815				2					57		192181	139502
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae		ELATERIDAE	ELATERIDAE Leach, 1815				1					57		192196	139507
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae		ELATERIDAE	ELATERIDAE Leach, 1815				3					57		192182	139502
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae		ELATERIDAE	ELATERIDAE Leach, 1815				1					57		192179	139502
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae		ELATERIDAE	ELATERIDAE Leach, 1815				1					57		192192	139502
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae		ELATERIDAE	ELATERIDAE Leach, 1815				2					57		192191	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae		ELATERIDAE	ELATERIDAE Leach, 1815				2					57		192189	139502
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Agrypninae	Agrypnus murinus	Agrypnus murinus (Linnaeus, 1758)	Agrypnus	murinus		1					57		192178	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Agrypninae	Lacon querceus	Lacon querceus (Herbst, 1784)	Lacon	querceus	coll	1					57		192171	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Cardiophorinae	Cardiophorus gramineus	Cardiophorus gramineus (Scopoli, 1763)	Cardiophorus	gramineus		4					57		192176	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Cardiophorinae	Cardiophorus gramineus	Cardiophorus gramineus (Scopoli, 1763)	Cardiophorus	gramineus		13					57		192177	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Cardiophorinae	Cardiophorus gramineus	Cardiophorus gramineus (Scopoli, 1763)	Cardiophorus	gramineus		1					57		192186	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Cardiophorinae	Cardiophorus sp.	Cardiophorus sp. Eschscholtz, 1829	Cardiophorus	sp.		1					57		192177	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Cardiophorinae	Cardiophorus sp.	Cardiophorus sp. Eschscholtz, 1829	Cardiophorus	sp.		1					57		192175	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Cardiophorinae	Cardiophorus sp.	Cardiophorus sp. Eschscholtz, 1829	Cardiophorus	sp.		1					57		192171	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Athous sp.	Athous sp. Eschscholtz, 1829	Athous	sp.		9					57		192177	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Athous sp.	Athous sp. Eschscholtz, 1829	Athous	sp.		3					57		192168	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Athous sp.	Athous sp. Eschscholtz, 1829	Athous	sp.		1					57		192187	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Athous sp.	Athous sp. Eschscholtz, 1829	Athous	sp.		1					57		192178	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Athous sp.	Athous sp. Eschscholtz, 1829	Athous	sp.		1					57		192176	139507
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Athous sp.	Athous sp. Eschscholtz, 1829	Athous	sp.		1					57		192185	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Athous sp.	Athous sp. Eschscholtz, 1829	Athous	sp.		7					57		192172	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Athous sp.	Athous sp. Eschscholtz, 1829	Athous	sp.		13					57		192171	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Athous sp.	Athous sp. Eschscholtz, 1829	Athous	sp.		6					57		192175	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Athous sp.	Athous sp. Eschscholtz, 1829	Athous	sp.		1					57		192170	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Athous sp.	Athous sp. Eschscholtz, 1829	Athous	sp.		1					57		192182	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Athous sp.	Athous sp. Eschscholtz, 1829	Athous	sp.		3					57		192169	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Calambus bipustulatus	Calambus bipustulatus (Linnaeus, 1767)	Calambus	bipustulatus		1					57		192173	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Calambus bipustulatus	Calambus bipustulatus (Linnaeus, 1767)	Calambus	bipustulatus		1					57		192174	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Calambus bipustulatus	Calambus bipustulatus (Linnaeus, 1767)	Calambus	bipustulatus		1					57		192171	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Cidnopus pilosus	Cidnopus pilosus (Leske, 1785)	Cidnopus	pilosus		6					57		192172	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Cidnopus pilosus	Cidnopus pilosus (Leske, 1785)	Cidnopus	pilosus		1					57		192169	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Cidnopus pilosus	Cidnopus pilosus (Leske, 1785)	Cidnopus	pilosus		1					57		192170	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Cidnopus pilosus	Cidnopus pilosus (Leske, 1785)	Cidnopus	pilosus		4					57		192171	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Denticollis linearis	Denticollis linearis (Linnaeus, 1758)	Denticollis	linearis		1					57		192175	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Hemicrepidius hirtus	Hemicrepidius hirtus (Herbst, 1784)	Hemicrepidius	hirtus	coll	1					57		192178	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Limonius sp.	Limonius sp. Eschscholtz, 1829	Limonius	sp.		1					57		192181	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Limonius sp.	Limonius sp. Eschscholtz, 1829	Limonius	sp.		8					57		192174	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Limonius sp.	Limonius sp. Eschscholtz, 1829	Limonius	sp.		1					57		192173	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Nothodes parvulus	Nothodes parvulus (Panzer, 1799)	Nothodes	parvulus		4					57		192171	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Nothodes parvulus	Nothodes parvulus (Panzer, 1799)	Nothodes	parvulus		1					57		192181	139502
+Null	20240415	20240430	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Nothodes parvulus	Nothodes parvulus (Panzer, 1799)	Nothodes	parvulus		1					57		192164	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Nothodes parvulus	Nothodes parvulus (Panzer, 1799)	Nothodes	parvulus		1					57		192188	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Prosternon tessellatum	Prosternon tessellatum (Linnaeus, 1758)	Prosternon	tessellatum		1					57		192174	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Stenagostus rhombeus	Stenagostus rhombeus (Olivier, 1790)	Stenagostus	rhombeus		1					57		192188	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Denticollinae	Stenagostus rhombeus	Stenagostus rhombeus (Olivier, 1790)	Stenagostus	rhombeus		1					57		192194	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Elaterinae	Agriotes sp.	Agriotes sp. Eschscholtz, 1829	Agriotes	sp.		5					57		192176	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Elaterinae	Agriotes sp.	Agriotes sp. Eschscholtz, 1829	Agriotes	sp.		1					57		192168	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Elaterinae	Agriotes sp.	Agriotes sp. Eschscholtz, 1829	Agriotes	sp.		1					57		192173	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Elaterinae	Ampedus pomorum	Ampedus pomorum (Herbst, 1784)	Ampedus	pomorum		1					57		192174	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Elaterinae	Ampedus pomorum	Ampedus pomorum (Herbst, 1784)	Ampedus	pomorum		1					57		192171	139502
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Elaterinae	Ampedus quercicola	Ampedus quercicola (Buysson, 1887)	Ampedus	quercicola		1					57		192184	139507
+Null	20240415	20240430	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Elaterinae	Ampedus quercicola	Ampedus quercicola (Buysson, 1887)	Ampedus	quercicola		1					57		192167	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Elaterinae	Ampedus quercicola	Ampedus quercicola (Buysson, 1887)	Ampedus	quercicola		1					57		192171	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Elaterinae	Ampedus sanguineus	Ampedus sanguineus (Linnaeus, 1758)	Ampedus	sanguineus		1					57		192171	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Elaterinae	Ampedus sanguineus	Ampedus sanguineus (Linnaeus, 1758)	Ampedus	sanguineus		1					57		192169	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Elateridae	Elaterinae	Idolus picipennis	Idolus picipennis (Bach, 1852)	Idolus	picipennis	cf	1					57		192168	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Elateridae	Melanotinae	Melanotus villosus	Melanotus villosus (Geoffroy in Fourcroy, 1785)	Melanotus	villosus		1					57		192173	139507
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Endomychidae	Anomorphinae	Symbiotes gibberosus	Symbiotes gibberosus (Lucas, 1849)	Symbiotes	gibberosus		1					57		192189	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Endomychidae	Anomorphinae	Symbiotes gibberosus	Symbiotes gibberosus (Lucas, 1849)	Symbiotes	gibberosus		1					57		192193	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Erotylidae	Dacninae	Dacne bipustulata	Dacne bipustulata (Thunberg, 1781)	Dacne	bipustulata		1					57		192173	139507
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Erotylidae	Dacninae	Dacne bipustulata	Dacne bipustulata (Thunberg, 1781)	Dacne	bipustulata		2					57		192189	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Erotylidae	Dacninae	Dacne bipustulata	Dacne bipustulata (Thunberg, 1781)	Dacne	bipustulata		1					57		192188	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Erotylidae	Dacninae	Dacne bipustulata	Dacne bipustulata (Thunberg, 1781)	Dacne	bipustulata		1					57		192171	139502
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Erotylidae	Dacninae	Dacne bipustulata	Dacne bipustulata (Thunberg, 1781)	Dacne	bipustulata		2					57		192184	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Erotylidae	Dacninae	Dacne bipustulata	Dacne bipustulata (Thunberg, 1781)	Dacne	bipustulata		1					57		192168	139502
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Erotylidae	Dacninae	Dacne bipustulata	Dacne bipustulata (Thunberg, 1781)	Dacne	bipustulata		2					57		192183	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Erotylidae	Dacninae	Dacne bipustulata	Dacne bipustulata (Thunberg, 1781)	Dacne	bipustulata		2					57		192174	139507
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Erotylidae	Dacninae	Dacne bipustulata	Dacne bipustulata (Thunberg, 1781)	Dacne	bipustulata		1					57		192187	139507
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Erotylidae	Dacninae	Dacne bipustulata	Dacne bipustulata (Thunberg, 1781)	Dacne	bipustulata		1					57		192194	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Erotylidae	Dacninae	Dacne bipustulata	Dacne bipustulata (Thunberg, 1781)	Dacne	bipustulata		2					57		192177	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Erotylidae	Dacninae	Dacne bipustulata	Dacne bipustulata (Thunberg, 1781)	Dacne	bipustulata		2					57		192178	139502
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Erotylidae	Tritominae	Triplax russica	Triplax russica (Linnaeus, 1758)	Triplax	russica		3					57		192197	139507
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Eucnemidae	Macraulacinae	Dromaeolus barnabita	Dromaeolus barnabita (A. & J.B. Villa, 1838)	Dromaeolus	barnabita		1					57		192189	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Eucnemidae	Melasinae	Melasis buprestoides	Melasis buprestoides (Linnaeus, 1761)	Melasis	buprestoides		1					57		192169	139502
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	DERMAPTERA	Forficulidae		FORFICULIDAE	FORFICULIDAE .				1					57		192192	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	DERMAPTERA	Forficulidae		FORFICULIDAE	FORFICULIDAE .				1					57		192182	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	DERMAPTERA	Forficulidae		FORFICULIDAE	FORFICULIDAE .				1					57		192188	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Histeridae		HISTERIDAE	HISTERIDAE Gyllenhal, 1808				1					57		192171	139502
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Laemophloeidae		Cryptolestes corticinus	Cryptolestes corticinus (Erichson, 1846)	Cryptolestes	corticinus		1					57		192190	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Laemophloeidae		Cryptolestes duplicatus	Cryptolestes duplicatus (Waltl, 1839)	Cryptolestes	duplicatus		1					57		192188	139502
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Laemophloeidae		Cryptolestes duplicatus	Cryptolestes duplicatus (Waltl, 1839)	Cryptolestes	duplicatus		1					57		192190	139502
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Lampyridae		LAMPYRIDAE	LAMPYRIDAE Latreille, 1817				1					57		192190	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Lampyridae		LAMPYRIDAE	LAMPYRIDAE Latreille, 1817				1					57		192175	139507
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Lampyridae		LAMPYRIDAE	LAMPYRIDAE Latreille, 1817				1					57		192195	139507
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Lampyridae		LAMPYRIDAE	LAMPYRIDAE Latreille, 1817				1					57		192187	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Lampyridae		LAMPYRIDAE	LAMPYRIDAE Latreille, 1817				1					57		192186	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Lampyridae		LAMPYRIDAE	LAMPYRIDAE Latreille, 1817				1					57		192176	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Lampyridae		LAMPYRIDAE	LAMPYRIDAE Latreille, 1817				1					57		192174	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Lampyridae		LAMPYRIDAE	LAMPYRIDAE Latreille, 1817				1					57		192196	139507
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Lampyridae		LAMPYRIDAE	LAMPYRIDAE Latreille, 1817				1					57		192189	139502
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Latridiidae		LATRIDIIDAE	LATRIDIIDAE Erichson, 1842				4					57		192192	139502
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Latridiidae		LATRIDIIDAE	LATRIDIIDAE Erichson, 1842				2					57		192191	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Latridiidae		LATRIDIIDAE	LATRIDIIDAE Erichson, 1842				5					57		192189	139502
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Latridiidae		LATRIDIIDAE	LATRIDIIDAE Erichson, 1842				2					57		192185	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Latridiidae		LATRIDIIDAE	LATRIDIIDAE Erichson, 1842				2					57		192196	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Latridiidae		LATRIDIIDAE	LATRIDIIDAE Erichson, 1842				18					57		192173	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Latridiidae		LATRIDIIDAE	LATRIDIIDAE Erichson, 1842				7					57		192175	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Latridiidae		LATRIDIIDAE	LATRIDIIDAE Erichson, 1842				10					57		192171	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Latridiidae		LATRIDIIDAE	LATRIDIIDAE Erichson, 1842				5					57		192181	139502
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Latridiidae		LATRIDIIDAE	LATRIDIIDAE Erichson, 1842				2					57		192184	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Latridiidae		LATRIDIIDAE	LATRIDIIDAE Erichson, 1842				3					57		192178	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Latridiidae		LATRIDIIDAE	LATRIDIIDAE Erichson, 1842				9					57		192187	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Latridiidae		LATRIDIIDAE	LATRIDIIDAE Erichson, 1842				14					57		192188	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Latridiidae		LATRIDIIDAE	LATRIDIIDAE Erichson, 1842				7					57		192193	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Latridiidae		LATRIDIIDAE	LATRIDIIDAE Erichson, 1842				5					57		192197	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Latridiidae		LATRIDIIDAE	LATRIDIIDAE Erichson, 1842				4					57		192172	139502
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Latridiidae		LATRIDIIDAE	LATRIDIIDAE Erichson, 1842				2					57		192180	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Latridiidae		LATRIDIIDAE	LATRIDIIDAE Erichson, 1842				4					57		192182	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Latridiidae		LATRIDIIDAE	LATRIDIIDAE Erichson, 1842				19					57		192174	139507
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Latridiidae		LATRIDIIDAE	LATRIDIIDAE Erichson, 1842				3					57		192195	139507
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Latridiidae		LATRIDIIDAE	LATRIDIIDAE Erichson, 1842				3					57		192194	139507
+Null	20240415	20240430	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Latridiidae	Corticariinae	Corticariinae	Corticariinae Curtis, 1829				1					57		192164	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Latridiidae	Corticariinae	Corticariinae	Corticariinae Curtis, 1829				1					57		192169	139502
+Null	20240415	20240430	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Latridiidae	Corticariinae	Corticariinae	Corticariinae Curtis, 1829				4					57		192166	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Latridiidae	Corticariinae	Corticariinae	Corticariinae Curtis, 1829				1					57		192183	139507
+Null	20240415	20240430	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Latridiidae	Corticariinae	Corticariinae	Corticariinae Curtis, 1829				1					57		192165	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Latridiidae	Corticariinae	Corticariinae	Corticariinae Curtis, 1829				6					57		192168	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Leiodidae		LEIODIDAE	LEIODIDAE Fleming, 1821				1					57		192171	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Leiodidae		LEIODIDAE	LEIODIDAE Fleming, 1821				1					57		192189	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Lucanidae	Dorcinae	Dorcus parallelipipedus	Dorcus parallelipipedus (Linnaeus, 1758)	Dorcus	parallelipipedus		1					57		192171	139502
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Four à chaux	Moliard		LEPIDOPTERA	Lycaenidae	Polyommatinae	Polyommatus icarus	Polyommatus icarus (Rottemburg, 1775)	Polyommatus	icarus		1					57		192191	139502
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard		LEPIDOPTERA	Lycaenidae	Polyommatinae	Polyommatus icarus	Polyommatus icarus (Rottemburg, 1775)	Polyommatus	icarus		1					57		192190	139502
+Null	20240415	20240430	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Malachiidae		MALACHIIDAE	MALACHIIDAE Fleming, 1821				1					57		192166	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Malachiidae		MALACHIIDAE	MALACHIIDAE Fleming, 1821				5					57		192168	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Malachiidae		MALACHIIDAE	MALACHIIDAE Fleming, 1821				1					57		192174	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Melandryidae	Melandryinae	Abdera biflexuosa	Abdera biflexuosa (Curtis, 1829)	Abdera	biflexuosa		1					57		192168	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Melandryidae	Melandryinae	Abdera biflexuosa	Abdera biflexuosa (Curtis, 1829)	Abdera	biflexuosa		1					57		192172	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Melandryidae	Melandryinae	Melandrya barbata	Melandrya barbata (Fabricius, 1787)	Melandrya	barbata		1					57		192177	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Monotomidae	Monotominae	Monotoma picipes	Monotoma picipes Herbst, 1793	Monotoma	picipes		1					57		192196	139507
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Mordellidae		MORDELLIDAE	MORDELLIDAE Latreille, 1802				2					57		192190	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Mordellidae		MORDELLIDAE	MORDELLIDAE Latreille, 1802				1					57		192182	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Mordellidae		MORDELLIDAE	MORDELLIDAE Latreille, 1802				4					57		192187	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Mordellidae		MORDELLIDAE	MORDELLIDAE Latreille, 1802				10					57		192176	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Mordellidae		MORDELLIDAE	MORDELLIDAE Latreille, 1802				5					57		192196	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Mordellidae		MORDELLIDAE	MORDELLIDAE Latreille, 1802				4					57		192191	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Mordellidae		MORDELLIDAE	MORDELLIDAE Latreille, 1802				1					57		192189	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Mordellidae		MORDELLIDAE	MORDELLIDAE Latreille, 1802				3					57		192188	139502
+Null	20240415	20240430	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Mordellidae		MORDELLIDAE	MORDELLIDAE Latreille, 1802				5					57		192166	139507
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Mordellidae		MORDELLIDAE	MORDELLIDAE Latreille, 1802				15					57		192195	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Mordellidae		MORDELLIDAE	MORDELLIDAE Latreille, 1802				3					57		192186	139507
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Mordellidae		MORDELLIDAE	MORDELLIDAE Latreille, 1802				11					57		192194	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Mordellidae		MORDELLIDAE	MORDELLIDAE Latreille, 1802				2					57		192197	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Mordellidae		MORDELLIDAE	MORDELLIDAE Latreille, 1802				5					57		192178	139502
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Mordellidae		MORDELLIDAE	MORDELLIDAE Latreille, 1802				1					57		192180	139502
+Null	20240415	20240430	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Mordellidae		MORDELLIDAE	MORDELLIDAE Latreille, 1802				4					57		192165	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Mordellidae		MORDELLIDAE	MORDELLIDAE Latreille, 1802				8					57		192183	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Mordellidae		MORDELLIDAE	MORDELLIDAE Latreille, 1802				1					57		192175	139507
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Mordellidae		MORDELLIDAE	MORDELLIDAE Latreille, 1802				2					57		192184	139507
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Mordellidae		MORDELLIDAE	MORDELLIDAE Latreille, 1802				5					57		192185	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Mordellidae		MORDELLIDAE	MORDELLIDAE Latreille, 1802				2					57		192193	139507
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Mycetophagidae	Bergininae	Berginus tamarisci	Berginus tamarisci Wollaston, 1854	Berginus	tamarisci		5					57		192190	139502
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Mycetophagidae	Bergininae	Berginus tamarisci	Berginus tamarisci Wollaston, 1854	Berginus	tamarisci		2					57		192191	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Mycetophagidae	Bergininae	Berginus tamarisci	Berginus tamarisci Wollaston, 1854	Berginus	tamarisci		2					57		192189	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Mycetophagidae	Bergininae	Berginus tamarisci	Berginus tamarisci Wollaston, 1854	Berginus	tamarisci		1					57		192182	139502
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Mycetophagidae	Bergininae	Berginus tamarisci	Berginus tamarisci Wollaston, 1854	Berginus	tamarisci		1					57		192184	139507
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Mycetophagidae	Bergininae	Berginus tamarisci	Berginus tamarisci Wollaston, 1854	Berginus	tamarisci		5					57		192180	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Mycetophagidae	Bergininae	Berginus tamarisci	Berginus tamarisci Wollaston, 1854	Berginus	tamarisci		3					57		192168	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Mycetophagidae	Bergininae	Berginus tamarisci	Berginus tamarisci Wollaston, 1854	Berginus	tamarisci		4					57		192188	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Mycetophagidae	Bergininae	Berginus tamarisci	Berginus tamarisci Wollaston, 1854	Berginus	tamarisci		2					57		192173	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Mycetophagidae	Bergininae	Berginus tamarisci	Berginus tamarisci Wollaston, 1854	Berginus	tamarisci		1					57		192181	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Mycetophagidae	Bergininae	Berginus tamarisci	Berginus tamarisci Wollaston, 1854	Berginus	tamarisci		2					57		192174	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Mycetophagidae	Bergininae	Berginus tamarisci	Berginus tamarisci Wollaston, 1854	Berginus	tamarisci		2					57		192171	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Mycetophagidae	Bergininae	Berginus tamarisci	Berginus tamarisci Wollaston, 1854	Berginus	tamarisci		1					57		192194	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Mycetophagidae	Bergininae	Berginus tamarisci	Berginus tamarisci Wollaston, 1854	Berginus	tamarisci		6					57		192178	139502
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Mycetophagidae	Bergininae	Berginus tamarisci	Berginus tamarisci Wollaston, 1854	Berginus	tamarisci		2					57		192183	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Mycetophagidae	Mycetophaginae	Eulagius filicornis	Eulagius filicornis (Reitter, 1887)	Eulagius	filicornis		3					57		192168	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Mycetophagidae	Mycetophaginae	Litargus connexus	Litargus connexus (Fourcroy, 1785)	Litargus	connexus		1					57		192188	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Mycetophagidae	Mycetophaginae	Litargus connexus	Litargus connexus (Fourcroy, 1785)	Litargus	connexus		1					57		192174	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Mycetophagidae	Mycetophaginae	Mycetophagus multipunctatus	Mycetophagus multipunctatus Fabricius, 1792	Mycetophagus	multipunctatus		2					57		192193	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Nitidulidae		NITIDULIDAE	NITIDULIDAE Latreille, 1802				1					57		192191	139502
+Null	20240415	20240430	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Nitidulidae	Cryptarchinae	Cryptarcha strigata	Cryptarcha strigata (Fabricius, 1787)	Cryptarcha	strigata		1					57		192164	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Nitidulidae	Meligethinae	Meligethes sp.	Meligethes sp. Stephens, 1830	Meligethes	sp.		6					57		192168	139502
+Null	20240415	20240430	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Nitidulidae	Meligethinae	Meligethes sp.	Meligethes sp. Stephens, 1830	Meligethes	sp.		1					57		192165	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Nitidulidae	Meligethinae	Meligethes sp.	Meligethes sp. Stephens, 1830	Meligethes	sp.		224					57		192176	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Nitidulidae	Meligethinae	Meligethes sp.	Meligethes sp. Stephens, 1830	Meligethes	sp.		1					57		192188	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Nitidulidae	Meligethinae	Meligethes sp.	Meligethes sp. Stephens, 1830	Meligethes	sp.		240					57		192171	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Nitidulidae	Meligethinae	Meligethes sp.	Meligethes sp. Stephens, 1830	Meligethes	sp.		23					57		192174	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Nitidulidae	Meligethinae	Meligethes sp.	Meligethes sp. Stephens, 1830	Meligethes	sp.		13					57		192173	139507
+Null	20240415	20240430	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Nitidulidae	Meligethinae	Meligethes sp.	Meligethes sp. Stephens, 1830	Meligethes	sp.		30					57		192166	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Nitidulidae	Meligethinae	Meligethes sp.	Meligethes sp. Stephens, 1830	Meligethes	sp.		1					57		192196	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Nitidulidae	Meligethinae	Meligethes sp.	Meligethes sp. Stephens, 1830	Meligethes	sp.		38					57		192175	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Nitidulidae	Meligethinae	Meligethes sp.	Meligethes sp. Stephens, 1830	Meligethes	sp.		1					57		192170	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Nitidulidae	Meligethinae	Meligethes sp.	Meligethes sp. Stephens, 1830	Meligethes	sp.		18					57		192177	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Nitidulidae	Meligethinae	Meligethes sp.	Meligethes sp. Stephens, 1830	Meligethes	sp.		8					57		192181	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Nitidulidae	Meligethinae	Meligethes sp.	Meligethes sp. Stephens, 1830	Meligethes	sp.		5					57		192186	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Nitidulidae	Meligethinae	Meligethes sp.	Meligethes sp. Stephens, 1830	Meligethes	sp.		36					57		192172	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Nitidulidae	Meligethinae	Meligethes sp.	Meligethes sp. Stephens, 1830	Meligethes	sp.		3					57		192169	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Nitidulidae	Meligethinae	Meligethes sp.	Meligethes sp. Stephens, 1830	Meligethes	sp.		3					57		192182	139502
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Nitidulidae	Meligethinae	Meligethes sp.	Meligethes sp. Stephens, 1830	Meligethes	sp.		3					57		192178	139502
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Nitidulidae	Meligethinae	Meligethes sp.	Meligethes sp. Stephens, 1830	Meligethes	sp.		1					57		192183	139507
+Null	20240415	20240430	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Nitidulidae	Meligethinae	Meligethes sp.	Meligethes sp. Stephens, 1830	Meligethes	sp.		5					57		192164	139507
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Nitidulidae	Meligethinae	Meligethes sp.	Meligethes sp. Stephens, 1830	Meligethes	sp.		1					57		192187	139507
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Nitidulidae	Nitidulinae	Amphotis marginata	Amphotis marginata (Fabricius, 1781)	Amphotis	marginata	coll	1					57		192187	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Nitidulidae	Nitidulinae	Soronia grisea	Soronia grisea (Linnaeus, 1758)	Soronia	grisea		1					57		192177	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Nitidulidae	Nitidulinae	Soronia grisea	Soronia grisea (Linnaeus, 1758)	Soronia	grisea		1					57		192197	139507
+Null	20240415	20240430	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Nitidulidae	Nitidulinae	Soronia grisea	Soronia grisea (Linnaeus, 1758)	Soronia	grisea		1					57		192166	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Nitidulidae	Nitidulinae	Soronia grisea	Soronia grisea (Linnaeus, 1758)	Soronia	grisea		1					57		192176	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Nitidulidae	Nitidulinae	Soronia grisea	Soronia grisea (Linnaeus, 1758)	Soronia	grisea		1					57		192174	139507
+Null	20240415	20240430	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Nitidulidae	Nitidulinae	Soronia grisea	Soronia grisea (Linnaeus, 1758)	Soronia	grisea		1					57		192165	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Nitidulidae	Nitidulinae	Soronia grisea	Soronia grisea (Linnaeus, 1758)	Soronia	grisea		1					57		192169	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Nitidulidae	Nitidulinae	Soronia grisea	Soronia grisea (Linnaeus, 1758)	Soronia	grisea		1					57		192172	139502
+Null	20240415	20240430	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Nitidulidae	Nitidulinae	Soronia grisea	Soronia grisea (Linnaeus, 1758)	Soronia	grisea		1					57		192167	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	LEPIDOPTERA	Nymphalidae	Nymphalinae	Polygonia c-album	Polygonia c-album (Linnaeus, 1758)	Polygonia	c-album		1					57		192175	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	LEPIDOPTERA	Nymphalidae	Nymphalinae	Polygonia c-album	Polygonia c-album (Linnaeus, 1758)	Polygonia	c-album		1					57		192177	139507
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Oedemeridae	Nacerdinae	Nacerdes carniolica	Nacerdes carniolica (Gistl, 1832)	Nacerdes	carniolica		1					57		192190	139502
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Oedemeridae	Nacerdinae	Nacerdes carniolica	Nacerdes carniolica (Gistl, 1832)	Nacerdes	carniolica		3					57		192192	139502
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Oedemeridae	Nacerdinae	Nacerdes carniolica	Nacerdes carniolica (Gistl, 1832)	Nacerdes	carniolica		1					57		192183	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Oedemeridae	Nacerdinae	Nacerdes carniolica	Nacerdes carniolica (Gistl, 1832)	Nacerdes	carniolica		2					57		192188	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Oedemeridae	Oedemerinae	Ischnomera caerulea	Ischnomera caerulea (Linnaeus, 1758)	Ischnomera	caerulea		1					57		192170	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Oedemeridae	Oedemerinae	Oedemera nobilis	Oedemera nobilis (Scopoli, 1763)	Oedemera	nobilis		1					57		192176	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard		LEPIDOPTERA	Papilionidae	Papilioninae	Iphiclides podalirius	Iphiclides podalirius (Linnaeus, 1758)	Iphiclides	podalirius		1					57		192192	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard		LEPIDOPTERA	Papilionidae	Papilioninae	Iphiclides podalirius	Iphiclides podalirius (Linnaeus, 1758)	Iphiclides	podalirius		1					57		192171	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard		LEPIDOPTERA	Papilionidae	Papilioninae	Iphiclides podalirius	Iphiclides podalirius (Linnaeus, 1758)	Iphiclides	podalirius		1					57		192193	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Phalacridae		PHALACRIDAE	PHALACRIDAE Leach, 1815				2					57		192171	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Phalacridae		PHALACRIDAE	PHALACRIDAE Leach, 1815				2					57		192168	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Phalacridae		PHALACRIDAE	PHALACRIDAE Leach, 1815				1					57		192189	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Phalacridae		PHALACRIDAE	PHALACRIDAE Leach, 1815				1					57		192174	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Ptiliidae		PTILIIDAE	PTILIIDAE Erichson, 1845				2					57		192172	139502
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Ptiliidae		PTILIIDAE	PTILIIDAE Erichson, 1845				1					57		192185	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Ptiliidae		PTILIIDAE	PTILIIDAE Erichson, 1845				1					57		192176	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Ptinidae	Anobiinae	Hadrobregmus denticollis	Hadrobregmus denticollis (Creutzer in Panzer, 1796)	Hadrobregmus	denticollis		1					57		192175	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Ptinidae	Anobiinae	Hemicoelus fulvicornis	Hemicoelus fulvicornis (Sturm, 1837)	Hemicoelus	fulvicornis		1					57		192172	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Ptinidae	Anobiinae	Hemicoelus fulvicornis	Hemicoelus fulvicornis (Sturm, 1837)	Hemicoelus	fulvicornis		1					57		192174	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Ptinidae	Anobiinae	Oligomerus brunneus	Oligomerus brunneus (Olivier, 1790)	Oligomerus	brunneus		2					57		192188	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Ptinidae	Anobiinae	Oligomerus brunneus	Oligomerus brunneus (Olivier, 1790)	Oligomerus	brunneus		1					57		192193	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Ptinidae	Anobiinae	Oligomerus brunneus	Oligomerus brunneus (Olivier, 1790)	Oligomerus	brunneus		1					57		192192	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Ptinidae	Dorcatominae	Dorcatoma sp.	Dorcatoma sp. Herbst, 1792	Dorcatoma	sp.		1					57		192181	139502
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Ptinidae	Dorcatominae	Dorcatoma sp.	Dorcatoma sp. Herbst, 1792	Dorcatoma	sp.		1					57		192183	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Ptinidae	Ernobiinae	Ernobius sp.	Ernobius sp. Thomson, 1859	Ernobius	sp.		1					57		192191	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Ptinidae	Eucradinae	Ptinomorphus imperialis	Ptinomorphus imperialis (Linnaeus, 1767)	Ptinomorphus	imperialis		1					57		192177	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Ptinidae	Eucradinae	Ptinomorphus regalis	Ptinomorphus regalis (Duftschmid, 1825)	Ptinomorphus	regalis	coll	1					57		192174	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Ptinidae	Mesocoelopodinae	Mesocoelopus niger	Mesocoelopus niger (P.W.J. Müller, 1821)	Mesocoelopus	niger		1					57		192188	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Ptinidae	Mesocoelopodinae	Mesocoelopus niger	Mesocoelopus niger (P.W.J. Müller, 1821)	Mesocoelopus	niger		1					57		192194	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Ptinidae	Mesocoelopodinae	Mesocoelopus niger	Mesocoelopus niger (P.W.J. Müller, 1821)	Mesocoelopus	niger		1					57		192197	139507
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Ptinidae	Ptilininae	Ptilinus fuscus	Ptilinus fuscus (Geoffroy in Fourcroy, 1785)	Ptilinus	fuscus		1					57		192187	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Ptinidae	Ptininae	Ptinus sp.	Ptinus sp. Linnaeus, 1766	Ptinus	sp.		1					57		192168	139502
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Ptinidae	Ptininae	Ptinus sp.	Ptinus sp. Linnaeus, 1766	Ptinus	sp.		2					57		192192	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Ptinidae	Ptininae	Ptinus sp.	Ptinus sp. Linnaeus, 1766	Ptinus	sp.		1					57		192189	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Ptinidae	Ptininae	Ptinus sp.	Ptinus sp. Linnaeus, 1766	Ptinus	sp.		1					57		192182	139502
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Ptinidae	Xyletininae	Xyletinus sp.	Xyletinus sp. Latreille, 1809	Xyletinus	sp.		1					57		192180	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Pyrochroidae	Pyrochroinae	Pyrochroa coccinea	Pyrochroa coccinea (Linnaeus, 1761)	Pyrochroa	coccinea		1					57		192172	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Salpingidae	Salpinginae	Salpingus planirostris	Salpingus planirostris (Fabricius, 1787)	Salpingus	planirostris		1					57		192177	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scarabaeidae		SCARABAEIDAE	SCARABAEIDAE Latreille, 1802				1					57		192174	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Aphodiinae	Aphodius sp.	Aphodius sp. Hellwig, 1798	Aphodius	sp.		1					57		192171	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Aphodiinae	Aphodius sp.	Aphodius sp. Hellwig, 1798	Aphodius	sp.		1					57		192168	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Aphodiinae	Aphodius sp.	Aphodius sp. Hellwig, 1798	Aphodius	sp.		1					57		192177	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Cetonia aurata	Cetonia aurata (Linnaeus, 1761)	Cetonia	aurata		1					57		192169	139502
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Cetonia aurata	Cetonia aurata (Linnaeus, 1761)	Cetonia	aurata		1					57		192191	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Cetonia aurata	Cetonia aurata (Linnaeus, 1761)	Cetonia	aurata		2					57		192168	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Cetonia aurata	Cetonia aurata (Linnaeus, 1761)	Cetonia	aurata		5					57		192173	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Cetonia aurata	Cetonia aurata (Linnaeus, 1761)	Cetonia	aurata		4					57		192175	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Cetonia aurata	Cetonia aurata (Linnaeus, 1761)	Cetonia	aurata		3					57		192171	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Cetonia aurata	Cetonia aurata (Linnaeus, 1761)	Cetonia	aurata		1					57		192182	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Cetonia aurata	Cetonia aurata (Linnaeus, 1761)	Cetonia	aurata		15					57		192172	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Cetonia aurata	Cetonia aurata (Linnaeus, 1761)	Cetonia	aurata		1					57		192176	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Cetonia aurata	Cetonia aurata (Linnaeus, 1761)	Cetonia	aurata		7					57		192170	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Cetonia aurata	Cetonia aurata (Linnaeus, 1761)	Cetonia	aurata		2					57		192177	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Cetonia aurata	Cetonia aurata (Linnaeus, 1761)	Cetonia	aurata		5					57		192174	139507
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Cetonischema speciosissima	Cetonischema speciosissima (Scopoli, 1786)	Cetonischema	speciosissima		1					57		192190	139502
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Cetonischema speciosissima	Cetonischema speciosissima (Scopoli, 1786)	Cetonischema	speciosissima		2					57		192192	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Oxythyrea funesta	Oxythyrea funesta (Poda von Neuhaus, 1761)	Oxythyrea	funesta		1					57		192175	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Potosia cuprea	Potosia cuprea (Fabricius, 1775)	Potosia	cuprea		2					57		192173	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Potosia cuprea	Potosia cuprea (Fabricius, 1775)	Potosia	cuprea		1					57		192188	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Potosia cuprea	Potosia cuprea (Fabricius, 1775)	Potosia	cuprea		1					57		192182	139502
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Potosia cuprea	Potosia cuprea (Fabricius, 1775)	Potosia	cuprea		1					57		192190	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Potosia cuprea	Potosia cuprea (Fabricius, 1775)	Potosia	cuprea		1					57		192172	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Potosia cuprea	Potosia cuprea (Fabricius, 1775)	Potosia	cuprea		1					57		192175	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Potosia cuprea	Potosia cuprea (Fabricius, 1775)	Potosia	cuprea		1					57		192174	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Potosia cuprea	Potosia cuprea (Fabricius, 1775)	Potosia	cuprea		2					57		192170	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Potosia fieberi	Potosia fieberi (Kraatz, 1880)	Potosia	fieberi		1					57		192188	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Cetoniinae	Potosia fieberi	Potosia fieberi (Kraatz, 1880)	Potosia	fieberi		2					57		192169	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Coprinae	Onthophagus sp.	Onthophagus sp. Latreille, 1802	Onthophagus	sp.		1					57		192189	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Valginae	Valgus hemipterus	Valgus hemipterus (Linnaeus, 1758)	Valgus	hemipterus		1					57		192176	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Valginae	Valgus hemipterus	Valgus hemipterus (Linnaeus, 1758)	Valgus	hemipterus		1					57		192174	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scarabaeidae	Valginae	Valgus hemipterus	Valgus hemipterus (Linnaeus, 1758)	Valgus	hemipterus		1					57		192175	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scraptiidae		SCRAPTIIDAE	SCRAPTIIDAE Mulsant, 1856				3					57		192174	139507
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scraptiidae		SCRAPTIIDAE	SCRAPTIIDAE Mulsant, 1856				1					57		192182	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scraptiidae		SCRAPTIIDAE	SCRAPTIIDAE Mulsant, 1856				2					57		192173	139507
+Null	20240415	20240430	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scraptiidae		SCRAPTIIDAE	SCRAPTIIDAE Mulsant, 1856				13					57		192166	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scraptiidae		SCRAPTIIDAE	SCRAPTIIDAE Mulsant, 1856				1					57		192169	139502
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scraptiidae		SCRAPTIIDAE	SCRAPTIIDAE Mulsant, 1856				3					57		192185	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scraptiidae		SCRAPTIIDAE	SCRAPTIIDAE Mulsant, 1856				2					57		192172	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scraptiidae		SCRAPTIIDAE	SCRAPTIIDAE Mulsant, 1856				7					57		192168	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scraptiidae		SCRAPTIIDAE	SCRAPTIIDAE Mulsant, 1856				1					57		192188	139502
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scraptiidae		SCRAPTIIDAE	SCRAPTIIDAE Mulsant, 1856				3					57		192195	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scraptiidae		SCRAPTIIDAE	SCRAPTIIDAE Mulsant, 1856				9					57		192175	139507
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scraptiidae		SCRAPTIIDAE	SCRAPTIIDAE Mulsant, 1856				1					57		192196	139507
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scraptiidae		SCRAPTIIDAE	SCRAPTIIDAE Mulsant, 1856				12					57		192176	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Scraptiidae		SCRAPTIIDAE	SCRAPTIIDAE Mulsant, 1856				1					57		192178	139502
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scraptiidae		SCRAPTIIDAE	SCRAPTIIDAE Mulsant, 1856				1					57		192184	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scraptiidae		SCRAPTIIDAE	SCRAPTIIDAE Mulsant, 1856				1					57		192186	139507
+Null	20240415	20240430	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Scraptiidae		SCRAPTIIDAE	SCRAPTIIDAE Mulsant, 1856				1					57		192165	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Silphidae	Silphinae	Dendroxena quadrimaculata	Dendroxena quadrimaculata (Scopoli, 1772)	Dendroxena	quadrimaculata		1					57		192169	139502
+Null	20240415	20240430	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Silphidae	Silphinae	Dendroxena quadrimaculata	Dendroxena quadrimaculata (Scopoli, 1772)	Dendroxena	quadrimaculata		7					57		192165	139507
+Null	20240415	20240430	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Silphidae	Silphinae	Dendroxena quadrimaculata	Dendroxena quadrimaculata (Scopoli, 1772)	Dendroxena	quadrimaculata		1					57		192166	139507
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Silphidae	Silphinae	Dendroxena quadrimaculata	Dendroxena quadrimaculata (Scopoli, 1772)	Dendroxena	quadrimaculata		2					57		192175	139507
+Null	20240415	20240430	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Silphidae	Silphinae	Dendroxena quadrimaculata	Dendroxena quadrimaculata (Scopoli, 1772)	Dendroxena	quadrimaculata		2					57		192164	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				1					57		192197	139507
+Null	20240415	20240430	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				1					57		192164	139507
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				12					57		192182	139502
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				14					57		192178	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				9					57		192174	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				7					57		192177	139507
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				2					57		192195	139507
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				2					57		192180	139502
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				3					57		192196	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				28					57		192181	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				4					57		192175	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				57					57		192172	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				15					57		192169	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				3					57		192170	139502
+Null	20240708	20240829	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				8					57		192189	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				71					57		192168	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				10					57		192188	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				117					57		192171	139502
+Null	20240708	20240829	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				5					57		192191	139502
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				3					57		192184	139507
+Null	20240618	20240708	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				1					57		192179	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				4					57		192193	139507
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				6					57		192187	139507
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				2					57		192185	139507
+Null	20240708	20240829	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				5					57		192190	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				5					57		192173	139507
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				1					57		192186	139507
+Null	20240415	20240430	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				1					57		192167	139507
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				7					57		192192	139502
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Staphylinidae		STAPHYLINIDAE	STAPHYLINIDAE Latreille, 1802				4					57		192183	139507
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	DIPTERA	Syrphidae		SYRPHIDAE	SYRPHIDAE .				2					57		192180	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	DIPTERA	Syrphidae		SYRPHIDAE	SYRPHIDAE .				1					57		192172	139502
+Null	20240430	20240618	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA	Syrphidae		SYRPHIDAE	SYRPHIDAE .				2					57		192175	139507
+Null	20240415	20240430	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA	Syrphidae		SYRPHIDAE	SYRPHIDAE .				1					57		192165	139507
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA	Syrphidae		SYRPHIDAE	SYRPHIDAE .				1					57		192185	139507
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA	Syrphidae		SYRPHIDAE	SYRPHIDAE .				1					57		192177	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	DIPTERA	Syrphidae		SYRPHIDAE	SYRPHIDAE .				1					57		192168	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA	Syrphidae		SYRPHIDAE	SYRPHIDAE .				2					57		192176	139507
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	DIPTERA	Syrphidae		SYRPHIDAE	SYRPHIDAE .				1					57		192169	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA	Syrphidae		SYRPHIDAE	SYRPHIDAE .				1					57		192186	139507
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Bois de la ferne	Moliard	Parmain	DIPTERA	Syrphidae		SYRPHIDAE	SYRPHIDAE .				2					57		192183	139507
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Tenebrionidae	Alleculinae	Gonodera luperus	Gonodera luperus (Herbst, 1783)	Gonodera	luperus		2					57		192168	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Tenebrionidae	Alleculinae	Gonodera luperus	Gonodera luperus (Herbst, 1783)	Gonodera	luperus		2					57		192171	139502
+Null	20240430	20240618	blanc bleu jaune groupé		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Tenebrionidae	Alleculinae	Isomira sp.	Isomira sp. Mulsant, 1856	Isomira	sp.		2					57		192169	139502
+Null	20240430	20240618	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Tenebrionidae	Alleculinae	Isomira sp.	Isomira sp. Mulsant, 1856	Isomira	sp.		2					57		192168	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Tenebrionidae	Alleculinae	Isomira sp.	Isomira sp. Mulsant, 1856	Isomira	sp.		8					57		192172	139502
+Null	20240430	20240618	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Tenebrionidae	Alleculinae	Isomira sp.	Isomira sp. Mulsant, 1856	Isomira	sp.		8					57		192171	139502
+Null	20240618	20240708	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Tenebrionidae	Alleculinae	Isomira sp.	Isomira sp. Mulsant, 1856	Isomira	sp.		1					57		192178	139502
+Null	20240618	20240708	jaune unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Tenebrionidae	Alleculinae	Isomira sp.	Isomira sp. Mulsant, 1856	Isomira	sp.		8					57		192180	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Tenebrionidae	Alleculinae	Isomira sp.	Isomira sp. Mulsant, 1856	Isomira	sp.		4					57		192182	139502
+Null	20240430	20240618	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	COLEOPTERA	Tenebrionidae	Alleculinae	Mycetochara maura	Mycetochara maura (Fabricius, 1792)	Mycetochara	maura		1					57		192177	139507
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Tenebrionidae	Tenebrioninae	Bolitophagus reticulatus	Bolitophagus reticulatus (Linnaeus, 1767)	Bolitophagus	reticulatus		1					57		192188	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Tenebrionidae	Tenebrioninae	Tribolium castaneum	Tribolium castaneum (Herbst, 1797)	Tribolium	castaneum		1					57		192182	139502
+Null	20240618	20240708	blanc unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Tenebrionidae	Tenebrioninae	Tribolium castaneum	Tribolium castaneum (Herbst, 1797)	Tribolium	castaneum		1					57		192181	139502
+Null	20240708	20240829	Blanc bleu jaune alterné		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Trogossitidae	Trogossitinae	Nemozoma elongatum	Nemozoma elongatum (Linnaeus, 1761)	Nemozoma	elongatum		1					57		192188	139502
+Null	20240708	20240829	bleu unicolore		Domaine des barres	Four à chaux	Moliard	Parmain	COLEOPTERA	Trogossitidae	Trogossitinae	Tenebroides fuscus	Tenebroides fuscus (Preyssler, 1790)	Tenebroides	fuscus	coll	1					57		192192	139502
+Null	20240618	20240708	bleu unicolore		Domaine des barres	Bois de la ferne	Moliard	Parmain	LEPIDOPTERA	Zygaenidae	Zygaeninae	Zygaena sp.	Zygaena sp. Fabricius, 1775	Zygaena	sp.		1					57		192187	139507
