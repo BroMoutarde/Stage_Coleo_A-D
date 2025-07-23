@@ -770,8 +770,26 @@ text(x = 1:length(levels_clean),
      labels = labels_df$letters, 
      col = my_colors[as.numeric(factor(labels_df$letters))])
 
+unique(Final$strate)
 
-  
+abon_colsx_all <- ggplot(Final,
+  aes(x = strate,
+      y = ab.colsx,
+      fill = strate)) +
+  geom_boxplot() +
+  stat_summary(fun = mean,
+               geom = "point",
+               shape = 20,
+               size = 3,
+               color = "red") +
+  scale_fill_manual(values = c("supra " = "maroon",
+                               "intra.sup" = "olivedrab",
+                               "intra.inf" = "mediumpurple",
+                               "infra " = "#FFA07A")) +
+  labs(x = "Strate",
+       y = "Abondance de coléoptères saproxyliques",
+       title = "Abondance de coléoptères saproxyliques par strate à l'échelle de la placette") +
+  theme_minimal() ; abon_colsx_all
 ```
 
 ## 5.2. Sr_col_all
@@ -18670,23 +18688,29 @@ strate_effects_deperissement$Groupe.var <- factor(
   strate_effects_deperissement$Groupe.var,
   levels = ordre_var)
   # plage de signif chisq.value
-critical_value <- qchisq(0.95, df = 3)
+strate_effects_deperissement$critical_value <- ifelse(
+  !is.na(strate_effects_deperissement$df),
+  qchisq(0.95, strate_effects_deperissement$df),
+  NA
+)
   # Graph
 graph_depe <- ggplot(strate_effects_deperissement,
                         aes(x = Y,
                             y = chisq.value)) + 
   coord_flip() + 
-  annotate("rect", 
-           xmin = -Inf, 
-           xmax = +Inf, 
-           ymin = 0, 
-           ymax = critical_value, 
-           alpha = 0.2, 
-           fill = "grey40") +
-  geom_hline(yintercept = critical_value, 
-             linetype = "dashed", 
-             color = "red", 
-             linewidth = 0.5) + 
+  geom_rect(
+  data = subset(strate_effects_deperissement,
+                !is.na(critical_value)),
+  aes(ymin = 0, ymax = critical_value),
+  xmin = -Inf, xmax = Inf,
+  fill = "grey40", alpha = 0.2,
+  inherit.aes = FALSE) +
+  geom_hline(data = subset(strate_effects_deperissement,
+                           !is.na(critical_value)),
+           aes(yintercept = critical_value),
+           linetype = "dashed", 
+           color = "red", 
+           linewidth = 0.5) + 
   geom_point(aes(color = County, 
                  size = pval)) +
   facet_grid(Groupe.var ~ Effect, 
@@ -18704,7 +18728,7 @@ graph_depe <- ggplot(strate_effects_deperissement,
                                "P < 0,001" = 6),
                     drop = TRUE,
                     na.translate = FALSE) + 
-  labs(y = "Chisq value", 
+  labs(y = "Chi² (test value)", 
        size = "p.value", 
        color = "Region") ; graph_depe
   # Save en image la sortie du graphique
