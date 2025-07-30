@@ -1,0 +1,15 @@
+Y;Y.explanation;Effect;Scale;Groupe.var;County;chisq.value;pval;pval.2
+abon_tot;abondance totale de DMH à l'échelle de l'arbre;Stratum effect;Arbre;DMH;Centre Val-de-Loire;1,4396;0.4868;N.S
+abon_saprox;abondance de DMH saproxyliques à l'échelle de l'arbre;Stratum effect;Arbre;DMH;Centre Val-de-Loire;7,6732;0.02157 *;N.S
+densi_tot;densité de DMH par mètre de hauteur sur l'arbre;Stratum effect;Arbre;DMH;Centre Val-de-Loire;7,2466;0.02669 *;N.S
+div_tot ;diversité totale de DMH à l'échelle de l'arbre;Stratum effect;Arbre;DMH;Centre Val-de-Loire;1,1203;0.5711;N.S
+CWM_saprox;CWM saproxilique moyen à l'échelle de l'arbre;Stratum effect;Arbre;DMH;Centre Val-de-Loire;11,575;0.003065 **;N.S
+Vol_BMP;volume de bois mort à l'échelle de la strate de l'arbre;Stratum effect;Arbre;BM;Centre Val-de-Loire;6,5824;0.0103 *;N.S
+abon_tot;abondance totale de DMH à l'échelle de la placette;Stratum effect;Placette;DMH;Centre Val-de-Loire;0,0144;0.9043;N.S
+abon_saprox;abondance de DMH saproxyliques à l'échelle de la placette;Stratum effect;Placette;DMH;Centre Val-de-Loire;16,963;3.812e-05 ***;P < 0,001
+div_tot;diversité totale de DMH à l'échelle de la placette;Stratum effect;Placette;DMH;Centre Val-de-Loire;3,6263;0.05687;N.S
+div_saprox;diversité DMH saproxyliques à l'échelle de la placette;Stratum effect;Placette;DMH;Centre Val-de-Loire;0,5402;0.4624;N.S
+abon_sporophore;abondance de DMH type sporophores à l'échelle de la placette;Stratum effect;Placette;DMH;Centre Val-de-Loire;4,3777;0.03641 *;N.S
+CWM_saprox ;CWM saproxilique moyen à l'échelle de la placette;Stratum effect;Placette;DMH;Centre Val-de-Loire;43,712;3.804e-11 ***;P < 0,001
+Vol_BMP.m3.ha;volume de bois mort perché à l'échelle de la placette;Stratum effect;Placette;BM;Centre Val-de-Loire;18,662;1.561e-05 ***;P < 0,001
+Div_BM;diversité de bois mort à l'échelle de la placette;Stratum effect;Placette;BM;Centre Val-de-Loire;62,737;2.363e-15 ***;P < 0,001

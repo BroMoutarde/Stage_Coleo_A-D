@@ -36,6 +36,8 @@ library(dendextend) # color_branches dendrogramme
 library(permute) # Test homogénéité variabilité des variances
 library(indicspecies) # Analyse IndVal
 library(pheatmap) # heatmap
+library(betapart) # Nestedness
+library(bipartite) # Nestedness
 ```
 
 # 2. working directory
@@ -647,6 +649,7 @@ testOutliers(sim)
 RES<-glht(model_ABX_BMPS, linfct = mcp(strate = "Tukey"))
 summary(RES)
 # Est ce que supra diffère du reste : strate2 avec supra et autre canopée ou autre appellation (2 eme temps pas urgent)
+ -0.18850
 
   # Graph de Tukey
 png("Tukey_abcolsx.png", width = 900, height = 500)
@@ -6424,7 +6427,7 @@ ggplot(accum_df, aes(x = Sites, y = Richness, color = Strate, fill = Strate)) +
   labs(title = "Courbes de richesse spécifique cumulée par strate",
        x = "Nombre de pièges",
        y = "Richesse spécifique cumulée") +
-  theme_minimal(base_size = 14) +
+  theme_minimal(base_size = 20) +
   theme(legend.position = "bottom") +
   scale_color_manual(values = c(
     "infra" = "red",
@@ -6445,15 +6448,14 @@ ggplot(accum_df, aes(x = Sites, y = Richness, color = Strate, fill = Strate)) +
 ```{r}
 library(vegan)
 ?nestedbetasor
-library(betapart)
-library(bipartite)
 nested <- beta.pair(mat, index.family = "sorensen")
 print(nested)
 boxplot(as.vector(nested$beta.sor), 
         as.vector(nested$beta.sim), 
         as.vector(nested$beta.sne),
         names = c("Total Sørensen", "Turnover (Simpson)", "Nestedness"),
-        main = "Décomposition de la bêta-diversité")
+        main = "Décomposition de la bêta-diversité",
+        col = c("mediumorchid", "orange", "skyblue"))
 mat <- as.matrix(matrices_AVEC[, 7 :355])
 mat[mat > 0] <- 1
 nested <- nestedbetasor(mat)
@@ -16843,6 +16845,9 @@ sim<-simulateResiduals(model_SRCOMDEPE_4)
 testUniformity(sim)
 testOutliers(sim)
 #
+RES<-glht(model_SRCOMDEPE_1, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 *** 0.00191 **
+#
 library(emmeans)
 comp <- emmeans(model_SRCOMDEPE_4, ~ strate * note2, data = Final)
 pairwise_comp <- contrast(comp, method = "pairwise", adjust = "tukey") ; summary(pairwise_comp)
@@ -18601,7 +18606,70 @@ strate_effects_chisqvalue =
        size = "p.value", 
        color = "Region") ; strate_effects_chisqvalue
   # Save en image la sortie du graphique
-ggsave("strate_effects_chisqvalue_GLMMALL.png", plot = strate_effects_chisqvalue, width = 20, height = 25, units = "cm")
+ggsave("strate_effects_chisqvalue_GLMMALL.png", plot = strate_effects_chisqvalue, width = 15, height = 25, units = "cm")
+
+### graph métriques environnementales ###
+
+  # Chargement des infos
+strate_struct = read.csv(here::here("glmm_allsamples", "Donnees_graphique_glmmTMB_struct.csv"), sep = ";", dec = ",", header = T)
+
+strate_struct$pval.2 <- factor(
+  strate_struct$pval.2, 
+  levels = c("N.S", 
+             "P < 0,05", 
+             "P < 0,01", 
+             "P < 0,001"))
+
+# Ordre des groupes de variables
+ordre_var <- c("DMH", "BM")
+strate_struct$Groupe.var <- factor(strate_struct$Groupe.var, levels = ordre_var)
+
+# Ordre des relevés (facultatif mais recommandé)
+strate_struct$Scale <- factor(
+  strate_struct$Scale, 
+  levels = c("Arbre", 
+             "Placette"))
+# Valeur critique
+critical_value <- qchisq(0.95, df = 3)
+
+graph_struct <- ggplot(strate_struct,
+                        aes(x = Y,
+                            y = chisq.value)) + 
+  coord_flip() + 
+  annotate("rect", 
+           xmin = -Inf, 
+           xmax = +Inf, 
+           ymin = 0, 
+           ymax = critical_value, 
+           alpha = 0.2, 
+           fill = "grey40") +
+  geom_hline(yintercept = critical_value, 
+             linetype = "dashed", 
+             color = "red", 
+             linewidth = 0.5) + 
+  geom_point(aes(color = County, 
+                 size = pval.2)) +
+  facet_grid(Groupe.var ~ Effect + Scale, 
+             scales = "free", 
+             space = "free") + 
+  theme_bw() + 
+  theme(axis.title.y = element_blank(), 
+        axis.text.y = element_text(face = "bold"),
+        strip.text.x = element_text(size = 8.5, 
+                                    face = "bold"),
+        strip.text.y = element_text(size = 8.5, 
+                                    face = "bold")) +
+  scale_color_manual(values = c("grey20")) +
+  scale_size_manual(values = c("N.S" = 2,
+                               "P < 0,001" = 6),
+                    drop = TRUE,
+                    na.translate = FALSE) + 
+  labs(y = "Chi² value", 
+       size = "p.value", 
+       color = "Region") ; graph_struct
+  # Save en image la sortie du graphique
+ggsave("strate_effects_chisqvalue_GLMMstruct.png", plot = graph_struct, width = 25, height = 20, units = "cm")
+
 
 ### graph releves ###
 
@@ -18739,7 +18807,7 @@ ggsave("strate_effects_depe.png", plot = graph_depe, width = 25, height = 20, un
 
 ```{r}
 library(purrr)
-c("here", "readxl", "dplyr", "tidyverse", "stringr", "ggplot2", "gridExtra", "fitdistrplus", "glmmTMB", "AICcmodavg", "DHARMa", "multcomp", "vegan", "tidyr", "pairwiseAdonis", "RVAideMemoire", "dendextend", "permute", "indicspecies", "pheatmap", "emmeans") %>%
+c("here", "readxl", "dplyr", "tidyverse", "stringr", "ggplot2", "gridExtra", "fitdistrplus", "glmmTMB", "AICcmodavg", "DHARMa", "multcomp", "vegan", "tidyr", "pairwiseAdonis", "RVAideMemoire", "dendextend", "permute", "indicspecies", "pheatmap", "emmeans", "bipartite", "UpSetR") %>%
   map(citation) %>%
   print(style = "text")
 
@@ -18859,7 +18927,7 @@ c("here", "readxl", "dplyr", "tidyverse", "stringr", "ggplot2", "gridExtra", "fi
 # R package version 1.11.1, <https://CRAN.R-project.org/package=emmeans>.
 ```
 
-# 14. Test
+# 14. Alternative ggvenn (Graphs)
 
 ```{r}
 library(UpSetR)
@@ -19152,5 +19220,577 @@ UpSetR::upset(
   sets.bar.color = "#56B4E9",
   mainbar.y.label = "Espèces partagées",
   sets.x.label = "Espèces par combinaison")
+```
+
+# 15. Graph dendro Indicspecies
+
+```{r}
+library(dendextend)
+library(ggdendro)
+library(randomcoloR)
+
+### ALL ###
+
+test_dendro_indval = read_excel(here::here("Plots tests", "test_dendro_indval.xlsx"))
+
+# Données test (même que toi)
+df <- test_dendro_indval
+esp_strate <- split(df$nouvelle_ordre_especes, df$Strate)
+
+# Matrice distance personnalisée
+dist_mat <- matrix(0, nrow=4, ncol=4)
+rownames(dist_mat) <- colnames(dist_mat) <- c("AC", "BC", "LC", "UC")
+
+dist_mat["AC", "BC"] <- dist_mat["BC", "AC"] <- 3
+dist_mat["AC", "LC"] <- dist_mat["LC", "AC"] <- 3
+dist_mat["AC", "UC"] <- dist_mat["UC", "AC"] <- 3
+dist_mat["BC", "LC"] <- dist_mat["LC", "BC"] <- 1
+dist_mat["BC", "UC"] <- dist_mat["UC", "BC"] <- 1
+dist_mat["LC", "UC"] <- dist_mat["UC", "LC"] <- 0.1
+
+# Réordonner les lignes et colonnes pour changer l'ordre d'affichage
+nouvel_ordre <- c("AC", "UC", "LC", "BC")  # On met UC avant BC
+dist_mat <- dist_mat[nouvel_ordre, nouvel_ordre]
+dist_obj <- as.dist(dist_mat)
+hc <- hclust(dist_obj, method = "complete")
+dend <- as.dendrogram(hc)
+
+ajuster_hauteur_branches_profondeur <- function(d, niveau = 1) {
+  if (is.leaf(d)) {
+    # Feuille : on augmente beaucoup la hauteur
+    attr(d, "height") <- attr(d, "height") * 4
+  } else {
+    # Noeud interne : facteur de réduction selon niveau
+    facteur_noeud <- switch(
+      as.character(niveau),
+      "1" = 1.1,   # racine très courte
+      "2" = 3,   # intermédiaire plus visible
+      "3" = 10,   # noeud proche des feuilles → longue branche
+      "4" = 10,     # encore plus long si plus profond
+      1            # défaut : pas de changement
+    )
+
+    attr(d, "height") <- attr(d, "height") * facteur_noeud
+
+    # Traitement récursif
+    for (i in seq_along(d)) {
+      d[[i]] <- ajuster_hauteur_branches_profondeur(d[[i]], niveau + 1)
+    }
+  }
+  return(d)
+}
+
+# Appliquer
+dend_modifie <- ajuster_hauteur_branches_profondeur(dend)
+ddata <- dendro_data(dend_modifie, type = "rectangle")
+ddata$labels$label <- ""
+
+# Création d’un data.frame pour labels personnalisés sous les feuilles
+labels_strates <- c("AC", "UC", "LC", "BC")
+labels_df <- data.frame(
+  x = ddata$labels$x,
+  y = min(ddata$segments$y) - 1,  
+  label = labels_strates
+)
+
+# Hauteur max (pour positionner espèces)
+hauteur_max <- max(ddata$segments$y)
+
+# Préparer un data.frame des espèces avec position x et y
+esp_text_df <- data.frame(
+  x = c(1, 2, 3, 4),
+  y = c(1.1, 0.5, 0.3, 0.35),  # Hauteur personnalisée pour chaque strate
+  label = c(
+    paste(esp_strate[["AC"]], collapse = "\n"),
+    paste(esp_strate[["UC"]], collapse = "\n"),
+    paste(esp_strate[["LC"]], collapse = "\n"),
+    paste(esp_strate[["BC"]], collapse = "\n")
+  )
+)
+esp_text_long <- esp_text_df %>%
+  mutate(label = strsplit(as.character(label), "\n")) %>% 
+  unnest(label) %>%
+  select(x, y, Espèce = label) %>%
+  left_join(test_dendro_indval %>% select(nouvelle_ordre_especes, Correspondance),
+            by = c("Espèce" = "nouvelle_ordre_especes")) %>%
+  group_by(x) %>%
+  arrange(factor(Espèce, levels = ordre_especes)) %>%
+  mutate(
+    y = first(y) + seq(0, by = 0.08, length.out = n())
+  ) %>%
+  ungroup()
+# Inverser l'ordre des espèces pour le facteur Espèce
+ordre_especes <- rev(unique(test_dendro_indval$nouvelle_ordre_especes))
+esp_text_long$Espèce <- factor(esp_text_long$Espèce, levels = ordre_especes)
+# Assurer que Note est facteur avec niveaux dans l'ordre rencontré (ou un ordre défini)
+esp_text_long$Correspondance <- factor(esp_text_long$Correspondance, levels = unique(esp_text_long$Correspondance))
+# Palette couleurs associée strictement aux niveaux de Note
+codes_note <- levels(esp_text_long$Correspondance)
+palette_couleurs <- distinctColorPalette(length(codes_note))
+names(palette_couleurs) <- codes_note
+
+esp_text_blocs <- esp_text_long %>%
+  group_by(x) %>%
+  summarise(
+    ymin = min(y) - 0.05,
+    ymax = max(y) + 0.05,
+    xmin = unique(x) - 0.25,
+    xmax = unique(x) + 0.25,
+    .groups = "drop"
+  )
+# Plot avec ggplot2
+ggplot() +
+  geom_segment(data = ddata$segments,
+               aes(x = x, y = y, xend = xend, yend = yend),
+               linewidth = 1) +
+  geom_text(data = labels_df, aes(x = x, y = y, label = label),
+            fontface = "bold", size = 5, vjust = 1) +
+geom_rect(data = esp_text_blocs,
+          aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+          fill = "white", alpha = 0.95,
+          color = "black", linewidth = 0.6)  +
+  geom_text(data = esp_text_long,
+            aes(x = x, y = y, label = Espèce, color = Correspondance),
+            size = 2.5,  fontface = "bold", hjust = 0.5, lineheight = 0.9) +
+  coord_cartesian(ylim = c(min(ddata$segments$y) - 1, hauteur_max + 0.1),
+                  xlim = c(min(ddata$segments$x) - 0.1, max(ddata$segments$x) + 0.1)) +
+  scale_color_manual(name = "Légende : Guilde",
+                     values = palette_couleurs) +
+  theme_minimal() +
+  theme(axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank(),
+        plot.title = element_text(face = "bold")) +
+  ggtitle("Dendrogramme selon les différences entre les strates avec leur espèces indicatrices associées")
+
+### juste TROPHIC ###
+
+test_dendro_indval = read_excel(here::here("Plots tests", "test_dendro_indval.xlsx"))
+
+# Données test (même que toi)
+df <- test_dendro_indval
+esp_strate <- split(df$ordre_trophic, df$Strate)
+
+# Matrice distance personnalisée
+dist_mat <- matrix(0, nrow=4, ncol=4)
+rownames(dist_mat) <- colnames(dist_mat) <- c("AC", "BC", "LC", "UC")
+
+dist_mat["AC", "BC"] <- dist_mat["BC", "AC"] <- 3
+dist_mat["AC", "LC"] <- dist_mat["LC", "AC"] <- 3
+dist_mat["AC", "UC"] <- dist_mat["UC", "AC"] <- 3
+dist_mat["BC", "LC"] <- dist_mat["LC", "BC"] <- 1
+dist_mat["BC", "UC"] <- dist_mat["UC", "BC"] <- 1
+dist_mat["LC", "UC"] <- dist_mat["UC", "LC"] <- 0.1
+
+# Réordonner les lignes et colonnes pour changer l'ordre d'affichage
+nouvel_ordre <- c("AC", "UC", "LC", "BC")  # On met UC avant BC
+dist_mat <- dist_mat[nouvel_ordre, nouvel_ordre]
+dist_obj <- as.dist(dist_mat)
+hc <- hclust(dist_obj, method = "complete")
+dend <- as.dendrogram(hc)
+
+ajuster_hauteur_branches_profondeur <- function(d, niveau = 1) {
+  if (is.leaf(d)) {
+    # Feuille : on augmente beaucoup la hauteur
+    attr(d, "height") <- attr(d, "height") * 4
+  } else {
+    # Noeud interne : facteur de réduction selon niveau
+    facteur_noeud <- switch(
+      as.character(niveau),
+      "1" = 1.1,   # racine très courte
+      "2" = 3,   # intermédiaire plus visible
+      "3" = 10,   # noeud proche des feuilles → longue branche
+      "4" = 10,     # encore plus long si plus profond
+      1            # défaut : pas de changement
+    )
+
+    attr(d, "height") <- attr(d, "height") * facteur_noeud
+
+    # Traitement récursif
+    for (i in seq_along(d)) {
+      d[[i]] <- ajuster_hauteur_branches_profondeur(d[[i]], niveau + 1)
+    }
+  }
+  return(d)
+}
+
+# Appliquer
+dend_modifie <- ajuster_hauteur_branches_profondeur(dend)
+ddata <- dendro_data(dend_modifie, type = "rectangle")
+ddata$labels$label <- ""
+
+# Création d’un data.frame pour labels personnalisés sous les feuilles
+labels_strates <- c("AC", "UC", "LC", "BC")
+labels_df <- data.frame(
+  x = ddata$labels$x,
+  y = min(ddata$segments$y) - 1,  
+  label = labels_strates
+)
+
+# Hauteur max (pour positionner espèces)
+hauteur_max <- max(ddata$segments$y)
+
+# Préparer les données espèces
+ordre_especes <- rev(unique(test_dendro_indval$ordre_trophic))  # Important à définir avant join
+esp_text_df <- data.frame(
+  x = 1:4,
+  y = c(1.1, 0.5, 0.3, 0.35),
+  label = sapply(nouvel_ordre, function(s) paste(esp_strate[[s]], collapse = "\n"))
+)
+
+esp_text_long <- esp_text_df %>%
+  mutate(label = strsplit(as.character(label), "\n")) %>%
+  unnest(label) %>%
+  rename(Espèce = label) %>%
+  left_join(test_dendro_indval %>% select(ordre_trophic, trophic_correspondance),
+            by = c("Espèce" = "ordre_trophic")) %>%
+  mutate(Espèce = factor(Espèce, levels = ordre_especes)) %>%
+  group_by(x) %>%
+  arrange(Espèce) %>%
+  mutate(y = first(y) + seq(0, by = 0.08, length.out = n())) %>%
+  ungroup()
+
+# Préparer les rectangles sous les strates
+esp_text_blocs <- esp_text_long %>%
+  group_by(x) %>%
+  summarise(
+    ymin = min(y) - 0.05,
+    ymax = max(y) + 0.05,
+    xmin = unique(x) - 0.25,
+    xmax = unique(x) + 0.25,
+    .groups = "drop"
+  )
+
+# Générer palette de couleurs
+esp_text_long$trophic_correspondance <- factor(
+  esp_text_long$trophic_correspondance,
+  levels = unique(esp_text_long$trophic_correspondance)
+)
+codes_note <- levels(esp_text_long$trophic_correspondance)
+palette_couleurs <- distinctColorPalette(length(codes_note))
+names(palette_couleurs) <- codes_note
+# Plot avec ggplot2
+ggplot() +
+  geom_segment(data = ddata$segments,
+               aes(x = x, y = y, xend = xend, yend = yend),
+               linewidth = 1) +
+  geom_text(data = labels_df, aes(x = x, y = y, label = label),
+            fontface = "bold", size = 5, vjust = 1) +
+geom_rect(data = esp_text_blocs,
+          aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+          fill = "white", alpha = 0.95,
+          color = "black", linewidth = 0.6)  +
+  geom_text(data = esp_text_long,
+            aes(x = x, y = y, label = Espèce, color = trophic_correspondance),
+            size = 2.5,  fontface = "bold", hjust = 0.5, lineheight = 0.9) +
+  coord_cartesian(ylim = c(min(ddata$segments$y) - 1, hauteur_max + 0.1),
+                  xlim = c(min(ddata$segments$x) - 0.1, max(ddata$segments$x) + 0.1)) +
+  scale_color_manual(name = "Légende : Guilde trophique",
+                     values = palette_couleurs) +
+  theme_minimal() +
+  theme(axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank(),
+        plot.title = element_text(face = "bold")) +
+  ggtitle("Dendrogramme selon les différences entre les strates avec leur espèces indicatrices associées")
+
+### JUSTE HABITAT ###
+
+test_dendro_indval = read_excel(here::here("Plots tests", "test_dendro_indval.xlsx"))
+
+# Données test (même que toi)
+df <- test_dendro_indval
+esp_strate <- split(df$ordre_habitat, df$Strate)
+
+# Matrice distance personnalisée
+dist_mat <- matrix(0, nrow=4, ncol=4)
+rownames(dist_mat) <- colnames(dist_mat) <- c("AC", "BC", "LC", "UC")
+
+dist_mat["AC", "BC"] <- dist_mat["BC", "AC"] <- 3
+dist_mat["AC", "LC"] <- dist_mat["LC", "AC"] <- 3
+dist_mat["AC", "UC"] <- dist_mat["UC", "AC"] <- 3
+dist_mat["BC", "LC"] <- dist_mat["LC", "BC"] <- 1
+dist_mat["BC", "UC"] <- dist_mat["UC", "BC"] <- 1
+dist_mat["LC", "UC"] <- dist_mat["UC", "LC"] <- 0.1
+
+# Réordonner les lignes et colonnes pour changer l'ordre d'affichage
+nouvel_ordre <- c("AC", "UC", "LC", "BC")  # On met UC avant BC
+dist_mat <- dist_mat[nouvel_ordre, nouvel_ordre]
+dist_obj <- as.dist(dist_mat)
+hc <- hclust(dist_obj, method = "complete")
+dend <- as.dendrogram(hc)
+
+ajuster_hauteur_branches_profondeur <- function(d, niveau = 1) {
+  if (is.leaf(d)) {
+    # Feuille : on augmente beaucoup la hauteur
+    attr(d, "height") <- attr(d, "height") * 4
+  } else {
+    # Noeud interne : facteur de réduction selon niveau
+    facteur_noeud <- switch(
+      as.character(niveau),
+      "1" = 1.1,   # racine très courte
+      "2" = 3,   # intermédiaire plus visible
+      "3" = 10,   # noeud proche des feuilles → longue branche
+      "4" = 10,     # encore plus long si plus profond
+      1            # défaut : pas de changement
+    )
+
+    attr(d, "height") <- attr(d, "height") * facteur_noeud
+
+    # Traitement récursif
+    for (i in seq_along(d)) {
+      d[[i]] <- ajuster_hauteur_branches_profondeur(d[[i]], niveau + 1)
+    }
+  }
+  return(d)
+}
+
+# Appliquer
+dend_modifie <- ajuster_hauteur_branches_profondeur(dend)
+ddata <- dendro_data(dend_modifie, type = "rectangle")
+ddata$labels$label <- ""
+
+# Création d’un data.frame pour labels personnalisés sous les feuilles
+labels_strates <- c("AC", "UC", "LC", "BC")
+labels_df <- data.frame(
+  x = ddata$labels$x,
+  y = min(ddata$segments$y) - 1,  
+  label = labels_strates
+)
+
+# Hauteur max (pour positionner espèces)
+hauteur_max <- max(ddata$segments$y)
+
+# Préparer les données espèces
+ordre_especes <- rev(unique(test_dendro_indval$ordre_habitat))  # Important à définir avant join
+esp_text_df <- data.frame(
+  x = 1:4,
+  y = c(1.1, 0.5, 0.3, 0.35),
+  label = sapply(nouvel_ordre, function(s) paste(esp_strate[[s]], collapse = "\n"))
+)
+
+esp_text_long <- esp_text_df %>%
+  mutate(label = strsplit(as.character(label), "\n")) %>%
+  unnest(label) %>%
+  rename(Espèce = label) %>%
+  left_join(test_dendro_indval %>% select(ordre_habitat, habitat_correspondance),
+            by = c("Espèce" = "ordre_habitat")) %>%
+  mutate(Espèce = factor(Espèce, levels = ordre_especes)) %>%
+  group_by(x) %>%
+  arrange(Espèce) %>%
+  mutate(y = first(y) + seq(0, by = 0.08, length.out = n())) %>%
+  ungroup()
+
+# Préparer les rectangles sous les strates
+esp_text_blocs <- esp_text_long %>%
+  group_by(x) %>%
+  summarise(
+    ymin = min(y) - 0.05,
+    ymax = max(y) + 0.05,
+    xmin = unique(x) - 0.25,
+    xmax = unique(x) + 0.25,
+    .groups = "drop"
+  )
+
+# Générer palette de couleurs
+esp_text_long$habitat_correspondance <- factor(
+  esp_text_long$habitat_correspondance,
+  levels = unique(esp_text_long$habitat_correspondance)
+)
+codes_note <- levels(esp_text_long$habitat_correspondance)
+palette_couleurs <- distinctColorPalette(length(codes_note))
+names(palette_couleurs) <- codes_note
+# Plot avec ggplot2
+ggplot() +
+  geom_segment(data = ddata$segments,
+               aes(x = x, y = y, xend = xend, yend = yend),
+               linewidth = 1) +
+  geom_text(data = labels_df, aes(x = x, y = y, label = label),
+            fontface = "bold", size = 5, vjust = 1) +
+geom_rect(data = esp_text_blocs,
+          aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+          fill = "white", alpha = 0.95,
+          color = "black", linewidth = 0.6)  +
+  geom_text(data = esp_text_long,
+            aes(x = x, y = y, label = Espèce, color = habitat_correspondance),
+            size = 2.5,  fontface = "bold", hjust = 0.5, lineheight = 0.9) +
+  coord_cartesian(ylim = c(min(ddata$segments$y) - 1, hauteur_max + 0.1),
+                  xlim = c(min(ddata$segments$x) - 0.1, max(ddata$segments$x) + 0.1)) +
+  scale_color_manual(name = "Légende : Guilde d'habitat",
+                     values = palette_couleurs) +
+  theme_minimal() +
+  theme(axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank(),
+        plot.title = element_text(face = "bold")) +
+  ggtitle("Dendrogramme selon les différences entre les strates avec leur espèces indicatrices associées")
+```
+
+# 16. Test (modifs GLMM graphs)
+
+```{r}
+
+### ALL ###
+
+test_glmm_allsamples = read.csv(here::here("glmm_allsamples", "Donnees_graphique_glmmTMB_bis.csv"), sep = ";", dec = ".", header = T)
+#
+ordre_comparaison  <- c("AC_UC", "AC_LC", "AC_BC", "UC_LC", "UC_BC", "LC_BC")
+test_glmm_allsamples$Comparaison <- factor(test_glmm_allsamples$Comparaison, levels = ordre_comparaison)
+
+comparaisons_principales <- c("AC_UC", "UC_LC", "LC_BC")
+positions_principales <- which(levels(test_glmm_allsamples$Comparaison) %in% comparaisons_principales)
+
+rects <- data.frame(
+  xmin = positions_principales - 0.5,
+  xmax = positions_principales + 0.5,
+  ymin = -Inf,
+  ymax = Inf
+)
+#
+test_glmm_allsamples <- test_glmm_allsamples %>%
+  mutate(Shape_auto = case_when(
+    is.na(Estimate)      ~ "round",
+    Estimate > 0         ~ "round",
+    Estimate < 0         ~ "square"
+  ))
+ordre_var <- c("General", "Trophic Larvae Guilds", "Microhabitat Larvae Guilds", "Adult Guilds", "Ecological niches Traits")
+test_glmm_allsamples$Groupe.var <- factor(test_glmm_allsamples$Groupe.var, levels = ordre_var)
+#
+strate_effects_GLMMALL <- ggplot(data = test_glmm_allsamples, aes(x = Comparaison, y = Y)) +
+  geom_rect(data = rects,
+            aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+            fill = "grey40", alpha = 0.5, inherit.aes = FALSE) +
+  geom_point(aes(size = Significance, 
+                 shape = Shape_auto, 
+                 color = Significance), 
+             stroke = 0.8) +
+  scale_size_manual(values = c("N.S" = 1, 
+                               "*" = 3, 
+                               "**" = 2.5, 
+                               "***" = 4)) +
+  scale_color_manual(values = c("N.S" = "#333333", 
+                                "*" = "#FFA07A", 
+                                "**" = "#FF7256", 
+                                "***" = "#8B1A1A")) +
+  scale_shape_manual(values = c("round" = 16, "square" = 15),
+                     labels = c("round" = "positif", "square" = "négatif")) +
+  facet_grid(Groupe.var ~ Effect, 
+             scales = "free", 
+             space = "free") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, face = "bold", color = "black"),
+        axis.text.y = element_text(face = "bold", color = "black"),
+        strip.text = element_text(face = "bold"),
+        panel.grid.major = element_line(color = "grey90"),
+        legend.position = "right") +
+  labs(x = "Comparaison des strates", 
+       y = NULL, 
+       shape = "Signe de l'effet", 
+       color = "Significativité", 
+       size = "Significativité") ; strate_effects_GLMMALL
+ggsave("strate_effects_GLMMALL.png", plot = strate_effects_GLMMALL, width = 20, height = 25, units = "cm")
+
+### RELEVES ###
+
+test_glmm_releves = read.csv(here::here("glmm_releves", "Donnees_graphique_glmmTMB_releves_bis.csv"), sep = ";", dec = ".", header = T)
+#
+test_glmm_releves <- test_glmm_releves %>%
+  mutate(Shape_auto = case_when(
+    is.na(Estimate)      ~ "round",
+    Estimate > 0         ~ "round",
+    Estimate < 0         ~ "square"
+  ))
+test_glmm_releves <- test_glmm_releves %>%
+  mutate(
+    Releve = fct_recode(Releve,
+                        "02-05/04/24" = "R1",
+                        "02-07/05/24" = "R2",
+                        "01-07/06/24" = "R3",
+                        "05-26/09/24" = "R4-5"
+    )
+  )
+
+ordre_comparaison  <- c("AC_UC", "AC_LC", "AC_BC", "UC_LC", "UC_BC", "LC_BC")
+test_glmm_releves$Comparaison <- factor(test_glmm_releves$Comparaison, levels = ordre_comparaison)
+ordre_var <- c("General", "Trophic Larvae Guilds", "Microhabitat Larvae Guilds")
+test_glmm_releves$Groupe.var <- factor(test_glmm_releves$Groupe.var, levels = ordre_var)
+#
+strate_effects_releves <- ggplot(data = test_glmm_releves, aes(x = Comparaison, y = Y)) +
+  geom_point(aes(size = Significance, 
+                 shape = Shape_auto, 
+                 color = Significance), 
+             stroke = 0.8) +
+  scale_size_manual(values = c("N.S" = 1, 
+                               "*" = 3, 
+                               "**" = 2.5, 
+                               "***" = 4)) +
+  scale_color_manual(values = c("N.S" = "#333333", 
+                                "*" = "#FFA07A", 
+                                "**" = "#FF7256", 
+                                "***" = "#8B1A1A")) +
+  scale_shape_manual(values = c("round" = 16, "square" = 15),
+                     labels = c("round" = "positif", "square" = "négatif")) +
+  facet_grid(Groupe.var ~ Effect + Releve, 
+             scales = "free", 
+             space = "free") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, face = "bold", color = "black"),
+        axis.text.y = element_text(face = "bold", color = "black"),
+        strip.text = element_text(face = "bold"),
+        panel.grid.major = element_line(color = "grey90"),
+        legend.position = "right") +
+  labs(x = "Comparaison des strates", 
+       y = NULL, 
+       shape = "Signe de l'effet", 
+       color = "Significativité", 
+       size = "Significativité") ; strate_effects_releves
+ggsave("strate_effects_releves.png", plot = strate_effects_releves, width = 20, height = 15, units = "cm")
+
+### DEPERISSEMENT ###
+
+test_glmm_depe = read.csv(here::here("glmm_deperissement", "Donnees_graphique_glmmTMB_deperissement_bis.csv"), sep = ";", dec = ".", header = T)
+#
+test_glmm_depe <- test_glmm_depe %>%
+  mutate(Shape_auto = case_when(
+    is.na(Estimate)      ~ "round",
+    Estimate > 0         ~ "round",
+    Estimate < 0         ~ "square"
+  ))
+ordre_var <- c("General", "Trophic Larvae Guilds", "Microhabitat Larvae Guilds")
+test_glmm_depe$Groupe.var <- factor(test_glmm_depe$Groupe.var, levels = ordre_var)
+#
+strate_effects_depe <- ggplot(data = test_glmm_depe, aes(x = Comparaison, y = Y)) +
+  geom_point(aes(size = Significance, 
+                 shape = Shape_auto, 
+                 color = Significance), 
+             stroke = 0.8) +
+  scale_size_manual(values = c("N.S" = 1, 
+                               "*" = 3, 
+                               "**" = 2.5, 
+                               "***" = 4)) +
+  scale_color_manual(values = c("N.S" = "#333333", 
+                                "*" = "#FFA07A", 
+                                "**" = "#FF7256", 
+                                "***" = "#8B1A1A")) +
+  scale_shape_manual(values = c("round" = 16, "square" = 15),
+                     labels = c("round" = "positif", "square" = "négatif")) +
+  facet_grid(Groupe.var ~ Effect, 
+             scales = "free", 
+             space = "free") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, face = "bold", color = "black"),
+        axis.text.y = element_text(face = "bold", color = "black"),
+        strip.text = element_text(face = "bold"),
+        panel.grid.major = element_line(color = "grey90"),
+        legend.position = "right") +
+  labs(x = "Comparaison des strates", 
+       y = NULL, 
+       shape = "Signe de l'effet", 
+       color = "Significativité", 
+       size = "Significativité") ; strate_effects_depe
+ggsave("strate_effects_deperissement.png", plot = strate_effects_depe, width = 20, height = 15, units = "cm")
 ```
 

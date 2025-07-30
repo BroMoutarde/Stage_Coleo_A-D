@@ -1,0 +1,337 @@
+Y;Effect;Releve;Groupe.var;pval (originale);pval;Comparaison;Estimate;p-value;Significance
+ab.colsx;Stratum effect;R1;General;N.S;N.S;AC_UC;;;N.S
+ab.colsx;Stratum effect;R1;General;N.S;N.S;AC_LC;;;N.S
+ab.colsx;Stratum effect;R1;General;N.S;N.S;AC_BC;;;N.S
+ab.colsx;Stratum effect;R1;General;N.S;N.S;UC_LC;;;N.S
+ab.colsx;Stratum effect;R1;General;N.S;N.S;UC_BC;;;N.S
+ab.colsx;Stratum effect;R1;General;N.S;N.S;LC_BC;;;N.S
+sr.colsx;Stratum effect;R1;General;N.S;N.S;AC_UC;;;N.S
+sr.colsx;Stratum effect;R1;General;N.S;N.S;AC_LC;;;N.S
+sr.colsx;Stratum effect;R1;General;N.S;N.S;AC_BC;;;N.S
+sr.colsx;Stratum effect;R1;General;N.S;N.S;UC_LC;;;N.S
+sr.colsx;Stratum effect;R1;General;N.S;N.S;UC_BC;;;N.S
+sr.colsx;Stratum effect;R1;General;N.S;N.S;LC_BC;;;N.S
+ab.colsxrar;Stratum effect;R1;General;;;AC_UC;;;
+ab.colsxrar;Stratum effect;R1;General;;;AC_LC;;;
+ab.colsxrar;Stratum effect;R1;General;;;AC_BC;;;
+ab.colsxrar;Stratum effect;R1;General;;;UC_LC;;;
+ab.colsxrar;Stratum effect;R1;General;;;UC_BC;;;
+ab.colsxrar;Stratum effect;R1;General;;;LC_BC;;;
+sr.colsxrar;Stratum effect;R1;General;N.S;N.S;AC_UC;;;N.S
+sr.colsxrar;Stratum effect;R1;General;N.S;N.S;AC_LC;;;N.S
+sr.colsxrar;Stratum effect;R1;General;N.S;N.S;AC_BC;;;N.S
+sr.colsxrar;Stratum effect;R1;General;N.S;N.S;UC_LC;;;N.S
+sr.colsxrar;Stratum effect;R1;General;N.S;N.S;UC_BC;;;N.S
+sr.colsxrar;Stratum effect;R1;General;N.S;N.S;LC_BC;;;N.S
+ab.colsxcom;Stratum effect;R1;General;P < 0,05;N.S;AC_UC;;;N.S
+ab.colsxcom;Stratum effect;R1;General;P < 0,05;N.S;AC_LC;;;N.S
+ab.colsxcom;Stratum effect;R1;General;P < 0,05;N.S;AC_BC;;;N.S
+ab.colsxcom;Stratum effect;R1;General;P < 0,05;N.S;UC_LC;;;N.S
+ab.colsxcom;Stratum effect;R1;General;P < 0,05;N.S;UC_BC;;;N.S
+ab.colsxcom;Stratum effect;R1;General;P < 0,05;N.S;LC_BC;;;N.S
+sr.colsxcom;Stratum effect;R1;General;;;AC_UC;;;
+sr.colsxcom;Stratum effect;R1;General;;;AC_LC;;;
+sr.colsxcom;Stratum effect;R1;General;;;AC_BC;;;
+sr.colsxcom;Stratum effect;R1;General;;;UC_LC;;;
+sr.colsxcom;Stratum effect;R1;General;;;UC_BC;;;
+sr.colsxcom;Stratum effect;R1;General;;;LC_BC;;;
+ab.fon;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;AC_UC;;;N.S
+ab.fon;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;AC_LC;;;N.S
+ab.fon;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;AC_BC;;;N.S
+ab.fon;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;UC_LC;;;N.S
+ab.fon;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;UC_BC;;;N.S
+ab.fon;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;LC_BC;;;N.S
+sr.fon;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;AC_UC;;;N.S
+sr.fon;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;AC_LC;;;N.S
+sr.fon;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;AC_BC;;;N.S
+sr.fon;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;UC_LC;;;N.S
+sr.fon;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;UC_BC;;;N.S
+sr.fon;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;LC_BC;;;N.S
+ab.lig;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;AC_UC;;;N.S
+ab.lig;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;AC_LC;;;N.S
+ab.lig;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;AC_BC;;;N.S
+ab.lig;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;UC_LC;;;N.S
+ab.lig;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;UC_BC;;;N.S
+ab.lig;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;LC_BC;;;N.S
+sr.lig;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;AC_UC;;;N.S
+sr.lig;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;AC_LC;;;N.S
+sr.lig;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;AC_BC;;;N.S
+sr.lig;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;UC_LC;;;N.S
+sr.lig;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;UC_BC;;;N.S
+sr.lig;Stratum effect;R1;Microhabitat Larvae Guilds;N.S;N.S;LC_BC;;;N.S
+ab.xyl;Stratum effect;R1;Trophic Larvae Guilds;N.S;N.S;AC_UC;;;N.S
+ab.xyl;Stratum effect;R1;Trophic Larvae Guilds;N.S;N.S;AC_LC;;;N.S
+ab.xyl;Stratum effect;R1;Trophic Larvae Guilds;N.S;N.S;AC_BC;;;N.S
+ab.xyl;Stratum effect;R1;Trophic Larvae Guilds;N.S;N.S;UC_LC;;;N.S
+ab.xyl;Stratum effect;R1;Trophic Larvae Guilds;N.S;N.S;UC_BC;;;N.S
+ab.xyl;Stratum effect;R1;Trophic Larvae Guilds;N.S;N.S;LC_BC;;;N.S
+sr.xyl;Stratum effect;R1;Trophic Larvae Guilds;N.S;N.S;AC_UC;;;N.S
+sr.xyl;Stratum effect;R1;Trophic Larvae Guilds;N.S;N.S;AC_LC;;;N.S
+sr.xyl;Stratum effect;R1;Trophic Larvae Guilds;N.S;N.S;AC_BC;;;N.S
+sr.xyl;Stratum effect;R1;Trophic Larvae Guilds;N.S;N.S;UC_LC;;;N.S
+sr.xyl;Stratum effect;R1;Trophic Larvae Guilds;N.S;N.S;UC_BC;;;N.S
+sr.xyl;Stratum effect;R1;Trophic Larvae Guilds;N.S;N.S;LC_BC;;;N.S
+ab.colsxrsx;Stratum effect;R1;Microhabitat Larvae Guilds;;;AC_UC;;;
+ab.colsxrsx;Stratum effect;R1;Microhabitat Larvae Guilds;;;AC_LC;;;
+ab.colsxrsx;Stratum effect;R1;Microhabitat Larvae Guilds;;;AC_BC;;;
+ab.colsxrsx;Stratum effect;R1;Microhabitat Larvae Guilds;;;UC_LC;;;
+ab.colsxrsx;Stratum effect;R1;Microhabitat Larvae Guilds;;;UC_BC;;;
+ab.colsxrsx;Stratum effect;R1;Microhabitat Larvae Guilds;;;LC_BC;;;
+sr.colsxsrx;Stratum effect;R1;Microhabitat Larvae Guilds;;;AC_UC;;;
+sr.colsxsrx;Stratum effect;R1;Microhabitat Larvae Guilds;;;AC_LC;;;
+sr.colsxsrx;Stratum effect;R1;Microhabitat Larvae Guilds;;;AC_BC;;;
+sr.colsxsrx;Stratum effect;R1;Microhabitat Larvae Guilds;;;UC_LC;;;
+sr.colsxsrx;Stratum effect;R1;Microhabitat Larvae Guilds;;;UC_BC;;;
+sr.colsxsrx;Stratum effect;R1;Microhabitat Larvae Guilds;;;LC_BC;;;
+ab.colsx;Stratum effect;R2;General;< 0,001;< 0,001;AC_UC;-0.09852;0.7848    ;N.S
+ab.colsx;Stratum effect;R2;General;< 0,001;< 0,001;AC_LC;0.22199    ;0.2172    ;N.S
+ab.colsx;Stratum effect;R2;General;< 0,001;< 0,001;AC_BC;0.62163    ;< 0,001 *** ;***
+ab.colsx;Stratum effect;R2;General;< 0,001;< 0,001;UC_LC;0.32051    ;0.0202 *;N.S
+ab.colsx;Stratum effect;R2;General;< 0,001;< 0,001;UC_BC;0.72015    ;< 0,001 *** ;***
+ab.colsx;Stratum effect;R2;General;< 0,001;< 0,001;LC_BC;0.39964    ;0.0142 *;N.S
+sr.colsx;Stratum effect;R2;General;< 0,001;< 0,001;AC_UC;-0.17394;0.12208    ;N.S
+sr.colsx;Stratum effect;R2;General;< 0,001;< 0,001;AC_LC;0.05364    ;0.91826    ;N.S
+sr.colsx;Stratum effect;R2;General;< 0,001;< 0,001;AC_BC;0.35093    ;< 0,001 *** ;***
+sr.colsx;Stratum effect;R2;General;< 0,001;< 0,001;UC_LC;0.22758    ;0.02381 *;N.S
+sr.colsx;Stratum effect;R2;General;< 0,001;< 0,001;UC_BC;0.52486    ;< 0,001 *** ;***
+sr.colsx;Stratum effect;R2;General;< 0,001;< 0,001;LC_BC;0.29728    ;0.00745 **;**
+ab.colsxrar;Stratum effect;R2;General;< 0,001;< 0,001;AC_UC;-0.4021;0.24349    ;N.S
+ab.colsxrar;Stratum effect;R2;General;< 0,001;< 0,001;AC_LC;0.3197     ;0.53946    ;N.S
+ab.colsxrar;Stratum effect;R2;General;< 0,001;< 0,001;AC_BC;1.1907     ;< 0,001 *** ;***
+ab.colsxrar;Stratum effect;R2;General;< 0,001;< 0,001;UC_LC;0.7218     ;0.00843 ** ;N.S
+ab.colsxrar;Stratum effect;R2;General;< 0,001;< 0,001;UC_BC;1.5928     ;< 0,001 *** ;***
+ab.colsxrar;Stratum effect;R2;General;< 0,001;< 0,001;LC_BC;0.8709     ;0.02735 *;N.S
+sr.colsxrar;Stratum effect;R2;General;< 0,001;< 0,001;AC_UC;-0.3132;0.08938 .;N.S
+sr.colsxrar;Stratum effect;R2;General;< 0,001;< 0,001;AC_LC;0.2323     ;0.44007    ;N.S
+sr.colsxrar;Stratum effect;R2;General;< 0,001;< 0,001;AC_BC;0.8407     ;< 0,001 *** ;***
+sr.colsxrar;Stratum effect;R2;General;< 0,001;< 0,001;UC_LC;0.5455        ;0.00119 **;**
+sr.colsxrar;Stratum effect;R2;General;< 0,001;< 0,001;UC_BC;1.1539     ;< 0,001 *** ;***
+sr.colsxrar;Stratum effect;R2;General;< 0,001;< 0,001;LC_BC;0.6084     ;0.01861 * ;N.S
+ab.colsxcom;Stratum effect;R2;General;< 0,001;< 0,001;AC_UC;0.06648    ;0.94364 ;N.S
+ab.colsxcom;Stratum effect;R2;General;< 0,001;< 0,001;AC_LC;0.53615    ;< 0,001 *** ;***
+ab.colsxcom;Stratum effect;R2;General;< 0,001;< 0,001;AC_BC;0.96691    ;< 0,001 *** ;***
+ab.colsxcom;Stratum effect;R2;General;< 0,001;< 0,001;UC_LC;0.46967    ;< 0,001 *** ;***
+ab.colsxcom;Stratum effect;R2;General;< 0,001;< 0,001;UC_BC;0.90043    ;< 0,001 *** ;***
+ab.colsxcom;Stratum effect;R2;General;< 0,001;< 0,001;LC_BC;0.43076    ;0.00357 **;**
+sr.colsxcom;Stratum effect;R2;General;< 0,001;< 0,001;AC_UC;-0.3500;0.38368    ;N.S
+sr.colsxcom;Stratum effect;R2;General;< 0,001;< 0,001;AC_LC;0.1555     ;0.88836    ;N.S
+sr.colsxcom;Stratum effect;R2;General;< 0,001;< 0,001;AC_BC;0.8353     ;< 0,001 *** ;***
+sr.colsxcom;Stratum effect;R2;General;< 0,001;< 0,001;UC_LC;0.5055     ;0.09496 .;N.S
+sr.colsxcom;Stratum effect;R2;General;< 0,001;< 0,001;UC_BC;1.1853     ;< 0,001 *** ;***
+sr.colsxcom;Stratum effect;R2;General;< 0,001;< 0,001;LC_BC;0.6798     ;0.00672 **;**
+ab.fon;Stratum effect;R2;Microhabitat Larvae Guilds;;;AC_UC;;;
+ab.fon;Stratum effect;R2;Microhabitat Larvae Guilds;;;AC_LC;;;
+ab.fon;Stratum effect;R2;Microhabitat Larvae Guilds;;;AC_BC;;;
+ab.fon;Stratum effect;R2;Microhabitat Larvae Guilds;;;UC_LC;;;
+ab.fon;Stratum effect;R2;Microhabitat Larvae Guilds;;;UC_BC;;;
+ab.fon;Stratum effect;R2;Microhabitat Larvae Guilds;;;LC_BC;;;
+sr.fon;Stratum effect;R2;Microhabitat Larvae Guilds;;;AC_UC;;;
+sr.fon;Stratum effect;R2;Microhabitat Larvae Guilds;;;AC_LC;;;
+sr.fon;Stratum effect;R2;Microhabitat Larvae Guilds;;;AC_BC;;;
+sr.fon;Stratum effect;R2;Microhabitat Larvae Guilds;;;UC_LC;;;
+sr.fon;Stratum effect;R2;Microhabitat Larvae Guilds;;;UC_BC;;;
+sr.fon;Stratum effect;R2;Microhabitat Larvae Guilds;;;LC_BC;;;
+ab.lig;Stratum effect;R2;Microhabitat Larvae Guilds;< 0,001;< 0,001;AC_UC;-0.2794;0.94515    ;N.S
+ab.lig;Stratum effect;R2;Microhabitat Larvae Guilds;< 0,001;< 0,001;AC_LC;1.1028     ;0.08010 .;N.S
+ab.lig;Stratum effect;R2;Microhabitat Larvae Guilds;< 0,001;< 0,001;AC_BC;2.5461     ;< 0,001 *** ;***
+ab.lig;Stratum effect;R2;Microhabitat Larvae Guilds;< 0,001;< 0,001;UC_LC;1.3822     ;0.02025 *;N.S
+ab.lig;Stratum effect;R2;Microhabitat Larvae Guilds;< 0,001;< 0,001;UC_BC;2.8255     ;< 0,001 *** ;***
+ab.lig;Stratum effect;R2;Microhabitat Larvae Guilds;< 0,001;< 0,001;LC_BC;1.4433     ;0.00222 ** ;**
+sr.lig;Stratum effect;R2;Microhabitat Larvae Guilds;< 0,001;< 0,001;AC_UC;-0.3909;0.2649    ;N.S
+sr.lig;Stratum effect;R2;Microhabitat Larvae Guilds;< 0,001;< 0,001;AC_LC;0.2772     ;0.5695    ;N.S
+sr.lig;Stratum effect;R2;Microhabitat Larvae Guilds;< 0,001;< 0,001;AC_BC;0.8874     ;< 0,001 *** ;***
+sr.lig;Stratum effect;R2;Microhabitat Larvae Guilds;< 0,001;< 0,001;UC_LC;0.6680     ;0.0101 *;N.S
+sr.lig;Stratum effect;R2;Microhabitat Larvae Guilds;< 0,001;< 0,001;UC_BC;1.2782     ;< 0,001 *** ;***
+sr.lig;Stratum effect;R2;Microhabitat Larvae Guilds;< 0,001;< 0,001;LC_BC;0.6102     ;0.0261 *;N.S
+ab.xyl;Stratum effect;R2;Trophic Larvae Guilds;< 0,001;< 0,001;AC_UC;0.3046     ;0.43078;N.S
+ab.xyl;Stratum effect;R2;Trophic Larvae Guilds;< 0,001;< 0,001;AC_LC;0.9444     ;< 0,001 *** ;***
+ab.xyl;Stratum effect;R2;Trophic Larvae Guilds;< 0,001;< 0,001;AC_BC;1.0928     ;< 0,001 *** ;***
+ab.xyl;Stratum effect;R2;Trophic Larvae Guilds;< 0,001;< 0,001;UC_LC;0.6397     ;0.01503 *;N.S
+ab.xyl;Stratum effect;R2;Trophic Larvae Guilds;< 0,001;< 0,001;UC_BC;0.7882     ;0.00197 **;**
+ab.xyl;Stratum effect;R2;Trophic Larvae Guilds;< 0,001;< 0,001;LC_BC;0.1485     ;0.91329    ;N.S
+sr.xyl;Stratum effect;R2;Trophic Larvae Guilds;< 0,001;< 0,001;AC_UC;1.3158     ;0.3478    ;N.S
+sr.xyl;Stratum effect;R2;Trophic Larvae Guilds;< 0,001;< 0,001;AC_LC;3.3684     ;< 0,001 *** ;***
+sr.xyl;Stratum effect;R2;Trophic Larvae Guilds;< 0,001;< 0,001;AC_BC;4.3363     ;< 0,001 *** ;***
+sr.xyl;Stratum effect;R2;Trophic Larvae Guilds;< 0,001;< 0,001;UC_LC;2.0526     ;0.0483 *;N.S
+sr.xyl;Stratum effect;R2;Trophic Larvae Guilds;< 0,001;< 0,001;UC_BC;3.0205     ;< 0,001 *** ;***
+sr.xyl;Stratum effect;R2;Trophic Larvae Guilds;< 0,001;< 0,001;LC_BC;0.9678     ;0.6262;N.S
+ab.colsxrsx;Stratum effect;R2;Microhabitat Larvae Guilds;;;AC_UC;;;
+ab.colsxrsx;Stratum effect;R2;Microhabitat Larvae Guilds;;;AC_LC;;;
+ab.colsxrsx;Stratum effect;R2;Microhabitat Larvae Guilds;;;AC_BC;;;
+ab.colsxrsx;Stratum effect;R2;Microhabitat Larvae Guilds;;;UC_LC;;;
+ab.colsxrsx;Stratum effect;R2;Microhabitat Larvae Guilds;;;UC_BC;;;
+ab.colsxrsx;Stratum effect;R2;Microhabitat Larvae Guilds;;;LC_BC;;;
+sr.colsxsrx;Stratum effect;R2;Microhabitat Larvae Guilds;;;AC_UC;;;
+sr.colsxsrx;Stratum effect;R2;Microhabitat Larvae Guilds;;;AC_LC;;;
+sr.colsxsrx;Stratum effect;R2;Microhabitat Larvae Guilds;;;AC_BC;;;
+sr.colsxsrx;Stratum effect;R2;Microhabitat Larvae Guilds;;;UC_LC;;;
+sr.colsxsrx;Stratum effect;R2;Microhabitat Larvae Guilds;;;UC_BC;;;
+sr.colsxsrx;Stratum effect;R2;Microhabitat Larvae Guilds;;;LC_BC;;;
+ab.colsx;Stratum effect;R3;General;< 0,001;< 0,001;AC_UC;-0.1436;0.64373    ;N.S
+ab.colsx;Stratum effect;R3;General;< 0,001;< 0,001;AC_LC;0.1648     ;0.58079    ;N.S
+ab.colsx;Stratum effect;R3;General;< 0,001;< 0,001;AC_BC;0.4263     ;0.00309 **;**
+ab.colsx;Stratum effect;R3;General;< 0,001;< 0,001;UC_LC;0.3084     ;0.08229 .;N.S
+ab.colsx;Stratum effect;R3;General;< 0,001;< 0,001;UC_BC;0.5699     ;< 0,001 *** ;***
+ab.colsx;Stratum effect;R3;General;< 0,001;< 0,001;LC_BC;0.2615     ;0.19063    ;N.S
+sr.colsx;Stratum effect;R3;General;< 0,001;< 0,001;AC_UC;-7.750;< 1e-04 ***;***
+sr.colsx;Stratum effect;R3;General;< 0,001;< 0,001;AC_LC;1.561      ;0.840    ;N.S
+sr.colsx;Stratum effect;R3;General;< 0,001;< 0,001;AC_BC;3.000      ;0.340    ;N.S
+sr.colsx;Stratum effect;R3;General;< 0,001;< 0,001;UC_LC;9.311      ;< 1e-04 ***;***
+sr.colsx;Stratum effect;R3;General;< 0,001;< 0,001;UC_BC;10.750      ;< 1e-04 ***;***
+sr.colsx;Stratum effect;R3;General;< 0,001;< 0,001;LC_BC;1.439      ;0.871    ;N.S
+ab.colsxrar;Stratum effect;R3;General;;;AC_UC;;;
+ab.colsxrar;Stratum effect;R3;General;;;AC_LC;;;
+ab.colsxrar;Stratum effect;R3;General;;;AC_BC;;;
+ab.colsxrar;Stratum effect;R3;General;;;UC_LC;;;
+ab.colsxrar;Stratum effect;R3;General;;;UC_BC;;;
+ab.colsxrar;Stratum effect;R3;General;;;LC_BC;;;
+sr.colsxrar;Stratum effect;R3;General;< 0,001;< 0,001;AC_UC;-0.6409;< 0,001 *** ;***
+sr.colsxrar;Stratum effect;R3;General;< 0,001;< 0,001;AC_LC;0.1169     ;0.9166;N.S
+sr.colsxrar;Stratum effect;R3;General;< 0,001;< 0,001;AC_BC;0.5614     ;0.0274 *;N.S
+sr.colsxrar;Stratum effect;R3;General;< 0,001;< 0,001;UC_LC;0.7579       ;< 0,001 *** ;***
+sr.colsxrar;Stratum effect;R3;General;< 0,001;< 0,001;UC_BC;1.2023     ;< 0,001 *** ;***
+sr.colsxrar;Stratum effect;R3;General;< 0,001;< 0,001;LC_BC;0.4445     ;0.1585    ;N.S
+ab.colsxcom;Stratum effect;R3;General;< 0,001;< 0,001;AC_UC;-0.07188;0.95602    ;N.S
+ab.colsxcom;Stratum effect;R3;General;< 0,001;< 0,001;AC_LC;0.49298    ;0.00546 **;**
+ab.colsxcom;Stratum effect;R3;General;< 0,001;< 0,001;AC_BC;0.59598    ;< 0,001 *** ;***
+ab.colsxcom;Stratum effect;R3;General;< 0,001;< 0,001;UC_LC;0.56486    ;0.00106 **;**
+ab.colsxcom;Stratum effect;R3;General;< 0,001;< 0,001;UC_BC;0.66786    ;< 0,001 *** ;***
+ab.colsxcom;Stratum effect;R3;General;< 0,001;< 0,001;LC_BC;0.10300    ;0.90365    ;N.S
+sr.colsxcom;Stratum effect;R3;General;< 0,001;< 0,001;AC_UC;-0.25994;0.00202 ** ;**
+sr.colsxcom;Stratum effect;R3;General;< 0,001;< 0,001;AC_LC;0.08500    ;0.75900    ;N.S
+sr.colsxcom;Stratum effect;R3;General;< 0,001;< 0,001;AC_BC;0.14685    ;0.32386    ;N.S
+sr.colsxcom;Stratum effect;R3;General;< 0,001;< 0,001;UC_LC;0.34494    ;< 0,001 *** ;***
+sr.colsxcom;Stratum effect;R3;General;< 0,001;< 0,001;UC_BC;0.40679    ;< 0,001 *** ;***
+sr.colsxcom;Stratum effect;R3;General;< 0,001;< 0,001;LC_BC;0.06185    ;0.90516    ;N.S
+ab.fon;Stratum effect;R3;Microhabitat Larvae Guilds;P < 0,05;N.S;AC_UC;;;N.S
+ab.fon;Stratum effect;R3;Microhabitat Larvae Guilds;P < 0,05;N.S;AC_LC;;;N.S
+ab.fon;Stratum effect;R3;Microhabitat Larvae Guilds;P < 0,05;N.S;AC_BC;;;N.S
+ab.fon;Stratum effect;R3;Microhabitat Larvae Guilds;P < 0,05;N.S;UC_LC;;;N.S
+ab.fon;Stratum effect;R3;Microhabitat Larvae Guilds;P < 0,05;N.S;UC_BC;;;N.S
+ab.fon;Stratum effect;R3;Microhabitat Larvae Guilds;P < 0,05;N.S;LC_BC;;;N.S
+sr.fon;Stratum effect;R3;Microhabitat Larvae Guilds;N.S;N.S;AC_UC;;;N.S
+sr.fon;Stratum effect;R3;Microhabitat Larvae Guilds;N.S;N.S;AC_LC;;;N.S
+sr.fon;Stratum effect;R3;Microhabitat Larvae Guilds;N.S;N.S;AC_BC;;;N.S
+sr.fon;Stratum effect;R3;Microhabitat Larvae Guilds;N.S;N.S;UC_LC;;;N.S
+sr.fon;Stratum effect;R3;Microhabitat Larvae Guilds;N.S;N.S;UC_BC;;;N.S
+sr.fon;Stratum effect;R3;Microhabitat Larvae Guilds;N.S;N.S;LC_BC;;;N.S
+ab.lig;Stratum effect;R3;Microhabitat Larvae Guilds;;;AC_UC;;;
+ab.lig;Stratum effect;R3;Microhabitat Larvae Guilds;;;AC_LC;;;
+ab.lig;Stratum effect;R3;Microhabitat Larvae Guilds;;;AC_BC;;;
+ab.lig;Stratum effect;R3;Microhabitat Larvae Guilds;;;UC_LC;;;
+ab.lig;Stratum effect;R3;Microhabitat Larvae Guilds;;;UC_BC;;;
+ab.lig;Stratum effect;R3;Microhabitat Larvae Guilds;;;LC_BC;;;
+sr.lig;Stratum effect;R3;Microhabitat Larvae Guilds;< 0,001;< 0,001;AC_UC;-7.021;< 0,001 *** ;***
+sr.lig;Stratum effect;R3;Microhabitat Larvae Guilds;< 0,001;< 0,001;AC_LC;1.875      ;0.609    ;N.S
+sr.lig;Stratum effect;R3;Microhabitat Larvae Guilds;< 0,001;< 0,001;AC_BC;2.890      ;0.192    ;N.S
+sr.lig;Stratum effect;R3;Microhabitat Larvae Guilds;< 0,001;< 0,001;UC_LC;8.896      ;< 0,001 *** ;***
+sr.lig;Stratum effect;R3;Microhabitat Larvae Guilds;< 0,001;< 0,001;UC_BC;9.911      ;< 0,001 *** ;***
+sr.lig;Stratum effect;R3;Microhabitat Larvae Guilds;< 0,001;< 0,001;LC_BC;1.015      ;0.898    ;N.S
+ab.xyl;Stratum effect;R3;Trophic Larvae Guilds;;;AC_UC;;;
+ab.xyl;Stratum effect;R3;Trophic Larvae Guilds;;;AC_LC;;;
+ab.xyl;Stratum effect;R3;Trophic Larvae Guilds;;;AC_BC;;;
+ab.xyl;Stratum effect;R3;Trophic Larvae Guilds;;;UC_LC;;;
+ab.xyl;Stratum effect;R3;Trophic Larvae Guilds;;;UC_BC;;;
+ab.xyl;Stratum effect;R3;Trophic Larvae Guilds;;;LC_BC;;;
+sr.xyl;Stratum effect;R3;Trophic Larvae Guilds;;;AC_UC;;;
+sr.xyl;Stratum effect;R3;Trophic Larvae Guilds;;;AC_LC;;;
+sr.xyl;Stratum effect;R3;Trophic Larvae Guilds;;;AC_BC;;;
+sr.xyl;Stratum effect;R3;Trophic Larvae Guilds;;;UC_LC;;;
+sr.xyl;Stratum effect;R3;Trophic Larvae Guilds;;;UC_BC;;;
+sr.xyl;Stratum effect;R3;Trophic Larvae Guilds;;;LC_BC;;;
+ab.colsxrsx;Stratum effect;R3;Microhabitat Larvae Guilds;;;AC_UC;;;
+ab.colsxrsx;Stratum effect;R3;Microhabitat Larvae Guilds;;;AC_LC;;;
+ab.colsxrsx;Stratum effect;R3;Microhabitat Larvae Guilds;;;AC_BC;;;
+ab.colsxrsx;Stratum effect;R3;Microhabitat Larvae Guilds;;;UC_LC;;;
+ab.colsxrsx;Stratum effect;R3;Microhabitat Larvae Guilds;;;UC_BC;;;
+ab.colsxrsx;Stratum effect;R3;Microhabitat Larvae Guilds;;;LC_BC;;;
+sr.colsxsrx;Stratum effect;R3;Microhabitat Larvae Guilds;;;AC_UC;;;
+sr.colsxsrx;Stratum effect;R3;Microhabitat Larvae Guilds;;;AC_LC;;;
+sr.colsxsrx;Stratum effect;R3;Microhabitat Larvae Guilds;;;AC_BC;;;
+sr.colsxsrx;Stratum effect;R3;Microhabitat Larvae Guilds;;;UC_LC;;;
+sr.colsxsrx;Stratum effect;R3;Microhabitat Larvae Guilds;;;UC_BC;;;
+sr.colsxsrx;Stratum effect;R3;Microhabitat Larvae Guilds;;;LC_BC;;;
+ab.colsx;Stratum effect;R4-5;General;;;AC_UC;;;
+ab.colsx;Stratum effect;R4-5;General;;;AC_LC;;;
+ab.colsx;Stratum effect;R4-5;General;;;AC_BC;;;
+ab.colsx;Stratum effect;R4-5;General;;;UC_LC;;;
+ab.colsx;Stratum effect;R4-5;General;;;UC_BC;;;
+ab.colsx;Stratum effect;R4-5;General;;;LC_BC;;;
+sr.colsx;Stratum effect;R4-5;General;P < 0,01;N.S;AC_UC;;;N.S
+sr.colsx;Stratum effect;R4-5;General;P < 0,01;N.S;AC_LC;;;N.S
+sr.colsx;Stratum effect;R4-5;General;P < 0,01;N.S;AC_BC;;;N.S
+sr.colsx;Stratum effect;R4-5;General;P < 0,01;N.S;UC_LC;;;N.S
+sr.colsx;Stratum effect;R4-5;General;P < 0,01;N.S;UC_BC;;;N.S
+sr.colsx;Stratum effect;R4-5;General;P < 0,01;N.S;LC_BC;;;N.S
+ab.colsxrar;Stratum effect;R4-5;General;;;AC_UC;;;
+ab.colsxrar;Stratum effect;R4-5;General;;;AC_LC;;;
+ab.colsxrar;Stratum effect;R4-5;General;;;AC_BC;;;
+ab.colsxrar;Stratum effect;R4-5;General;;;UC_LC;;;
+ab.colsxrar;Stratum effect;R4-5;General;;;UC_BC;;;
+ab.colsxrar;Stratum effect;R4-5;General;;;LC_BC;;;
+sr.colsxrar;Stratum effect;R4-5;General;P < 0,01;N.S;AC_UC;;;N.S
+sr.colsxrar;Stratum effect;R4-5;General;P < 0,01;N.S;AC_LC;;;N.S
+sr.colsxrar;Stratum effect;R4-5;General;P < 0,01;N.S;AC_BC;;;N.S
+sr.colsxrar;Stratum effect;R4-5;General;P < 0,01;N.S;UC_LC;;;N.S
+sr.colsxrar;Stratum effect;R4-5;General;P < 0,01;N.S;UC_BC;;;N.S
+sr.colsxrar;Stratum effect;R4-5;General;P < 0,01;N.S;LC_BC;;;N.S
+ab.colsxcom;Stratum effect;R4-5;General;< 0,001;< 0,001;AC_UC;-0.2671;0.3987    ;N.S
+ab.colsxcom;Stratum effect;R4-5;General;< 0,001;< 0,001;AC_LC;0.5487     ;0.0100 *;N.S
+ab.colsxcom;Stratum effect;R4-5;General;< 0,001;< 0,001;AC_BC;0.4492     ;0.0415 *;N.S
+ab.colsxcom;Stratum effect;R4-5;General;< 0,001;< 0,001;UC_LC;0.8159     ;< 0,001 *** ;***
+ab.colsxcom;Stratum effect;R4-5;General;< 0,001;< 0,001;UC_BC;0.7164     ;< 0,001 *** ;***
+ab.colsxcom;Stratum effect;R4-5;General;< 0,001;< 0,001;LC_BC;-0.0995;0.9445    ;N.S
+sr.colsxcom;Stratum effect;R4-5;General;P < 0,01;N.S;AC_UC;;;N.S
+sr.colsxcom;Stratum effect;R4-5;General;P < 0,01;N.S;AC_LC;;;N.S
+sr.colsxcom;Stratum effect;R4-5;General;P < 0,01;N.S;AC_BC;;;N.S
+sr.colsxcom;Stratum effect;R4-5;General;P < 0,01;N.S;UC_LC;;;N.S
+sr.colsxcom;Stratum effect;R4-5;General;P < 0,01;N.S;UC_BC;;;N.S
+sr.colsxcom;Stratum effect;R4-5;General;P < 0,01;N.S;LC_BC;;;N.S
+ab.fon;Stratum effect;R4-5;Microhabitat Larvae Guilds;N.S;N.S;AC_UC;;;N.S
+ab.fon;Stratum effect;R4-5;Microhabitat Larvae Guilds;N.S;N.S;AC_LC;;;N.S
+ab.fon;Stratum effect;R4-5;Microhabitat Larvae Guilds;N.S;N.S;AC_BC;;;N.S
+ab.fon;Stratum effect;R4-5;Microhabitat Larvae Guilds;N.S;N.S;UC_LC;;;N.S
+ab.fon;Stratum effect;R4-5;Microhabitat Larvae Guilds;N.S;N.S;UC_BC;;;N.S
+ab.fon;Stratum effect;R4-5;Microhabitat Larvae Guilds;N.S;N.S;LC_BC;;;N.S
+sr.fon;Stratum effect;R4-5;Microhabitat Larvae Guilds;N.S;N.S;AC_UC;;;N.S
+sr.fon;Stratum effect;R4-5;Microhabitat Larvae Guilds;N.S;N.S;AC_LC;;;N.S
+sr.fon;Stratum effect;R4-5;Microhabitat Larvae Guilds;N.S;N.S;AC_BC;;;N.S
+sr.fon;Stratum effect;R4-5;Microhabitat Larvae Guilds;N.S;N.S;UC_LC;;;N.S
+sr.fon;Stratum effect;R4-5;Microhabitat Larvae Guilds;N.S;N.S;UC_BC;;;N.S
+sr.fon;Stratum effect;R4-5;Microhabitat Larvae Guilds;N.S;N.S;LC_BC;;;N.S
+ab.lig;Stratum effect;R4-5;Microhabitat Larvae Guilds;< 0,001;< 0,001;AC_UC;0.0008855  ;1.0000    ;N.S
+ab.lig;Stratum effect;R4-5;Microhabitat Larvae Guilds;< 0,001;< 0,001;AC_LC;0.3054457  ;0.0351 *;N.S
+ab.lig;Stratum effect;R4-5;Microhabitat Larvae Guilds;< 0,001;< 0,001;AC_BC;0.4743731  ;< 0,001 *** ;***
+ab.lig;Stratum effect;R4-5;Microhabitat Larvae Guilds;< 0,001;< 0,001;UC_LC;0.3045602  ;0.0495 *;N.S
+ab.lig;Stratum effect;R4-5;Microhabitat Larvae Guilds;< 0,001;< 0,001;UC_BC;0.4734875  ;< 0,001 *** ;***
+ab.lig;Stratum effect;R4-5;Microhabitat Larvae Guilds;< 0,001;< 0,001;LC_BC;0.1689274  ;0.5163    ;N.S
+sr.lig;Stratum effect;R4-5;Microhabitat Larvae Guilds;P < 0,01;N.S;AC_UC;;;N.S
+sr.lig;Stratum effect;R4-5;Microhabitat Larvae Guilds;P < 0,01;N.S;AC_LC;;;N.S
+sr.lig;Stratum effect;R4-5;Microhabitat Larvae Guilds;P < 0,01;N.S;AC_BC;;;N.S
+sr.lig;Stratum effect;R4-5;Microhabitat Larvae Guilds;P < 0,01;N.S;UC_LC;;;N.S
+sr.lig;Stratum effect;R4-5;Microhabitat Larvae Guilds;P < 0,01;N.S;UC_BC;;;N.S
+sr.lig;Stratum effect;R4-5;Microhabitat Larvae Guilds;P < 0,01;N.S;LC_BC;;;N.S
+ab.xyl;Stratum effect;R4-5;Trophic Larvae Guilds;< 0,001;< 0,001;AC_UC;-0.61821;0.01619 *;N.S
+ab.xyl;Stratum effect;R4-5;Trophic Larvae Guilds;< 0,001;< 0,001;AC_LC;0.23324    ;0.69129    ;N.S
+ab.xyl;Stratum effect;R4-5;Trophic Larvae Guilds;< 0,001;< 0,001;AC_BC;0.15326    ;0.88422    ;N.S
+ab.xyl;Stratum effect;R4-5;Trophic Larvae Guilds;< 0,001;< 0,001;UC_LC;0.85146    ;< 0,001 *** ;***
+ab.xyl;Stratum effect;R4-5;Trophic Larvae Guilds;< 0,001;< 0,001;UC_BC;0.77148    ;0.00205 **;**
+ab.xyl;Stratum effect;R4-5;Trophic Larvae Guilds;< 0,001;< 0,001;LC_BC;-0.07998;0.98344    ;N.S
+sr.xyl;Stratum effect;R4-5;Trophic Larvae Guilds;< 0,001;< 0,001;AC_UC;-0.06430;0.95449   ;N.S
+sr.xyl;Stratum effect;R4-5;Trophic Larvae Guilds;< 0,001;< 0,001;AC_LC;0.37760    ;0.01432 *;N.S
+sr.xyl;Stratum effect;R4-5;Trophic Larvae Guilds;< 0,001;< 0,001;AC_BC;0.38810    ;0.00717 **;**
+sr.xyl;Stratum effect;R4-5;Trophic Larvae Guilds;< 0,001;< 0,001;UC_LC;0.44190    ;0.00320 **;**
+sr.xyl;Stratum effect;R4-5;Trophic Larvae Guilds;< 0,001;< 0,001;UC_BC;0.45240    ;0.00147 **;**
+sr.xyl;Stratum effect;R4-5;Trophic Larvae Guilds;< 0,001;< 0,001;LC_BC;0.01049    ;0.99979   ;N.S
+ab.colsxrsx;Stratum effect;R4-5;Microhabitat Larvae Guilds;;;AC_UC;;;
+ab.colsxrsx;Stratum effect;R4-5;Microhabitat Larvae Guilds;;;AC_LC;;;
+ab.colsxrsx;Stratum effect;R4-5;Microhabitat Larvae Guilds;;;AC_BC;;;
+ab.colsxrsx;Stratum effect;R4-5;Microhabitat Larvae Guilds;;;UC_LC;;;
+ab.colsxrsx;Stratum effect;R4-5;Microhabitat Larvae Guilds;;;UC_BC;;;
+ab.colsxrsx;Stratum effect;R4-5;Microhabitat Larvae Guilds;;;LC_BC;;;
+sr.colsxsrx;Stratum effect;R4-5;Microhabitat Larvae Guilds;;;AC_UC;;;
+sr.colsxsrx;Stratum effect;R4-5;Microhabitat Larvae Guilds;;;AC_LC;;;
+sr.colsxsrx;Stratum effect;R4-5;Microhabitat Larvae Guilds;;;AC_BC;;;
+sr.colsxsrx;Stratum effect;R4-5;Microhabitat Larvae Guilds;;;UC_LC;;;
+sr.colsxsrx;Stratum effect;R4-5;Microhabitat Larvae Guilds;;;UC_BC;;;
+sr.colsxsrx;Stratum effect;R4-5;Microhabitat Larvae Guilds;;;LC_BC;;;
