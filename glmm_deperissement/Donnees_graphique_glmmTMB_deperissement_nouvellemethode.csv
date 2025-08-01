@@ -29,42 +29,42 @@ ab.colsxcom;Stratum effect;sain;General;;;AC_BC;;;
 ab.colsxcom;Stratum effect;sain;General;;;UC_LC;;;
 ab.colsxcom;Stratum effect;sain;General;;;UC_BC;;;
 ab.colsxcom;Stratum effect;sain;General;;;LC_BC;;;
-sr.colsxcom;Stratum effect;sain;General;;;AC_UC;;;
-sr.colsxcom;Stratum effect;sain;General;;;AC_LC;;;
-sr.colsxcom;Stratum effect;sain;General;;;AC_BC;;;
-sr.colsxcom;Stratum effect;sain;General;;;UC_LC;;;
-sr.colsxcom;Stratum effect;sain;General;;;UC_BC;;;
-sr.colsxcom;Stratum effect;sain;General;;;LC_BC;;;
-ab.fon;Stratum effect;sain;Microhabitat Larvae Guilds;;;AC_UC;;;
-ab.fon;Stratum effect;sain;Microhabitat Larvae Guilds;;;AC_LC;;;
-ab.fon;Stratum effect;sain;Microhabitat Larvae Guilds;;;AC_BC;;;
-ab.fon;Stratum effect;sain;Microhabitat Larvae Guilds;;;UC_LC;;;
-ab.fon;Stratum effect;sain;Microhabitat Larvae Guilds;;;UC_BC;;;
-ab.fon;Stratum effect;sain;Microhabitat Larvae Guilds;;;LC_BC;;;
-sr.fon;Stratum effect;sain;Microhabitat Larvae Guilds;;;AC_UC;;;
-sr.fon;Stratum effect;sain;Microhabitat Larvae Guilds;;;AC_LC;;;
-sr.fon;Stratum effect;sain;Microhabitat Larvae Guilds;;;AC_BC;;;
-sr.fon;Stratum effect;sain;Microhabitat Larvae Guilds;;;UC_LC;;;
-sr.fon;Stratum effect;sain;Microhabitat Larvae Guilds;;;UC_BC;;;
-sr.fon;Stratum effect;sain;Microhabitat Larvae Guilds;;;LC_BC;;;
-ab.lig;Stratum effect;sain;Microhabitat Larvae Guilds;;;AC_UC;;;
-ab.lig;Stratum effect;sain;Microhabitat Larvae Guilds;;;AC_LC;;;
-ab.lig;Stratum effect;sain;Microhabitat Larvae Guilds;;;AC_BC;;;
-ab.lig;Stratum effect;sain;Microhabitat Larvae Guilds;;;UC_LC;;;
-ab.lig;Stratum effect;sain;Microhabitat Larvae Guilds;;;UC_BC;;;
-ab.lig;Stratum effect;sain;Microhabitat Larvae Guilds;;;LC_BC;;;
-sr.lig;Stratum effect;sain;Microhabitat Larvae Guilds;;;AC_UC;;;
-sr.lig;Stratum effect;sain;Microhabitat Larvae Guilds;;;AC_LC;;;
-sr.lig;Stratum effect;sain;Microhabitat Larvae Guilds;;;AC_BC;;;
-sr.lig;Stratum effect;sain;Microhabitat Larvae Guilds;;;UC_LC;;;
-sr.lig;Stratum effect;sain;Microhabitat Larvae Guilds;;;UC_BC;;;
-sr.lig;Stratum effect;sain;Microhabitat Larvae Guilds;;;LC_BC;;;
-ab.xyl;Stratum effect;sain;Trophic Larvae Guilds;;;AC_UC;;;
-ab.xyl;Stratum effect;sain;Trophic Larvae Guilds;;;AC_LC;;;
-ab.xyl;Stratum effect;sain;Trophic Larvae Guilds;;;AC_BC;;;
-ab.xyl;Stratum effect;sain;Trophic Larvae Guilds;;;UC_LC;;;
-ab.xyl;Stratum effect;sain;Trophic Larvae Guilds;;;UC_BC;;;
-ab.xyl;Stratum effect;sain;Trophic Larvae Guilds;;;LC_BC;;;
+sr.colsxcom;Stratum effect;sain;General;N.S;N.S;AC_UC;;;N.S
+sr.colsxcom;Stratum effect;sain;General;N.S;N.S;AC_LC;;;N.S
+sr.colsxcom;Stratum effect;sain;General;N.S;N.S;AC_BC;;;N.S
+sr.colsxcom;Stratum effect;sain;General;N.S;N.S;UC_LC;;;N.S
+sr.colsxcom;Stratum effect;sain;General;N.S;N.S;UC_BC;;;N.S
+sr.colsxcom;Stratum effect;sain;General;N.S;N.S;LC_BC;;;N.S
+ab.fon;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;AC_UC;;;N.S
+ab.fon;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;AC_LC;;;N.S
+ab.fon;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;AC_BC;;;N.S
+ab.fon;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;UC_LC;;;N.S
+ab.fon;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;UC_BC;;;N.S
+ab.fon;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;LC_BC;;;N.S
+sr.fon;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;AC_UC;;;N.S
+sr.fon;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;AC_LC;;;N.S
+sr.fon;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;AC_BC;;;N.S
+sr.fon;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;UC_LC;;;N.S
+sr.fon;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;UC_BC;;;N.S
+sr.fon;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;LC_BC;;;N.S
+ab.lig;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;AC_UC;;;N.S
+ab.lig;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;AC_LC;;;N.S
+ab.lig;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;AC_BC;;;N.S
+ab.lig;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;UC_LC;;;N.S
+ab.lig;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;UC_BC;;;N.S
+ab.lig;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;LC_BC;;;N.S
+sr.lig;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;AC_UC;;;N.S
+sr.lig;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;AC_LC;;;N.S
+sr.lig;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;AC_BC;;;N.S
+sr.lig;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;UC_LC;;;N.S
+sr.lig;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;UC_BC;;;N.S
+sr.lig;Stratum effect;sain;Microhabitat Larvae Guilds;N.S;N.S;LC_BC;;;N.S
+ab.xyl;Stratum effect;sain;Trophic Larvae Guilds;< 0,001;< 0,001;AC_UC;0.31328    ;< 0.001 ***;***
+ab.xyl;Stratum effect;sain;Trophic Larvae Guilds;< 0,001;< 0,001;AC_LC;0.45592    ;< 0.001 ***;***
+ab.xyl;Stratum effect;sain;Trophic Larvae Guilds;< 0,001;< 0,001;AC_BC;0.79393    ;< 0.001 ***;***
+ab.xyl;Stratum effect;sain;Trophic Larvae Guilds;< 0,001;< 0,001;UC_LC;0.14264    ;0.31793    ;N.S
+ab.xyl;Stratum effect;sain;Trophic Larvae Guilds;< 0,001;< 0,001;UC_BC;0.48065    ;< 0.001 ***;***
+ab.xyl;Stratum effect;sain;Trophic Larvae Guilds;< 0,001;< 0,001;LC_BC;0.33802    ;0.00241 **;**
 sr.xyl;Stratum effect;sain;Trophic Larvae Guilds;;;AC_UC;;;
 sr.xyl;Stratum effect;sain;Trophic Larvae Guilds;;;AC_LC;;;
 sr.xyl;Stratum effect;sain;Trophic Larvae Guilds;;;AC_BC;;;
@@ -113,48 +113,48 @@ ab.colsxcom;Stratum effect;deperissant;General;N.S;N.S;AC_BC;;;N.S
 ab.colsxcom;Stratum effect;deperissant;General;N.S;N.S;UC_LC;;;N.S
 ab.colsxcom;Stratum effect;deperissant;General;N.S;N.S;UC_BC;;;N.S
 ab.colsxcom;Stratum effect;deperissant;General;N.S;N.S;LC_BC;;;N.S
-sr.colsxcom;Stratum effect;deperissant;General;;;AC_UC;;;
-sr.colsxcom;Stratum effect;deperissant;General;;;AC_LC;;;
-sr.colsxcom;Stratum effect;deperissant;General;;;AC_BC;;;
-sr.colsxcom;Stratum effect;deperissant;General;;;UC_LC;;;
-sr.colsxcom;Stratum effect;deperissant;General;;;UC_BC;;;
-sr.colsxcom;Stratum effect;deperissant;General;;;LC_BC;;;
-ab.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;AC_UC;;;
-ab.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;AC_LC;;;
-ab.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;AC_BC;;;
-ab.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;UC_LC;;;
-ab.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;UC_BC;;;
-ab.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;LC_BC;;;
-sr.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;AC_UC;;;
-sr.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;AC_LC;;;
-sr.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;AC_BC;;;
-sr.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;UC_LC;;;
-sr.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;UC_BC;;;
-sr.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;LC_BC;;;
-ab.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;AC_UC;;;
-ab.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;AC_LC;;;
-ab.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;AC_BC;;;
-ab.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;UC_LC;;;
-ab.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;UC_BC;;;
-ab.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;LC_BC;;;
-sr.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;AC_UC;;;
-sr.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;AC_LC;;;
-sr.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;AC_BC;;;
-sr.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;UC_LC;;;
-sr.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;UC_BC;;;
-sr.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;LC_BC;;;
-ab.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;;;AC_UC;;;
-ab.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;;;AC_LC;;;
-ab.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;;;AC_BC;;;
-ab.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;;;UC_LC;;;
-ab.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;;;UC_BC;;;
-ab.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;;;LC_BC;;;
-sr.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;;;AC_UC;;;
-sr.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;;;AC_LC;;;
-sr.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;;;AC_BC;;;
-sr.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;;;UC_LC;;;
-sr.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;;;UC_BC;;;
-sr.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;;;LC_BC;;;
+sr.colsxcom;Stratum effect;deperissant;General;N.S;N.S;AC_UC;;;N.S
+sr.colsxcom;Stratum effect;deperissant;General;N.S;N.S;AC_LC;;;N.S
+sr.colsxcom;Stratum effect;deperissant;General;N.S;N.S;AC_BC;;;N.S
+sr.colsxcom;Stratum effect;deperissant;General;N.S;N.S;UC_LC;;;N.S
+sr.colsxcom;Stratum effect;deperissant;General;N.S;N.S;UC_BC;;;N.S
+sr.colsxcom;Stratum effect;deperissant;General;N.S;N.S;LC_BC;;;N.S
+ab.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;AC_UC;;;N.S
+ab.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;AC_LC;;;N.S
+ab.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;AC_BC;;;N.S
+ab.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;UC_LC;;;N.S
+ab.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;UC_BC;;;N.S
+ab.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;LC_BC;;;N.S
+sr.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;AC_UC;;;N.S
+sr.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;AC_LC;;;N.S
+sr.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;AC_BC;;;N.S
+sr.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;UC_LC;;;N.S
+sr.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;UC_BC;;;N.S
+sr.fon;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;LC_BC;;;N.S
+ab.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;AC_UC;;;N.S
+ab.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;AC_LC;;;N.S
+ab.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;AC_BC;;;N.S
+ab.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;UC_LC;;;N.S
+ab.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;UC_BC;;;N.S
+ab.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;LC_BC;;;N.S
+sr.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;AC_UC;;;N.S
+sr.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;AC_LC;;;N.S
+sr.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;AC_BC;;;N.S
+sr.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;UC_LC;;;N.S
+sr.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;UC_BC;;;N.S
+sr.lig;Stratum effect;deperissant;Microhabitat Larvae Guilds;N.S;N.S;LC_BC;;;N.S
+ab.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;N.S;N.S;AC_UC;;;N.S
+ab.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;N.S;N.S;AC_LC;;;N.S
+ab.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;N.S;N.S;AC_BC;;;N.S
+ab.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;N.S;N.S;UC_LC;;;N.S
+ab.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;N.S;N.S;UC_BC;;;N.S
+ab.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;N.S;N.S;LC_BC;;;N.S
+sr.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;N.S;N.S;AC_UC;;;N.S
+sr.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;N.S;N.S;AC_LC;;;N.S
+sr.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;N.S;N.S;AC_BC;;;N.S
+sr.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;N.S;N.S;UC_LC;;;N.S
+sr.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;N.S;N.S;UC_BC;;;N.S
+sr.xyl;Stratum effect;deperissant;Trophic Larvae Guilds;N.S;N.S;LC_BC;;;N.S
 ab.colsxrsx;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;AC_UC;;;
 ab.colsxrsx;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;AC_LC;;;
 ab.colsxrsx;Stratum effect;deperissant;Microhabitat Larvae Guilds;;;AC_BC;;;

@@ -17624,34 +17624,34 @@ dev.off()
 
 ### depe / sain ###
 
-descdist(sain$sr.colsxrar,discrete=TRUE,boot=1001)
-plot(fitdist(sain$sr.colsxrar,"norm"))
+descdist(sain$sr.colsxcom,discrete=TRUE,boot=1001)
+plot(fitdist(sain$sr.colsxcom,"norm"))
 #
-fitnb<-fitdist(sain$sr.colsxrar,"nbinom")
-plot(fitdist(sain$sr.colsxrar,"nbinom"))
+fitnb<-fitdist(sain$sr.colsxcom,"nbinom")
+plot(fitdist(sain$sr.colsxcom,"nbinom"))
 #
-fitp<-fitdist(sain$sr.colsxrar,"pois")
+fitp<-fitdist(sain$sr.colsxcom,"pois")
 plot(fitp)
 #
-fitn<-fitdist(sain$sr.colsxrar,"norm")
+fitn<-fitdist(sain$sr.colsxcom,"norm")
 plot(fitn) # oui
 #
-fitlnorm<-fitdist(sain$sr.colsxrar,"lnorm")
+fitlnorm<-fitdist(sain$sr.colsxcom,"lnorm")
 plot(fitlnorm) # oui
 #
-fitexp<-fitdist(sain$sr.colsxrar,"exp")
+fitexp<-fitdist(sain$sr.colsxcom,"exp")
 plot(fitexp)
 #
-fitgeom<-fitdist(sain$sr.colsxrar,"geom")
+fitgeom<-fitdist(sain$sr.colsxcom,"geom")
 plot(fitgeom)
 #
-fitbeta<-fitdist(sain$sr.colsxrar,"beta") # Pas possible, pas 0/1
+fitbeta<-fitdist(sain$sr.colsxcom,"beta") # Pas possible, pas 0/1
 plot(fitbeta)
 #
-fitunif<-fitdist(sain$sr.colsxrar,"unif")
+fitunif<-fitdist(sain$sr.colsxcom,"unif")
 plot(fitunif)
 #
-fitg<-fitdist(sain$sr.colsxrar,"gamma",method="mme")
+fitg<-fitdist(sain$sr.colsxcom,"gamma",method="mme")
 plot(fitg) # oui
 #
 gofstat(fitnb)$chisqpvalue # 2
@@ -17664,57 +17664,57 @@ gofstat(fitunif)$chisqpvalue
 gofstat(fitbeta)$chisqpvalue #
 gofstat(fitg)$chisqpvalue # 5
 #
-model_SRRARsain_1 <- glmmTMB(
-  sr.colsxrar ~ strate + (1 | LOCA / placette) + exp(pos_sain + 0 | ID_sain) + offset(log(prop.trap.season)),
-  family = Gamma(link = "identity"), 
+model_SRCOMsain_1 <- glmmTMB(
+  sr.colsxcom ~ strate + (1 | LOCA / placette) + exp(pos_sain + 0 | ID_sain) + offset(log(prop.trap.season)),
+  family = gaussian(), 
   data = sain, 
-  na.action = na.fail) ; summary(model_SRRARsain_1) 
+  na.action = na.fail) ; summary(model_SRCOMsain_1) 
 #
-model_SRRARsain_2 <- glmmTMB(
-  sr.colsxrar ~ 1 + (1 | LOCA / placette) + exp(pos_sain + 0 | ID_sain) + offset(log(prop.trap.season)), 
-  family = Gamma(link = "identity"), 
+model_SRCOMsain_2 <- glmmTMB(
+  sr.colsxcom ~ 1 + (1 | LOCA / placette) + exp(pos_sain + 0 | ID_sain) + offset(log(prop.trap.season)), 
+  family = gaussian(), 
   data = sain, 
-  na.action = na.fail) ; summary(model_SRRARsain_2)
+  na.action = na.fail) ; summary(model_SRCOMsain_2)
 #
-AICc(model_SRRARsain_1) # 117.4839
-AICc(model_SRRARsain_2) # 118.0856
+AICc(model_SRCOMsain_1) # 208.4168
+AICc(model_SRCOMsain_2) # 203.1817
 #
-anova(model_SRRARsain_1, model_SRRARsain_2) # 0.002279 **
+anova(model_SRCOMsain_1, model_SRCOMsain_2) # 0.03385 *
 #
-sim<-simulateResiduals(model_SRRARsain_2)
+sim<-simulateResiduals(model_SRCOMsain_2)
 testUniformity(sim)
 testOutliers(sim)
 
 # deperissant
 
-descdist(deperissant$sr.colsxrar,discrete=TRUE,boot=1001)
-plot(fitdist(deperissant$sr.colsxrar,"norm"))
+descdist(deperissant$sr.colsxcom,discrete=TRUE,boot=1001)
+plot(fitdist(deperissant$sr.colsxcom,"norm"))
 #
-fitnb<-fitdist(deperissant$sr.colsxrar,"nbinom")
-plot(fitdist(deperissant$sr.colsxrar,"nbinom"))
+fitnb<-fitdist(deperissant$sr.colsxcom,"nbinom")
+plot(fitdist(deperissant$sr.colsxcom,"nbinom"))
 #
-fitp<-fitdist(deperissant$sr.colsxrar,"pois")
+fitp<-fitdist(deperissant$sr.colsxcom,"pois")
 plot(fitp)
 #
-fitn<-fitdist(deperissant$sr.colsxrar,"norm")
+fitn<-fitdist(deperissant$sr.colsxcom,"norm")
 plot(fitn) # oui
 #
-fitlnorm<-fitdist(deperissant$sr.colsxrar,"lnorm")
+fitlnorm<-fitdist(deperissant$sr.colsxcom,"lnorm")
 plot(fitlnorm) # oui
 #
-fitexp<-fitdist(deperissant$sr.colsxrar,"exp")
+fitexp<-fitdist(deperissant$sr.colsxcom,"exp")
 plot(fitexp)
 #
-fitgeom<-fitdist(deperissant$sr.colsxrar,"geom")
+fitgeom<-fitdist(deperissant$sr.colsxcom,"geom")
 plot(fitgeom)
 #
-fitbeta<-fitdist(deperissant$sr.colsxrar,"beta") # Pas possible, pas 0/1
+fitbeta<-fitdist(deperissant$sr.colsxcom,"beta") # Pas possible, pas 0/1
 plot(fitbeta)
 #
-fitunif<-fitdist(deperissant$sr.colsxrar,"unif")
+fitunif<-fitdist(deperissant$sr.colsxcom,"unif")
 plot(fitunif)
 #
-fitg<-fitdist(deperissant$sr.colsxrar,"gamma",method="mme")
+fitg<-fitdist(deperissant$sr.colsxcom,"gamma",method="mme")
 plot(fitg) # oui
 #
 gofstat(fitnb)$chisqpvalue # 2
@@ -17727,24 +17727,24 @@ gofstat(fitunif)$chisqpvalue
 gofstat(fitbeta)$chisqpvalue #
 gofstat(fitg)$chisqpvalue # 4
 #
-model_SRRARdepe_1 <- glmmTMB(
-  sr.colsxrar ~ strate + (1 | LOCA / placette) + exp(pos_depe + 0 | ID_depe) + offset(log(prop.trap.season)),
-  family = genpois(), 
+model_SRCOMdepe_1 <- glmmTMB(
+  sr.colsxcom ~ strate + (1 | LOCA / placette) + exp(pos_depe + 0 | ID_depe) + offset(log(prop.trap.season)),
+  family = gaussian(), 
   data = deperissant, 
-  na.action = na.fail) ; summary(model_SRRARdepe_1) 
+  na.action = na.fail) ; summary(model_SRCOMdepe_1) 
 #
-model_SRRARdepe_2 <- glmmTMB(
-  sr.colsxrar ~ 1 + (1 | LOCA / placette) + exp(pos_depe + 0 | ID_depe) + offset(log(prop.trap.season)), 
-  family = genpois(), 
+model_SRCOMdepe_2 <- glmmTMB(
+  sr.colsxcom ~ 1 + (1 | LOCA / placette) + exp(pos_depe + 0 | ID_depe) + offset(log(prop.trap.season)), 
+  family = gaussian(), 
   data = deperissant, 
-  na.action = na.fail) ; summary(model_SRRARdepe_2)
+  na.action = na.fail) ; summary(model_SRCOMdepe_2)
 #
-AICc(model_SRRARdepe_1) # 122.9335
-AICc(model_SRRARdepe_2) # 121.1216
+AICc(model_SRCOMdepe_1) # 209.2146
+AICc(model_SRCOMdepe_2) # 197.5902
 #
-anova(model_SRRARdepe_1, model_SRRARdepe_2) # 0.007035 **
+anova(model_SRCOMdepe_1, model_SRCOMdepe_2) # 0.5141
 #
-sim<-simulateResiduals(model_SRRARdepe_2)
+sim<-simulateResiduals(model_SRCOMdepe_2)
 testUniformity(sim)
 testOutliers(sim)
 #
@@ -17955,34 +17955,34 @@ print(summary_res)
 
 ### depe / sain ###
 
-descdist(sain$sr.colsxrar,discrete=TRUE,boot=1001)
-plot(fitdist(sain$sr.colsxrar,"norm"))
+descdist(sain$ab.fon,discrete=TRUE,boot=1001)
+plot(fitdist(sain$ab.fon,"norm"))
 #
-fitnb<-fitdist(sain$sr.colsxrar,"nbinom")
-plot(fitdist(sain$sr.colsxrar,"nbinom"))
+fitnb<-fitdist(sain$ab.fon,"nbinom")
+plot(fitdist(sain$ab.fon,"nbinom"))
 #
-fitp<-fitdist(sain$sr.colsxrar,"pois")
+fitp<-fitdist(sain$ab.fon,"pois")
 plot(fitp)
 #
-fitn<-fitdist(sain$sr.colsxrar,"norm")
+fitn<-fitdist(sain$ab.fon,"norm")
 plot(fitn) # oui
 #
-fitlnorm<-fitdist(sain$sr.colsxrar,"lnorm")
+fitlnorm<-fitdist(sain$ab.fon,"lnorm")
 plot(fitlnorm) # oui
 #
-fitexp<-fitdist(sain$sr.colsxrar,"exp")
+fitexp<-fitdist(sain$ab.fon,"exp")
 plot(fitexp)
 #
-fitgeom<-fitdist(sain$sr.colsxrar,"geom")
+fitgeom<-fitdist(sain$ab.fon,"geom")
 plot(fitgeom)
 #
-fitbeta<-fitdist(sain$sr.colsxrar,"beta") # Pas possible, pas 0/1
+fitbeta<-fitdist(sain$ab.fon,"beta") # Pas possible, pas 0/1
 plot(fitbeta)
 #
-fitunif<-fitdist(sain$sr.colsxrar,"unif")
+fitunif<-fitdist(sain$ab.fon,"unif")
 plot(fitunif)
 #
-fitg<-fitdist(sain$sr.colsxrar,"gamma",method="mme")
+fitg<-fitdist(sain$ab.fon,"gamma",method="mme")
 plot(fitg) # oui
 #
 gofstat(fitnb)$chisqpvalue # 2
@@ -17995,57 +17995,57 @@ gofstat(fitunif)$chisqpvalue
 gofstat(fitbeta)$chisqpvalue #
 gofstat(fitg)$chisqpvalue # 5
 #
-model_SRRARsain_1 <- glmmTMB(
-  sr.colsxrar ~ strate + (1 | LOCA / placette) + exp(pos_sain + 0 | ID_sain) + offset(log(prop.trap.season)),
-  family = Gamma(link = "identity"), 
+model_ABFONsain_1 <- glmmTMB(
+  ab.fon ~ strate + (1 | LOCA / placette) + exp(pos_sain + 0 | ID_sain) + offset(log(prop.trap.season)),
+  family = truncated_nbinom1(), 
   data = sain, 
-  na.action = na.fail) ; summary(model_SRRARsain_1) 
+  na.action = na.fail) ; summary(model_ABFONsain_1) 
 #
-model_SRRARsain_2 <- glmmTMB(
-  sr.colsxrar ~ 1 + (1 | LOCA / placette) + exp(pos_sain + 0 | ID_sain) + offset(log(prop.trap.season)), 
-  family = Gamma(link = "identity"), 
+model_ABFONsain_2 <- glmmTMB(
+  ab.fon ~ 1 + (1 | LOCA / placette) + exp(pos_sain + 0 | ID_sain) + offset(log(prop.trap.season)), 
+  family = truncated_nbinom1(), 
   data = sain, 
-  na.action = na.fail) ; summary(model_SRRARsain_2)
+  na.action = na.fail) ; summary(model_ABFONsain_2)
 #
-AICc(model_SRRARsain_1) # 117.4839
-AICc(model_SRRARsain_2) # 118.0856
+AICc(model_ABFONsain_1) # 289.0874
+AICc(model_ABFONsain_2) # 284.7812
 #
-anova(model_SRRARsain_1, model_SRRARsain_2) # 0.002279 **
+anova(model_ABFONsain_1, model_ABFONsain_2) # 0.02219 *
 #
-sim<-simulateResiduals(model_SRRARsain_2)
+sim<-simulateResiduals(model_ABFONsain_2)
 testUniformity(sim)
 testOutliers(sim)
 
 # deperissant
 
-descdist(deperissant$sr.colsxrar,discrete=TRUE,boot=1001)
-plot(fitdist(deperissant$sr.colsxrar,"norm"))
+descdist(deperissant$ab.fon,discrete=TRUE,boot=1001)
+plot(fitdist(deperissant$ab.fon,"norm"))
 #
-fitnb<-fitdist(deperissant$sr.colsxrar,"nbinom")
-plot(fitdist(deperissant$sr.colsxrar,"nbinom"))
+fitnb<-fitdist(deperissant$ab.fon,"nbinom")
+plot(fitdist(deperissant$ab.fon,"nbinom"))
 #
-fitp<-fitdist(deperissant$sr.colsxrar,"pois")
+fitp<-fitdist(deperissant$ab.fon,"pois")
 plot(fitp)
 #
-fitn<-fitdist(deperissant$sr.colsxrar,"norm")
+fitn<-fitdist(deperissant$ab.fon,"norm")
 plot(fitn) # oui
 #
-fitlnorm<-fitdist(deperissant$sr.colsxrar,"lnorm")
+fitlnorm<-fitdist(deperissant$ab.fon,"lnorm")
 plot(fitlnorm) # oui
 #
-fitexp<-fitdist(deperissant$sr.colsxrar,"exp")
+fitexp<-fitdist(deperissant$ab.fon,"exp")
 plot(fitexp)
 #
-fitgeom<-fitdist(deperissant$sr.colsxrar,"geom")
+fitgeom<-fitdist(deperissant$ab.fon,"geom")
 plot(fitgeom)
 #
-fitbeta<-fitdist(deperissant$sr.colsxrar,"beta") # Pas possible, pas 0/1
+fitbeta<-fitdist(deperissant$ab.fon,"beta") # Pas possible, pas 0/1
 plot(fitbeta)
 #
-fitunif<-fitdist(deperissant$sr.colsxrar,"unif")
+fitunif<-fitdist(deperissant$ab.fon,"unif")
 plot(fitunif)
 #
-fitg<-fitdist(deperissant$sr.colsxrar,"gamma",method="mme")
+fitg<-fitdist(deperissant$ab.fon,"gamma",method="mme")
 plot(fitg) # oui
 #
 gofstat(fitnb)$chisqpvalue # 2
@@ -18058,24 +18058,24 @@ gofstat(fitunif)$chisqpvalue
 gofstat(fitbeta)$chisqpvalue #
 gofstat(fitg)$chisqpvalue # 4
 #
-model_SRRARdepe_1 <- glmmTMB(
-  sr.colsxrar ~ strate + (1 | LOCA / placette) + exp(pos_depe + 0 | ID_depe) + offset(log(prop.trap.season)),
-  family = genpois(), 
+model_ABFONdepe_1 <- glmmTMB(
+  ab.fon ~ strate + (1 | LOCA / placette) + exp(pos_depe + 0 | ID_depe) + offset(log(prop.trap.season)),
+  family = nbinom1(), 
   data = deperissant, 
-  na.action = na.fail) ; summary(model_SRRARdepe_1) 
+  na.action = na.fail) ; summary(model_ABFONdepe_1) 
 #
-model_SRRARdepe_2 <- glmmTMB(
-  sr.colsxrar ~ 1 + (1 | LOCA / placette) + exp(pos_depe + 0 | ID_depe) + offset(log(prop.trap.season)), 
-  family = genpois(), 
+model_ABFONdepe_2 <- glmmTMB(
+  ab.fon ~ 1 + (1 | LOCA / placette) + exp(pos_depe + 0 | ID_depe) + offset(log(prop.trap.season)), 
+  family = nbinom1(), 
   data = deperissant, 
-  na.action = na.fail) ; summary(model_SRRARdepe_2)
+  na.action = na.fail) ; summary(model_ABFONdepe_2)
 #
-AICc(model_SRRARdepe_1) # 122.9335
-AICc(model_SRRARdepe_2) # 121.1216
+AICc(model_ABFONdepe_1) # 274.618
+AICc(model_ABFONdepe_2) # 265.9211
 #
-anova(model_SRRARdepe_1, model_SRRARdepe_2) # 0.007035 **
+anova(model_ABFONdepe_1, model_ABFONdepe_2) # 0.1564
 #
-sim<-simulateResiduals(model_SRRARdepe_2)
+sim<-simulateResiduals(model_ABFONdepe_2)
 testUniformity(sim)
 testOutliers(sim)
 #
@@ -18277,34 +18277,34 @@ dev.off()
 
 ### depe / sain ###
 
-descdist(sain$sr.colsxrar,discrete=TRUE,boot=1001)
-plot(fitdist(sain$sr.colsxrar,"norm"))
+descdist(sain$sr.fon,discrete=TRUE,boot=1001)
+plot(fitdist(sain$sr.fon,"norm"))
 #
-fitnb<-fitdist(sain$sr.colsxrar,"nbinom")
-plot(fitdist(sain$sr.colsxrar,"nbinom"))
+fitnb<-fitdist(sain$sr.fon,"nbinom")
+plot(fitdist(sain$sr.fon,"nbinom"))
 #
-fitp<-fitdist(sain$sr.colsxrar,"pois")
+fitp<-fitdist(sain$sr.fon,"pois")
 plot(fitp)
 #
-fitn<-fitdist(sain$sr.colsxrar,"norm")
+fitn<-fitdist(sain$sr.fon,"norm")
 plot(fitn) # oui
 #
-fitlnorm<-fitdist(sain$sr.colsxrar,"lnorm")
+fitlnorm<-fitdist(sain$sr.fon,"lnorm")
 plot(fitlnorm) # oui
 #
-fitexp<-fitdist(sain$sr.colsxrar,"exp")
+fitexp<-fitdist(sain$sr.fon,"exp")
 plot(fitexp)
 #
-fitgeom<-fitdist(sain$sr.colsxrar,"geom")
+fitgeom<-fitdist(sain$sr.fon,"geom")
 plot(fitgeom)
 #
-fitbeta<-fitdist(sain$sr.colsxrar,"beta") # Pas possible, pas 0/1
+fitbeta<-fitdist(sain$sr.fon,"beta") # Pas possible, pas 0/1
 plot(fitbeta)
 #
-fitunif<-fitdist(sain$sr.colsxrar,"unif")
+fitunif<-fitdist(sain$sr.fon,"unif")
 plot(fitunif)
 #
-fitg<-fitdist(sain$sr.colsxrar,"gamma",method="mme")
+fitg<-fitdist(sain$sr.fon,"gamma",method="mme")
 plot(fitg) # oui
 #
 gofstat(fitnb)$chisqpvalue # 2
@@ -18317,57 +18317,57 @@ gofstat(fitunif)$chisqpvalue
 gofstat(fitbeta)$chisqpvalue #
 gofstat(fitg)$chisqpvalue # 5
 #
-model_SRRARsain_1 <- glmmTMB(
-  sr.colsxrar ~ strate + (1 | LOCA / placette) + exp(pos_sain + 0 | ID_sain) + offset(log(prop.trap.season)),
-  family = Gamma(link = "identity"), 
+model_SRFONsain_1 <- glmmTMB(
+  sr.fon ~ strate + (1 | LOCA / placette) + exp(pos_sain + 0 | ID_sain) + offset(log(prop.trap.season)),
+  family = lognormal(), 
   data = sain, 
-  na.action = na.fail) ; summary(model_SRRARsain_1) 
+  na.action = na.fail) ; summary(model_SRFONsain_1) 
 #
-model_SRRARsain_2 <- glmmTMB(
-  sr.colsxrar ~ 1 + (1 | LOCA / placette) + exp(pos_sain + 0 | ID_sain) + offset(log(prop.trap.season)), 
-  family = Gamma(link = "identity"), 
+model_SRFONsain_2 <- glmmTMB(
+  sr.fon ~ 1 + (1 | LOCA / placette) + exp(pos_sain + 0 | ID_sain) + offset(log(prop.trap.season)), 
+  family = lognormal(), 
   data = sain, 
-  na.action = na.fail) ; summary(model_SRRARsain_2)
+  na.action = na.fail) ; summary(model_SRFONsain_2)
 #
-AICc(model_SRRARsain_1) # 117.4839
-AICc(model_SRRARsain_2) # 118.0856
+AICc(model_SRFONsain_1) # 165.686
+AICc(model_SRFONsain_2) # 157.3467
 #
-anova(model_SRRARsain_1, model_SRRARsain_2) # 0.002279 **
+anova(model_SRFONsain_1, model_SRFONsain_2) # 0.1341
 #
-sim<-simulateResiduals(model_SRRARsain_2)
+sim<-simulateResiduals(model_SRFONsain_2)
 testUniformity(sim)
 testOutliers(sim)
 
 # deperissant
 
-descdist(deperissant$sr.colsxrar,discrete=TRUE,boot=1001)
-plot(fitdist(deperissant$sr.colsxrar,"norm"))
+descdist(deperissant$sr.fon,discrete=TRUE,boot=1001)
+plot(fitdist(deperissant$sr.fon,"norm"))
 #
-fitnb<-fitdist(deperissant$sr.colsxrar,"nbinom")
-plot(fitdist(deperissant$sr.colsxrar,"nbinom"))
+fitnb<-fitdist(deperissant$sr.fon,"nbinom")
+plot(fitdist(deperissant$sr.fon,"nbinom"))
 #
-fitp<-fitdist(deperissant$sr.colsxrar,"pois")
+fitp<-fitdist(deperissant$sr.fon,"pois")
 plot(fitp)
 #
-fitn<-fitdist(deperissant$sr.colsxrar,"norm")
+fitn<-fitdist(deperissant$sr.fon,"norm")
 plot(fitn) # oui
 #
-fitlnorm<-fitdist(deperissant$sr.colsxrar,"lnorm")
+fitlnorm<-fitdist(deperissant$sr.fon,"lnorm")
 plot(fitlnorm) # oui
 #
-fitexp<-fitdist(deperissant$sr.colsxrar,"exp")
+fitexp<-fitdist(deperissant$sr.fon,"exp")
 plot(fitexp)
 #
-fitgeom<-fitdist(deperissant$sr.colsxrar,"geom")
+fitgeom<-fitdist(deperissant$sr.fon,"geom")
 plot(fitgeom)
 #
-fitbeta<-fitdist(deperissant$sr.colsxrar,"beta") # Pas possible, pas 0/1
+fitbeta<-fitdist(deperissant$sr.fon,"beta") # Pas possible, pas 0/1
 plot(fitbeta)
 #
-fitunif<-fitdist(deperissant$sr.colsxrar,"unif")
+fitunif<-fitdist(deperissant$sr.fon,"unif")
 plot(fitunif)
 #
-fitg<-fitdist(deperissant$sr.colsxrar,"gamma",method="mme")
+fitg<-fitdist(deperissant$sr.fon,"gamma",method="mme")
 plot(fitg) # oui
 #
 gofstat(fitnb)$chisqpvalue # 2
@@ -18380,24 +18380,24 @@ gofstat(fitunif)$chisqpvalue
 gofstat(fitbeta)$chisqpvalue #
 gofstat(fitg)$chisqpvalue # 4
 #
-model_SRRARdepe_1 <- glmmTMB(
-  sr.colsxrar ~ strate + (1 | LOCA / placette) + exp(pos_depe + 0 | ID_depe) + offset(log(prop.trap.season)),
-  family = genpois(), 
+model_SRFONdepe_1 <- glmmTMB(
+  sr.fon ~ strate + (1 | LOCA / placette) + exp(pos_depe + 0 | ID_depe) + offset(log(prop.trap.season)),
+  family = gaussian(), 
   data = deperissant, 
-  na.action = na.fail) ; summary(model_SRRARdepe_1) 
+  na.action = na.fail) ; summary(model_SRFONdepe_1) 
 #
-model_SRRARdepe_2 <- glmmTMB(
-  sr.colsxrar ~ 1 + (1 | LOCA / placette) + exp(pos_depe + 0 | ID_depe) + offset(log(prop.trap.season)), 
-  family = genpois(), 
+model_SRFONdepe_2 <- glmmTMB(
+  sr.fon ~ 1 + (1 | LOCA / placette) + exp(pos_depe + 0 | ID_depe) + offset(log(prop.trap.season)), 
+  family = gaussian(), 
   data = deperissant, 
-  na.action = na.fail) ; summary(model_SRRARdepe_2)
+  na.action = na.fail) ; summary(model_SRFONdepe_2)
 #
-AICc(model_SRRARdepe_1) # 122.9335
-AICc(model_SRRARdepe_2) # 121.1216
+AICc(model_SRFONdepe_1) # 157.0468
+AICc(model_SRFONdepe_2) # 154.4997
 #
-anova(model_SRRARdepe_1, model_SRRARdepe_2) # 0.007035 **
+anova(model_SRFONdepe_1, model_SRFONdepe_2) # 0.00989 **
 #
-sim<-simulateResiduals(model_SRRARdepe_2)
+sim<-simulateResiduals(model_SRFONdepe_2)
 testUniformity(sim)
 testOutliers(sim)
 #
@@ -18539,6 +18539,136 @@ labels <- ifelse(pvals < 0.001,
 text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
 #
 dev.off()
+
+### depe / sain ###
+
+descdist(sain$ab.lig,discrete=TRUE,boot=1001)
+plot(fitdist(sain$ab.lig,"norm"))
+#
+fitnb<-fitdist(sain$ab.lig,"nbinom")
+plot(fitdist(sain$ab.lig,"nbinom"))
+#
+fitp<-fitdist(sain$ab.lig,"pois")
+plot(fitp)
+#
+fitn<-fitdist(sain$ab.lig,"norm")
+plot(fitn) # oui
+#
+fitlnorm<-fitdist(sain$ab.lig,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(sain$ab.lig,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(sain$ab.lig,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(sain$ab.lig,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(sain$ab.lig,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(sain$ab.lig,"gamma",method="mme")
+plot(fitg) # oui
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 1
+gofstat(fitn)$chisqpvalue # 4
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue #
+gofstat(fitg)$chisqpvalue # 5
+#
+model_ABLIGsain_1 <- glmmTMB(
+  ab.lig ~ strate + (1 | LOCA / placette) + exp(pos_sain + 0 | ID_sain) + offset(log(prop.trap.season)),
+  family = nbinom1(link = "sqrt"), 
+  data = sain, 
+  na.action = na.fail) ; summary(model_ABLIGsain_1) 
+#
+model_ABLIGsain_2 <- glmmTMB(
+  ab.lig ~ 1 + (1 | LOCA / placette) + exp(pos_sain + 0 | ID_sain) + offset(log(prop.trap.season)), 
+  family = nbinom1(link = "sqrt"), 
+  data = sain, 
+  na.action = na.fail) ; summary(model_ABLIGsain_2)
+#
+AICc(model_ABLIGsain_1) # 321.2309
+AICc(model_ABLIGsain_2) # 321.7114
+#
+anova(model_ABLIGsain_1, model_ABLIGsain_2) # 0.002412 **
+#
+sim<-simulateResiduals(model_ABLIGsain_2)
+testUniformity(sim)
+testOutliers(sim)
+
+# deperissant
+
+descdist(deperissant$ab.lig,discrete=TRUE,boot=1001)
+plot(fitdist(deperissant$ab.lig,"norm"))
+#
+fitnb<-fitdist(deperissant$ab.lig,"nbinom")
+plot(fitdist(deperissant$ab.lig,"nbinom"))
+#
+fitp<-fitdist(deperissant$ab.lig,"pois")
+plot(fitp)
+#
+fitn<-fitdist(deperissant$ab.lig,"norm")
+plot(fitn) # oui
+#
+fitlnorm<-fitdist(deperissant$ab.lig,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(deperissant$ab.lig,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(deperissant$ab.lig,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(deperissant$ab.lig,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(deperissant$ab.lig,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(deperissant$ab.lig,"gamma",method="mme")
+plot(fitg) # oui
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue #
+gofstat(fitn)$chisqpvalue # 1
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue #
+gofstat(fitg)$chisqpvalue # 4
+#
+model_ABLIGdepe_1 <- glmmTMB(
+  ab.lig ~ strate + (1 | LOCA / placette) + exp(pos_depe + 0 | ID_depe) + offset(log(prop.trap.season)),
+  family = nbinom1(), 
+  data = deperissant, 
+  na.action = na.fail) ; summary(model_ABLIGdepe_1) 
+#
+model_ABLIGdepe_2 <- glmmTMB(
+  ab.lig ~ 1 + (1 | LOCA / placette) + exp(pos_depe + 0 | ID_depe) + offset(log(prop.trap.season)), 
+  family = nbinom1(), 
+  data = deperissant, 
+  na.action = na.fail) ; summary(model_ABLIGdepe_2)
+#
+AICc(model_ABLIGdepe_1) # 294.7066
+AICc(model_ABLIGdepe_2) # 289.3309
+#
+anova(model_ABLIGdepe_1, model_ABLIGdepe_2) # 0.03607 *
+#
+sim<-simulateResiduals(model_ABLIGdepe_2)
+testUniformity(sim)
+testOutliers(sim)
+#
+
+RES<-glht(model_SRRARdepe_1, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***
 ```
 
 ## 10.5.10. sr.lig
@@ -18716,6 +18846,136 @@ labels <- ifelse(pvals < 0.001,
 text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
 #
 dev.off()
+
+### depe / sain ###
+
+descdist(sain$sr.lig,discrete=TRUE,boot=1001)
+plot(fitdist(sain$sr.lig,"norm"))
+#
+fitnb<-fitdist(sain$sr.lig,"nbinom")
+plot(fitdist(sain$sr.lig,"nbinom"))
+#
+fitp<-fitdist(sain$sr.lig,"pois")
+plot(fitp)
+#
+fitn<-fitdist(sain$sr.lig,"norm")
+plot(fitn) # oui
+#
+fitlnorm<-fitdist(sain$sr.lig,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(sain$sr.lig,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(sain$sr.lig,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(sain$sr.lig,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(sain$sr.lig,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(sain$sr.lig,"gamma",method="mme")
+plot(fitg) # oui
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 1
+gofstat(fitn)$chisqpvalue # 4
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue #
+gofstat(fitg)$chisqpvalue # 5
+#
+model_SRLIGsain_1 <- glmmTMB(
+  sr.lig ~ strate + (1 | LOCA / placette) + exp(pos_sain + 0 | ID_sain) + offset(log(prop.trap.season)),
+  family = nbinom1(link = "identity"), 
+  data = sain, 
+  na.action = na.fail) ; summary(model_SRLIGsain_1) 
+#
+model_SRLIGsain_2 <- glmmTMB(
+  sr.lig ~ 1 + (1 | LOCA / placette) + exp(pos_sain + 0 | ID_sain) + offset(log(prop.trap.season)), 
+  family = nbinom1(link = "identity"), 
+  data = sain, 
+  na.action = na.fail) ; summary(model_SRLIGsain_2)
+#
+AICc(model_SRLIGsain_1) # 205.7517
+AICc(model_SRLIGsain_2) # 206.2788
+#
+anova(model_SRLIGsain_1, model_SRLIGsain_2) # 0.00236 **
+#
+sim<-simulateResiduals(model_SRLIGsain_2)
+testUniformity(sim)
+testOutliers(sim)
+
+# deperissant
+
+descdist(deperissant$sr.lig,discrete=TRUE,boot=1001)
+plot(fitdist(deperissant$sr.lig,"norm"))
+#
+fitnb<-fitdist(deperissant$sr.lig,"nbinom")
+plot(fitdist(deperissant$sr.lig,"nbinom"))
+#
+fitp<-fitdist(deperissant$sr.lig,"pois")
+plot(fitp)
+#
+fitn<-fitdist(deperissant$sr.lig,"norm")
+plot(fitn) # oui
+#
+fitlnorm<-fitdist(deperissant$sr.lig,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(deperissant$sr.lig,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(deperissant$sr.lig,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(deperissant$sr.lig,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(deperissant$sr.lig,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(deperissant$sr.lig,"gamma",method="mme")
+plot(fitg) # oui
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue #
+gofstat(fitn)$chisqpvalue # 1
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue #
+gofstat(fitg)$chisqpvalue # 4
+#
+model_SRLIGdepe_1 <- glmmTMB(
+  sr.lig ~ strate + (1 | LOCA / placette) + exp(pos_depe + 0 | ID_depe) + offset(log(prop.trap.season)),
+  family = Gamma(link = "identity"), 
+  data = deperissant, 
+  na.action = na.fail) ; summary(model_SRLIGdepe_1) 
+#
+model_SRLIGdepe_2 <- glmmTMB(
+  sr.lig ~ 1 + (1 | LOCA / placette) + exp(pos_depe + 0 | ID_depe) + offset(log(prop.trap.season)), 
+  family = Gamma(link = "identity"), 
+  data = deperissant, 
+  na.action = na.fail) ; summary(model_SRLIGdepe_2)
+#
+AICc(model_SRLIGdepe_1) # 209.9821
+AICc(model_SRLIGdepe_2) # 200.1075
+#
+anova(model_SRLIGdepe_1, model_SRLIGdepe_2) # 0.257
+#
+sim<-simulateResiduals(model_SRLIGdepe_2)
+testUniformity(sim)
+testOutliers(sim)
+#
+
+RES<-glht(model_SRRARdepe_1, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***
 ```
 
 ## 10.5.11. ab.xyl
@@ -18850,6 +19110,138 @@ labels <- ifelse(pvals < 0.001,
 text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
 #
 dev.off()
+
+### depe / sain ###
+
+descdist(sain$ab.xyl,discrete=TRUE,boot=1001)
+plot(fitdist(sain$ab.xyl,"norm"))
+#
+fitnb<-fitdist(sain$ab.xyl,"nbinom")
+plot(fitdist(sain$ab.xyl,"nbinom"))
+#
+fitp<-fitdist(sain$ab.xyl,"pois")
+plot(fitp)
+#
+fitn<-fitdist(sain$ab.xyl,"norm")
+plot(fitn) # oui
+#
+fitlnorm<-fitdist(sain$ab.xyl,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(sain$ab.xyl,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(sain$ab.xyl,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(sain$ab.xyl,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(sain$ab.xyl,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(sain$ab.xyl,"gamma",method="mme")
+plot(fitg) # oui
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 1
+gofstat(fitn)$chisqpvalue # 4
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue #
+gofstat(fitg)$chisqpvalue # 5
+#
+model_ABXYLsain_1 <- glmmTMB(
+  ab.xyl ~ strate + (1 | LOCA / placette) + exp(pos_sain + 0 | ID_sain) + offset(log(prop.trap.season)),
+  family = lognormal(), 
+  data = sain, 
+  na.action = na.fail) ; summary(model_ABXYLsain_1) 
+#
+model_ABXYLsain_2 <- glmmTMB(
+  ab.xyl ~ 1 + (1 | LOCA / placette) + exp(pos_sain + 0 | ID_sain) + offset(log(prop.trap.season)), 
+  family = lognormal(), 
+  data = sain, 
+  na.action = na.fail) ; summary(model_ABXYLsain_2)
+#
+AICc(model_ABXYLsain_1) # 264.4484
+AICc(model_ABXYLsain_2) # 275.2065
+#
+anova(model_ABXYLsain_1, model_ABXYLsain_2) # 1.806e-05 ***
+#
+sim<-simulateResiduals(model_ABXYLsain_1)
+testUniformity(sim)
+testOutliers(sim)
+RES<-glht(model_ABXYLsain_1, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***
+
+# deperissant
+
+descdist(deperissant$ab.xyl,discrete=TRUE,boot=1001)
+plot(fitdist(deperissant$ab.xyl,"norm"))
+#
+fitnb<-fitdist(deperissant$ab.xyl,"nbinom")
+plot(fitdist(deperissant$ab.xyl,"nbinom"))
+#
+fitp<-fitdist(deperissant$ab.xyl,"pois")
+plot(fitp)
+#
+fitn<-fitdist(deperissant$ab.xyl,"norm")
+plot(fitn) # oui
+#
+fitlnorm<-fitdist(deperissant$ab.xyl,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(deperissant$ab.xyl,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(deperissant$ab.xyl,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(deperissant$ab.xyl,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(deperissant$ab.xyl,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(deperissant$ab.xyl,"gamma",method="mme")
+plot(fitg) # oui
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue #
+gofstat(fitn)$chisqpvalue # 1
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue #
+gofstat(fitg)$chisqpvalue # 4
+#
+model_ABXYLdepe_1 <- glmmTMB(
+  ab.xyl ~ strate + (1 | LOCA / placette) + exp(pos_depe + 0 | ID_depe) + offset(log(prop.trap.season)),
+  family = lognormal(), 
+  data = deperissant, 
+  na.action = na.fail) ; summary(model_ABXYLdepe_1) 
+#
+model_ABXYLdepe_2 <- glmmTMB(
+  ab.xyl ~ 1 + (1 | LOCA / placette) + exp(pos_depe + 0 | ID_depe) + offset(log(prop.trap.season)), 
+  family = lognormal(), 
+  data = deperissant, 
+  na.action = na.fail) ; summary(model_ABXYLdepe_2)
+#
+AICc(model_ABXYLdepe_1) # 269.6584
+AICc(model_ABXYLdepe_2) # 259.9897
+#
+anova(model_ABXYLdepe_1, model_ABXYLdepe_2) # 0.236
+#
+sim<-simulateResiduals(model_ABXYLdepe_2)
+testUniformity(sim)
+testOutliers(sim)
+#
+
+RES<-glht(model_SRRARdepe_1, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***
 ```
 
 ## 10.5.12. sr.xyl
@@ -19026,6 +19418,136 @@ labels <- ifelse(pvals < 0.001,
 text(x = x_pos - 0.2, y = y_pos + 0.3, labels = labels, adj = 0, cex = 0.8, col = "black")
 #
 dev.off()
+
+### depe / sain ###
+
+descdist(sain$sr.xyl,discrete=TRUE,boot=1001)
+plot(fitdist(sain$sr.xyl,"norm"))
+#
+fitnb<-fitdist(sain$sr.xyl,"nbinom")
+plot(fitdist(sain$sr.xyl,"nbinom"))
+#
+fitp<-fitdist(sain$sr.xyl,"pois")
+plot(fitp)
+#
+fitn<-fitdist(sain$sr.xyl,"norm")
+plot(fitn) # oui
+#
+fitlnorm<-fitdist(sain$sr.xyl,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(sain$sr.xyl,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(sain$sr.xyl,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(sain$sr.xyl,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(sain$sr.xyl,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(sain$sr.xyl,"gamma",method="mme")
+plot(fitg) # oui
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue # 1
+gofstat(fitn)$chisqpvalue # 4
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue #
+gofstat(fitg)$chisqpvalue # 5
+#
+model_SRXYLsain_1 <- glmmTMB(
+  sr.xyl ~ strate + (1 | LOCA / placette) + exp(pos_sain + 0 | ID_sain) + offset(log(prop.trap.season)),
+  family = tweedie(link = "sqrt"), 
+  data = sain, 
+  na.action = na.fail) ; summary(model_SRXYLsain_1) 
+#
+model_SRXYLsain_2 <- glmmTMB(
+  sr.xyl ~ 1 + (1 | LOCA / placette) + exp(pos_sain + 0 | ID_sain) + offset(log(prop.trap.season)), 
+  family = tweedie(link = "sqrt"), 
+  data = sain, 
+  na.action = na.fail) ; summary(model_SRXYLsain_2)
+#
+AICc(model_SRXYLsain_1) # 165.686
+AICc(model_SRXYLsain_2) # 157.3467
+#
+anova(model_SRXYLsain_1, model_SRXYLsain_2) # 0.1341
+#
+sim<-simulateResiduals(model_SRXYLsain_2)
+testUniformity(sim)
+testOutliers(sim)
+
+# deperissant
+
+descdist(deperissant$sr.xyl,discrete=TRUE,boot=1001)
+plot(fitdist(deperissant$sr.xyl,"norm"))
+#
+fitnb<-fitdist(deperissant$sr.xyl,"nbinom")
+plot(fitdist(deperissant$sr.xyl,"nbinom"))
+#
+fitp<-fitdist(deperissant$sr.xyl,"pois")
+plot(fitp)
+#
+fitn<-fitdist(deperissant$sr.xyl,"norm")
+plot(fitn) # oui
+#
+fitlnorm<-fitdist(deperissant$sr.xyl,"lnorm")
+plot(fitlnorm) # oui
+#
+fitexp<-fitdist(deperissant$sr.xyl,"exp")
+plot(fitexp)
+#
+fitgeom<-fitdist(deperissant$sr.xyl,"geom")
+plot(fitgeom)
+#
+fitbeta<-fitdist(deperissant$sr.xyl,"beta") # Pas possible, pas 0/1
+plot(fitbeta)
+#
+fitunif<-fitdist(deperissant$sr.xyl,"unif")
+plot(fitunif)
+#
+fitg<-fitdist(deperissant$sr.xyl,"gamma",method="mme")
+plot(fitg) # oui
+#
+gofstat(fitnb)$chisqpvalue # 2
+gofstat(fitp)$chisqpvalue #
+gofstat(fitn)$chisqpvalue # 1
+gofstat(fitlnorm)$chisqpvalue # 3
+gofstat(fitexp)$chisqpvalue
+gofstat(fitgeom)$chisqpvalue
+gofstat(fitunif)$chisqpvalue
+gofstat(fitbeta)$chisqpvalue #
+gofstat(fitg)$chisqpvalue # 4
+#
+model_SRXYLdepe_1 <- glmmTMB(
+  sr.xyl ~ strate + (1 | LOCA / placette) + exp(pos_depe + 0 | ID_depe) + offset(log(prop.trap.season)),
+  family = nbinom1(link = "sqrt"), 
+  data = deperissant, 
+  na.action = na.fail) ; summary(model_SRXYLdepe_1) 
+#
+model_SRXYLdepe_2 <- glmmTMB(
+  sr.xyl ~ 1 + (1 | LOCA / placette) + exp(pos_depe + 0 | ID_depe) + offset(log(prop.trap.season)), 
+  family = nbinom1(link = "sqrt"), 
+  data = deperissant, 
+  na.action = na.fail) ; summary(model_SRXYLdepe_2)
+#
+AICc(model_SRXYLdepe_1) # 153.4541
+AICc(model_SRXYLdepe_2) # 149.9253
+#
+anova(model_SRXYLdepe_1, model_SRXYLdepe_2) # 0.01555 *
+#
+sim<-simulateResiduals(model_SRXYLdepe_2)
+testUniformity(sim)
+testOutliers(sim)
+#
+
+RES<-glht(model_SRRARdepe_1, linfct = mcp(strate = "Tukey"))
+summary(RES) # < 0.001 ***
 ```
 
 ## 10.5.13. ab.colsxrsx
